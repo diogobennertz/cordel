@@ -54,7 +54,40 @@ const CLASSES := {
 		"inicial": "carimbo", "desbloqueia": {"banda_couro": 3, "pisada_forte": 6},
 		"desc": "Carimbó, banda de couro e pisada forte: o mais ligeiro na dança, difícil de pegar."
 	},
+	# ---- desbloqueáveis (por feito — ver DESBLOQUEIOS) ----
+	"forrozeiro": {
+		"nome": "Pandeirista de Forró", "apelido": "Jackson do Pandeiro", "pulo": "Pulo comum de forrozeiro — nada de especial ao cair.", "cor": Color(0.95, 0.65, 0.1), "maxhp": 115.0, "speed": 6.9, "crit": 0.06,
+		"inicial": "pandeirao", "desbloqueia": {"coco_embolada": 3, "baiao_rapido": 6},
+		"desc": "Pandeirão, coco de embolada e baião rápido: o mais veloz de pé no chão."
+	},
+	"angoleiro": {
+		"nome": "Mestre de Capoeira Angola", "apelido": "Mestre Pastinha", "pulo": "Pulo baixo e manhoso: a cabeçada ao cair atordoa quem está perto.", "cor": Color(0.15, 0.15, 0.17), "maxhp": 135.0, "speed": 5.0, "armor": 0.15,
+		"inicial": "cocorinha", "desbloqueia": {"cabecada": 3, "negativa": 6},
+		"desc": "Cocorinha, cabeçada e negativa: devagar no chão, manha e defesa de mestre."
+	},
+	"marujo": {
+		"nome": "Marujo da Bahia", "apelido": "Dorival Caymmi", "pulo": "Pulo comum de marujo — nada de especial ao cair.", "cor": Color(0.15, 0.35, 0.65), "maxhp": 108.0, "speed": 5.9, "regen": 0.5,
+		"inicial": "rede_pesca", "desbloqueia": {"mare_cheia": 3, "canto_mar": 6},
+		"desc": "Rede de pesca, maré cheia e canto do mar: ataca de longe, sustenta a travessia."
+	},
 }
+
+# Heróis desbloqueáveis: ficam de contorno preto na grade até cumprir o feito. "ach" já é o nome
+# pronto pra virar conquista da Steam no futuro (hoje só paga a liberação, sem integração nenhuma ainda).
+const DESBLOQUEIOS := {
+	"forrozeiro": {"txt": "Dê 2.000.000 de dano numa única corrida", "ach": "ACH_HEROI_FORROZEIRO", "tipo": "dano_run", "meta": 2000000.0},
+	"angoleiro":  {"txt": "Vença 10 chefes", "ach": "ACH_HEROI_ANGOLEIRO", "tipo": "contador", "c": "chefes", "meta": 10},
+	"marujo":     {"txt": "Derrube 10.000 bichos", "ach": "ACH_HEROI_MARUJO", "tipo": "contador", "c": "abates", "meta": 10000},
+}
+static func heroi_desbloqueado(id: String) -> bool:
+	if not DESBLOQUEIOS.has(id): return true
+	var r: Dictionary = DESBLOQUEIOS[id]
+	match r["tipo"]:
+		"contador": return int(Salvo.d["contadores"].get(r["c"], 0)) >= int(r["meta"])
+		"dano_run": return float(Salvo.d.get("maior_dano_run", 0.0)) >= float(r["meta"])
+	return false
+static func requisito_heroi(id: String) -> String:
+	return String(DESBLOQUEIOS.get(id, {}).get("txt", ""))
 
 const GOLPES := {
 	# Capoeira
@@ -98,6 +131,18 @@ const GOLPES := {
 	"carimbo":     {"nome": "Carimbó", "build": "carimbo", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.0, "knock": 1.3, "arte": "arretado", "txt": "Giro de carimbó: empurra todo mundo em volta."},
 	"banda_couro": {"nome": "Banda de Couro", "build": "carimbo", "tipo": "arco", "dmg": 25.0, "cd": 1.3, "raio": 3.4, "ang": 1.5, "knock": 1.1, "arte": "arretado", "txt": "Tapa no couro do tambor, na direção do bicho mais perto."},
 	"pisada_forte":{"nome": "Pisada Forte", "build": "carimbo", "tipo": "onda", "dmg": 16.0, "cd": 2.6, "raio": 5.2, "knock": 2.0, "arte": "arretado", "txt": "Pisada forte que sacode o chão e afasta a bicharada."},
+	# Forró
+	"pandeirao":     {"nome": "Pandeirão", "build": "forro", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.0, "knock": 1.2, "arte": "arretado", "txt": "Giro de pandeiro: acerta e empurra todo mundo em volta."},
+	"coco_embolada": {"nome": "Coco de Embolada", "build": "forro", "tipo": "onda", "dmg": 16.0, "cd": 2.8, "raio": 5.3, "knock": 1.9, "arte": "arretado", "txt": "Verso cantado rápido: onda que afasta a bicharada."},
+	"baiao_rapido":  {"nome": "Baião Rápido", "build": "forro", "tipo": "arco", "dmg": 25.0, "cd": 1.1, "raio": 3.2, "ang": 1.6, "knock": 1.1, "arte": "arretado", "txt": "Passo rápido de baião na direção do bicho mais perto."},
+	# Capoeira Angola
+	"cocorinha":     {"nome": "Cocorinha", "build": "angola", "tipo": "ring", "dmg": 22.0, "cd": 1.2, "raio": 2.9, "stun": 0.7, "knock": 0.6, "arte": "arretado", "txt": "Agacha e varre baixo: atordoa quem chega perto."},
+	"cabecada":      {"nome": "Cabeçada", "build": "angola", "tipo": "investida", "dmg": 32.0, "cd": 1.6, "raio": 1.6, "alcance": 6.5, "stun": 1.3, "arte": "arretado", "txt": "Investe de cabeça baixa no bicho mais perto e atordoa."},
+	"negativa":      {"nome": "Negativa", "build": "angola", "tipo": "onda", "dmg": 17.0, "cd": 2.9, "raio": 5.5, "knock": 2.1, "arte": "arretado", "txt": "Esquiva rasteira que sacode e empurra tudo em volta."},
+	# Marujo
+	"rede_pesca":    {"nome": "Rede de Pesca", "build": "maruja", "tipo": "ring", "dmg": 21.0, "cd": 1.15, "raio": 3.2, "knock": 1.0, "arte": "arretado", "txt": "Lança a rede em volta, prende e machuca a bicharada."},
+	"mare_cheia":    {"nome": "Maré Cheia", "build": "maruja", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.6, "knock": 2.3, "arte": "arretado", "txt": "Onda de maré que empurra tudo para longe."},
+	"canto_mar":     {"nome": "Canto do Mar", "build": "maruja", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.3, 0.55, 0.85), "arte": "arretado", "txt": "Nota que ecoa n'água e persegue o bicho até estourar."},
 }
 
 # Dano do golpe no nível atual (sobe 25% por nível acima do 1).
@@ -169,6 +214,12 @@ const HABILIDADES := {
 		"r": {"nome": "Desafio de Viola", "dur": 5.0, "txt": "5 s soltando notas para todos os lados"}},
 	"carimbozeiro": {"q": {"nome": "Giro de Carimbó", "cd": 8.0, "txt": "gira no ar, intocável, e acerta todo mundo em volta"},
 		"r": {"nome": "Roda de Carimbó", "dur": 6.0, "txt": "6 s dançando sem parar, batendo em quem chega perto"}},
+	"forrozeiro": {"q": {"nome": "Xote Veloz", "cd": 8.0, "txt": "giro de forró intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Arrasta-Pé", "dur": 6.0, "txt": "6 s dançando sem parar, de pandeiro na mão"}},
+	"angoleiro": {"q": {"nome": "Rasteira de Mestre", "cd": 9.0, "txt": "agarra o bicho mais forte por perto e dá uma cabeçada"},
+		"r": {"nome": "Roda de Angola", "dur": 4.5, "txt": "4,5 s de ginga baixa acertando em volta sem parar"}},
+	"marujo": {"q": {"nome": "Rede Certeira", "cd": 7.0, "txt": "uma nota que atravessa tudo na frente"},
+		"r": {"nome": "Canto da Maré", "dur": 5.0, "txt": "5 s soltando notas para todos os lados"}},
 }
 const ULT_ABATES := 60          # abates para carregar o ultimate
 
@@ -252,6 +303,11 @@ const PIADAS := {
 	"dedilhado": "Corda de aço, dedo calejado.", "caterete": "Desafio na viola, ninguém leva desaforo.",
 	"toada": "Toada boa dói de bonito.", "carimbo": "Quem carimba não erra o passo.",
 	"banda_couro": "Couro bom aguenta o tranco.", "pisada_forte": "Pisa forte quem tem raiz.",
+	"pandeirao": "Pandeiro bom não erra o tom.", "coco_embolada": "Embolou, não desemola fácil.",
+	"baiao_rapido": "Baião que é bom não para quieto.", "cocorinha": "Quem se abaixa, escapa.",
+	"cabecada": "Na cabeça é que a ideia bate.", "negativa": "Na negativa é que mora a manha.",
+	"rede_pesca": "Rede bem lançada não volta vazia.", "mare_cheia": "Maré cheia não espera ninguém.",
+	"canto_mar": "Canto do mar, ninguém esquece.",
 }
 
 # Bodega do Lampião: o que se compra com as moedas da partida.

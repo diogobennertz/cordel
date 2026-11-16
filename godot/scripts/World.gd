@@ -35,6 +35,8 @@ var extra_t := 0.0             # tempo sobrevivido depois do chefe
 var moedas := 0.0
 var dano_total := 0.0
 var maior_dano := 0.0
+var _dps_janela := []       # [[tempo, dano], ...] do último segundo, pra mostrar dano por segundo
+var lbl_dps: Label
 var menus: Menus
 var moldura: Panel            # borda vermelha: pisca ao levar dano e pulsa com a vida baixa
 var _moldura_a := 0.0
@@ -147,6 +149,8 @@ func _ready() -> void:
 		_teste_dash()
 	elif "--teste-mundo" in args:
 		_teste_mundo()
+	elif "--teste-lock" in args:
+		_teste_lock()
 	elif "--coop-host" in args:
 		_teste_coop_host()
 	elif "--coop-join" in args:
@@ -198,7 +202,8 @@ func _bot(cls: String) -> void:
 func bot_dir() -> Vector3:
 	var pp: Vector3 = player.global_position
 	var quer: float = {"capoeirista": 2.2, "cangaceiro": 2.0 if player.golpes.size() < 2 else 5.0, "jiujitsu": 5.0, "benzedeira": 10.0, "frevista": 2.4, "cordelista": 9.0,
-		"sambista": 2.3, "maracatuzeiro": 5.0, "violeiro": 9.5, "carimbozeiro": 2.3}[player.classe]
+		"sambista": 2.3, "maracatuzeiro": 5.0, "violeiro": 9.5, "carimbozeiro": 2.3,
+		"forrozeiro": 2.3, "angoleiro": 5.0, "marujo": 9.5}[player.classe]
 	if player.hp < player.max_hp * 0.35: quer += 5.0
 	var dir := Vector3.ZERO
 	var alvo = _nearest(pp, 80.0)
@@ -388,6 +393,11 @@ func _montar_hud() -> void:
 	hud.add_child(minimapa)
 	lbl_dir = _label(17, HORIZONTAL_ALIGNMENT_RIGHT)
 	lbl_dir.anchor_left = 1; lbl_dir.anchor_right = 1; lbl_dir.offset_left = -400; lbl_dir.offset_right = -14; lbl_dir.offset_top = 210; hud.add_child(lbl_dir)
+	# dano por segundo, no canto de baixo à direita (só informativo, não mexe em nada do jogo)
+	lbl_dps = _label(18, HORIZONTAL_ALIGNMENT_RIGHT)
+	lbl_dps.anchor_left = 1; lbl_dps.anchor_right = 1; lbl_dps.anchor_top = 1; lbl_dps.anchor_bottom = 1
+	lbl_dps.offset_left = -220; lbl_dps.offset_right = -14; lbl_dps.offset_top = -40; lbl_dps.offset_bottom = -10
+	lbl_dps.grow_vertical = Control.GROW_DIRECTION_BEGIN; hud.add_child(lbl_dps)
 	# mini inventário: cartas de atributo pegas, no canto de cima à esquerda
 	caixa_inv = HFlowContainer.new(); caixa_inv.position = Vector2(12, 12); caixa_inv.size = Vector2(300, 80)
 	caixa_inv.add_theme_constant_override("h_separation", 4); caixa_inv.add_theme_constant_override("v_separation", 4)
@@ -451,7 +461,8 @@ func _refazer_slots() -> void:
 	for g in player.golpes: _slots.append(_quadro(Dados.GOLPES[g["id"]]["arte"], "", 50.0))
 	var vao := Control.new(); vao.custom_minimum_size = Vector2(10, 0); caixa_slots.add_child(vao)
 	var artes: Array = {"capoeirista": ["au", "roda"], "jiujitsu": ["mataleao", "faixapreta"], "benzedeira": ["banho", "vela"], "cangaceiro": ["mira", "rei"], "frevista": ["atabaque", "estrela"], "cordelista": ["mira", "sol"],
-		"sambista": ["roda", "estrela"], "maracatuzeiro": ["mataleao", "vela"], "violeiro": ["mira", "sol"], "carimbozeiro": ["atabaque", "roda"]}[player.classe]
+		"sambista": ["roda", "estrela"], "maracatuzeiro": ["mataleao", "vela"], "violeiro": ["mira", "sol"], "carimbozeiro": ["atabaque", "roda"],
+		"forrozeiro": ["roda", "atabaque"], "angoleiro": ["mataleao", "faixapreta"], "marujo": ["mira", "sol"]}[player.classe]
 	_slots.append(_quadro(artes[0], Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro(artes[1], Ctrl.nome("r").left(3), 60.0))
 
 func _hud_heroi() -> void:
@@ -892,6 +903,7 @@ func ferir(e, dmg: float, bonus: float = 0.0) -> void:
 	n = mini(n, 3)
 	if n > 0: dmg *= pow(player.crit_dano, n)
 	dano_total += dmg; maior_dano = maxf(maior_dano, dmg)
+	_dps_janela.append([time, dmg])
 	Som.tocar("crit" if n > 0 else "hit", -6.0 if n == 0 else -2.0, 0.15, 0.06)
 	if n > 0:
 		Salvo.contar("criticos")
@@ -1669,6 +1681,9 @@ func pousou(p: Jogador) -> void:
 		"carimbozeiro":    # só empurra, não bate — como no frevista
 			_ring(p.global_position, 3.0 * p.area_mult, 0.0, 0.0, 2.2)
 			_efeito_anel(p.global_position, 3.0 * p.area_mult, Dados.CLASSES[p.classe]["cor"])
+		"angoleiro":       # cabeçada ao cair: atordoa quem está perto
+			_ring(p.global_position, 2.7 * p.area_mult, 8.0 * s, 1.0, 0.2)
+			_efeito_anel(p.global_position, 2.7 * p.area_mult, Dados.CLASSES[p.classe]["cor"]); tremor = maxf(tremor, 0.15)
 
 # ---------------- tutorial ----------------
 const TUT := [
@@ -1764,6 +1779,7 @@ func _encerrar(titulo: String, cor: Color) -> void:
 	_mouse(false)
 	var ganho := int(moedas * (1.0 if chefe_morto else 0.5))
 	Salvo.d["moedas"] = int(Salvo.d["moedas"]) + ganho
+	Salvo.d["maior_dano_run"] = maxf(float(Salvo.d.get("maior_dano_run", 0.0)), dano_total)   # pra liberar herói por feito, tipo "2 milhões numa corrida"
 	var linha := "Não venceu o chefe: leva metade das moedas"
 	if chefe_morto:
 		linha = "Aguentou %s depois do chefe" % _mmss(extra_t)
@@ -1793,6 +1809,10 @@ func _hud() -> void:
 	lbl_topo.text = _mmss(time)
 	lbl_nv.text = "NÍVEL %d" % p.level
 	lbl_dir.text = "☠ %d   ◉ %d" % [kills, int(moedas)]
+	while _dps_janela.size() > 0 and time - _dps_janela[0][0] > 1.0: _dps_janela.pop_front()
+	var dps := 0.0
+	for it in _dps_janela: dps += it[1]
+	lbl_dps.text = "%s de dano/s" % Tela.num(dps)
 	# segurando Tab, o minimapa do canto só aumenta no lugar dele mesmo — não cobre a tela
 	var mapa_ampliado: bool = Ctrl.ap("mapa") and not levelup_aberto
 	var lado_map := (380.0 if mapa_ampliado else 194.0)
@@ -1901,9 +1921,13 @@ func _shot_tela(nome: String) -> void:
 	sem_mouse = true
 	Salvo.d["moedas"] = 345; Salvo.d["fase_max"] = 1; Salvo.d["melhorias"] = {"capoeirista": {"dano": 3, "vida": 1}, "jiujitsu": {"dano": 7, "critico": 4}}; Salvo.d["recordes"] = {"0": 100.0}
 	Salvo.d["contadores"] = {"abates": 812, "abates_saci": 150, "chefes": 1, "uso_kimura": 40, "criticos": 300}
-	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop"]:
+	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop", "herois_trancados"]:
 		_montar_menu()
 		if nome == "herois": menus.herois()
+		elif nome == "herois_trancados":
+			menus.herois()
+			await get_tree().process_frame; await get_tree().process_frame
+			menus._scr_herois.scroll_vertical = 9999
 		elif nome == "herois_tut": menus._so_tutorial = true; menus.herois()
 		elif nome == "melhorias": menus.melhorias()
 		elif nome == "feitos": menus.feitos()
@@ -2005,6 +2029,18 @@ func _teste_coop_relatar() -> void:
 			print("CLIENTE atacou — _ring acertou %d bicho(s)" % k)
 		print("COOP eu=%s id=%d tick=%d jogadores=%d bichos=%d nivel=%d xp=%.1f moedas=%.1f vida=%.1f/%.1f" % [
 			sel_heroi, Rede.meu_id(), i, jogadores_rede.size(), enemies.size(), player.level, player.xp, moedas, player.hp, player.max_hp])
+	get_tree().quit()
+
+func _teste_lock() -> void:
+	for id in ["forrozeiro", "angoleiro", "marujo"]:
+		print("%s trancado no começo: %s (esperado: true)" % [id, not Dados.heroi_desbloqueado(id)])
+	Salvo.d["maior_dano_run"] = 2000001.0
+	print("forrozeiro depois de 2kk de dano: %s (esperado: true)" % Dados.heroi_desbloqueado("forrozeiro"))
+	Salvo.d["contadores"]["chefes"] = 10
+	print("angoleiro depois de 10 chefes: %s (esperado: true)" % Dados.heroi_desbloqueado("angoleiro"))
+	Salvo.d["contadores"]["abates"] = 10000
+	print("marujo depois de 10 mil abates: %s (esperado: true)" % Dados.heroi_desbloqueado("marujo"))
+	print("capoeirista sempre liberado: %s (esperado: true)" % Dados.heroi_desbloqueado("capoeirista"))
 	get_tree().quit()
 
 func _teste_mundo() -> void:
@@ -2164,6 +2200,27 @@ func usar_especial(p: Jogador) -> void:
 			p.iframes = 0.7; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
 			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
 			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"forrozeiro":
+			p.iframes = 0.72; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 35.0 * s, 0.5, 1.9)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"angoleiro":
+			var alvo7 = _mais_forte(pos, 9.0)
+			if alvo7 == null: return
+			var alvo7_id: int = alvo7.get_instance_id()
+			p.comecar_investida(alvo7.global_position, 18.0, func():
+				_efeito_anel(p.global_position, 2.3, cor)
+				var al7 = instance_from_id(alvo7_id)
+				if al7 != null and is_instance_valid(al7) and not al7.dead:
+					al7.stun_t = maxf(al7.stun_t, 0.6 if al7.is_boss else 2.5)
+					ferir(al7, 155.0 * s))
+		"marujo":
+			var alvo8 = _mais_forte(pos, 28.0)
+			var dir8: Vector3 = p.frente
+			if alvo8:
+				dir8 = alvo8.global_position - pos; dir8.y = 0; dir8 = dir8.normalized()
+			_disparar(pos, dir8 * 30.0, TIRO_Q, 210.0 * s)
+			p.boneco.atacar()
 	p.q_cd = hq["cd"]
 	Som.tocar("especial")
 	Salvo.contar("uso_especial_" + p.classe)
@@ -2246,6 +2303,26 @@ func _hab_update(delta: float) -> void:
 			p.ult_tick = 0.28; p.boneco.girar()
 			_ring(pos, 4.2 * p.area_mult, 14.0 * s, 0.0, 0.5)
 			_efeito_anel(pos, 4.2 * p.area_mult, cor)
+		"forrozeiro":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.4 * p.area_mult, cor)
+		"angoleiro":
+			p.ult_tick = 0.22; p.iframes = 0.4
+			var alvo9 = _nearest(pos, 13.0)
+			if alvo9:
+				var d9: Vector3 = alvo9.global_position - pos; d9.y = 0
+				p.position += d9 * 0.7
+				if d9.length() > 0.1: p.frente = d9.normalized()
+				p.boneco.atacar()
+				var k9 := _ring(p.global_position, 2.3, 90.0 * s, 1.0, 0.0)
+				_efeito_anel(p.global_position, 2.3, cor)
+				if k9 > 0: p.curar(p.max_hp * 0.015 * k9)
+		"marujo":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a9 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a9), 0, sin(a9)) * 16.0, BALA_ULT, 13.0 * s)
 
 # ---------------- ataques dos chefes ----------------
 func aviso_chefe(pos: Vector3, raio: float, txt: String) -> void:

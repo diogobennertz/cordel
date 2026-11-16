@@ -1,5 +1,17 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — primeiros heróis desbloqueáveis, contador de dano por segundo
+- **Primeiros 3 heróis desbloqueáveis por feito** (de uma meta de ~20): **Jackson do Pandeiro**
+  (forrozeiro), **Mestre Pastinha** (capoeira angola) e **Dorival Caymmi** (marujo da Bahia).
+  Ficam em **silhueta preta** na grade até cumprir o feito; passar o mouse mostra o que falta.
+  Já vem pronto pra virar conquista da Steam no futuro (cada um já tem um id de conquista reservado).
+- Requisitos desta primeira leva: Jackson pede **2.000.000 de dano numa única corrida** (precisou de
+  um registro novo — "maior dano numa corrida" — separado do recorde de tempo de sobrevida); Pastinha
+  pede vencer 10 chefes; Caymmi pede derrubar 10.000 bichos.
+- **Contador de dano por segundo** no canto de baixo à direita da tela, durante a fase.
+- Corrigido: a fileira de heróis da tela de Melhorias também não cabia mais na tela — agora rola.
+- Mais heróis desbloqueáveis (até fechar os ~20 pedidos) ficam para as próximas levas.
+
 ## 2026-11-16 — 4 heróis novos, progresso do co-op separado por mundo, menu reorganizado
 - **4 heróis novos jogáveis desde o início** (além dos 6 que já existiam): **Cartola** (sambista),
   **Dona Santa** (maracatuzeira), **Tião Carreiro** (violeiro) e **Mestre Verequete** (carimbozeiro) —

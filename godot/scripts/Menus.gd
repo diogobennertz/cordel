@@ -13,6 +13,7 @@ var _heroi_nv                 # herói que está subindo de nível
 var _abriu := 0
 var _capt := ""               # ação esperando uma tecla nova (opções > controles)               # quando a tela de nível abriu (evita clique sem querer)
 var _so_tutorial := false     # true: foi pro "escolha de herói" só pra fazer o tutorial (não pra jogar a fase)
+var _scr_herois: ScrollContainer   # só pra debug/teste
 
 func _init() -> void:
 	layer = 10
@@ -100,6 +101,7 @@ func titulo() -> void:
 
 # ---------------- escolha do herói e da fase ----------------
 func herois() -> void:
+	if not Dados.heroi_desbloqueado(w.sel_heroi): w.sel_heroi = "capoeirista"   # nunca fica selecionado um herói trancado
 	_limpar("herois")
 	Tela.fundo_papel(raiz)
 	var vb := _centro(8)
@@ -109,6 +111,7 @@ func herois() -> void:
 	# esquerda: grade dos heróis (rola quando tiver muitos — hoje são poucos, mas vão chegar a ~20)
 	var scr := ScrollContainer.new(); scr.custom_minimum_size = Vector2(356, 424)
 	scr.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; corpo.add_child(scr)
+	_scr_herois = scr   # só pra debug/teste (rolar até os trancados num print)
 	var gr := GridContainer.new(); gr.columns = 3
 	gr.add_theme_constant_override("h_separation", 8); gr.add_theme_constant_override("v_separation", 8); scr.add_child(gr)
 	for id in Dados.CLASSES: gr.add_child(_icone_heroi(id))
@@ -135,14 +138,20 @@ func herois() -> void:
 func _icone_heroi(id: String) -> Button:
 	var c: Dictionary = Dados.CLASSES[id]
 	var sel: bool = id == w.sel_heroi
+	var trancado: bool = not Dados.heroi_desbloqueado(id)
 	var b := Button.new(); b.custom_minimum_size = Vector2(112, 148); b.clip_contents = true
 	_estilo_carta(b, sel)
 	var v := _miolo(b, 6, 2)
-	v.add_child(_retrato_heroi(id, Vector2(70, 88)))
+	var ret := _retrato_heroi(id, Vector2(70, 88))
+	if trancado: ret.modulate = Color(0.03, 0.03, 0.03)   # silhueta preta até cumprir o feito
+	v.add_child(ret)
 	v.add_child(Tela.texto(String(c["apelido"]), 12, 96, Tela.TINTA if not sel else Tela.URUCUM))
 	Tela.ignora_mouse(b)
-	b.pressed.connect(func():
-		w.sel_heroi = id; Salvo.d["heroi"] = id; herois())
+	if trancado:
+		b.tooltip_text = "🔒 Para liberar: " + Dados.requisito_heroi(id)
+	else:
+		b.pressed.connect(func():
+			w.sel_heroi = id; Salvo.d["heroi"] = id; herois())
 	return b
 
 # pergunta (só na primeira vez) se a pessoa quer fazer o tutorial antes da 1ª fase
@@ -296,8 +305,11 @@ func melhorias() -> void:
 	var vb := _centro(12)
 	vb.add_child(Tela.titulo("t_melhorias", 58))
 	vb.add_child(Tela.rotulo("Cada herói tem as suas: quem você não treinou continua do zero.", 15))
-	var hh := _linha(vb, 10)
+	var scrh := ScrollContainer.new(); scrh.custom_minimum_size = Vector2(1180, 56)
+	scrh.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; vb.add_child(scrh)
+	var hh := HBoxContainer.new(); hh.add_theme_constant_override("separation", 10); scrh.add_child(hh)
 	for hid in Dados.CLASSES:
+		if not Dados.heroi_desbloqueado(hid): continue   # treino só vale pra quem já tem o herói liberado
 		var hsel: String = hid
 		var ac_h := func():
 			w.sel_heroi = hsel; Salvo.d["heroi"] = hsel; Salvo.salvar(); melhorias()

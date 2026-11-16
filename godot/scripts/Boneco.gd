@@ -291,6 +291,34 @@ func _montar(tipo: String, destaque) -> void:
 			Lib.cil(corpo, 0.24, 0.28, 0.18, Vector3(0, CY + 0.37, 0), Color(0.88, 0.78, 0.5), 12)
 			Lib.cil(corpo, 0.3, 0.33, 0.5, Vector3(0, 0.6, -0.42), Color(0.68, 0.42, 0.2), 10, Vector3(1.57, 0, 0))  # curimbó (tambor comprido)
 			Lib.cil(corpo, 0.33, 0.33, 0.03, Vector3(0, 0.6, -0.67), Color(0.92, 0.85, 0.65), 10, Vector3(1.57, 0, 0))
+		"forrozeiro":   # pandeirista de forró: chapéu de couro de cangaceiro-sertanejo (sol), colete, pandeiro na mão
+			var pfo := Color(0.72, 0.5, 0.3)
+			_humano(pfo, Color(0.95, 0.9, 0.8), Color(0.5, 0.3, 0.15), COURO_ESC, Color(0.95, 0.9, 0.8))
+			cor_base = Color(0.95, 0.65, 0.1)
+			_cinto(COURO_ESC, 0.68)
+			Lib.cx(corpo, Vector3(0.78, 0.5, 0.21), Vector3(0, 0.84, 0.0), Color(0.95, 0.65, 0.1))      # colete
+			Lib.cil(corpo, 0.5, 0.56, 0.05, Vector3(0, CY + 0.3, 0), Color(0.55, 0.35, 0.18), 14)       # chapéu de couro
+			Lib.cil(corpo, 0.24, 0.28, 0.2, Vector3(0, CY + 0.4, 0), Color(0.55, 0.35, 0.18), 12)
+			Lib.cil(braco_d, 0.3, 0.3, 0.05, Vector3(0, -0.3, 0.14), Color(0.92, 0.85, 0.65), 12).rotation.x = 1.57   # pandeiro
+			Lib.cil(braco_d, 0.3, 0.3, 0.015, Vector3(0, -0.3, 0.1), COURO, 12).rotation.x = 1.57
+		"angoleiro":    # mestre de capoeira angola: calça/camisa branca com faixa preta e dourada, boina
+			var pan := Color(0.4, 0.23, 0.13)
+			_humano(pan, BRANCO, BRANCO, pan, BRANCO)
+			cor_base = Color(0.15, 0.15, 0.17)
+			_cinto(Color(0.15, 0.15, 0.17), 0.68)
+			Lib.cil(corpo, 0.42, 0.44, 0.1, Vector3(0, CY + 0.32, 0), Color(0.15, 0.15, 0.17), 12)      # boina preta
+			Lib.esf(corpo, 0.34, Vector3(0, CY + 0.38, 0), Color(0.15, 0.15, 0.17), Vector3(1, 0.6, 1), 10)
+			Lib.cx(corpo, Vector3(0.3, 0.06, 0.05), Vector3(0, CY - 0.14, 0.385), BRANCO)               # bigode e barba grisalha
+			Lib.cx(corpo, Vector3(0.22, 0.14, 0.05), Vector3(0, CY - 0.26, 0.37), BRANCO)
+		"marujo":       # marujo da Bahia: camisa listrada branca e azul, boné de marinheiro, lenço no pescoço
+			var pmj := Color(0.68, 0.46, 0.28)
+			_humano(pmj, BRANCO, Color(0.15, 0.3, 0.55), pmj, BRANCO)
+			cor_base = Color(0.15, 0.35, 0.65)
+			for i in range(4):
+				Lib.cx(corpo, Vector3(0.7, 0.06, 0.42), Vector3(0, 0.78 + i * 0.14, 0.08), Color(0.15, 0.35, 0.65))   # listras
+			Lib.cx(corpo, Vector3(0.3, 0.08, 0.05), Vector3(0, 1.1, 0.3), Color(0.85, 0.2, 0.15))       # lenço vermelho no pescoço
+			Lib.cil(corpo, 0.4, 0.44, 0.1, Vector3(0, CY + 0.3, 0), BRANCO, 12)                         # boné de marinheiro
+			Lib.cil(corpo, 0.34, 0.34, 0.03, Vector3(0, CY + 0.36, 0), Color(0.15, 0.35, 0.65), 12)
 		"zepilintra":   # Seu Zé Pilintra: terno branco, chapéu de fita vermelha, gravata vermelha e bengala
 			var pz := Color(0.28, 0.17, 0.1)
 			_humano(pz, BRANCO, BRANCO, BRANCO, BRANCO)

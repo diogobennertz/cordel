@@ -245,6 +245,29 @@ tradução (os textos ainda estão soltos no código), coop Steam/LAN, exportaç
   "apelido de arquivo" no código (`Menus.APELIDO_ARQUIVO`) pra não precisar mudar o id do herói em lugar nenhum.
 - Regressão completa nos 32 heróis (headless, sem erro de script).
 
+## Novidades de 16/11 (madrugada): placas legíveis, mundo achado sozinho, gente do mapa mais rara
+- **BUG REAL achado e corrigido**: de longe, as placas flutuantes (ORATÓRIO, nome dos aliados) ficavam ilegíveis,
+  um borrão de pixel — o filtro de pixelização "comia" os traços finos da letra. Corrigido deixando a letra e o
+  contorno bem mais grossos (`World._placa()`), sem precisar mexer no filtro em si.
+- **BUG REAL achado e corrigido**: os golpes automáticos continuavam disparando/girando mesmo sem nenhum bicho por
+  perto (ex.: parado conversando com a Baiana). Como eles miram em "quem está na mira" por padrão quando não acham
+  bicho, de longe parecia que estavam "mirando" na gente do mapa — mas o dano nunca ia pra eles (só bicho de verdade
+  recebe dano). Agora, sem bicho na tela, o herói simplesmente não atira/golpeia à toa.
+- **Gente do mapa mais rara**: antes eram sempre 3 fixos a partida inteira; agora é só 1 ou 2, e cada um some sozinho
+  depois de um tempo (50 a 85s), em vez de ficar pra sempre no mapa — a ideia é ser um encontro ocasional, não mobília.
+- **Mundo hospedado agora é achado sozinho**: a tela de "entrar" no co-op escuta um anúncio UDP que o anfitrião manda
+  na rede local; se tiver alguém hospedando por perto, aparece um botão "ENTRAR EM: <nome do mundo>" pronto, sem
+  precisar digitar IP (o campo de IP continua ali, como alternativa). Confirmado que o anúncio sai certo pela rede
+  de verdade (testado com um ouvinte UDP externo); num PC só com duas janelas do jogo ao mesmo tempo, só uma das duas
+  consegue ESCUTAR o anúncio (as duas não podem abrir a mesma porta ao mesmo tempo no mesmo PC) — em computadores
+  diferentes (o uso de verdade) isso não é problema, cada um tem sua própria rede de portas.
+- Mais uma leva de retratos de IA local: `benzedeira` e `violonista` (dos "4 primeiros" que ainda usavam o boneco
+  3D ou a arte 2D antiga) ganharam retrato de IA local de verdade. `capoeirista`, `jiujitsu` e `cangaceiro` ficaram
+  com a arte original (tentei gerar por IA, mas saiu com defeito de recorte de fundo ou um estilo bem diferente do
+  resto do jogo em todas as tentativas — decidi não trocar uma arte boa por uma pior). `frevista` perdeu o retrato
+  de IA que tinha saído quebrado (ficava quase todo transparente) e voltou a cair no boneco 3D, que já ficou bom
+  com a luz de três pontos da leva anterior.
+
 ## Distribuir
 `python instalador/publicar.py [endereço]` gera em `dist/`: `Cordelame-Instalar.exe` (instala sem senha de administrador e cria
 atalho) e `jogo.zip` + `versao.txt`. O jogo instalado abre por `Jogar.ps1`, que, se houver endereço em `atualizacao.txt`,

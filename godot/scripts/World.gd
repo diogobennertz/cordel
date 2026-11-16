@@ -1277,13 +1277,15 @@ func _montar_objetos() -> void:
 	var gente: Array = Dados.NPCS.keys(); gente.shuffle()
 	var so_um := OS.get_cmdline_user_args().find("--npc")
 	if so_um >= 0: gente = [OS.get_cmdline_user_args()[so_um + 1]]
-	for i in range(mini(3, gente.size())): _novo_objeto(gente[i], _pos_livre(12.0, ARENA - 8.0), 0)
+	var qtd_gente := 1 if so_um >= 0 else randi_range(1, 2)   # só 1 ou 2 por partida, não um grupo fixo sempre no mapa
+	for i in range(mini(qtd_gente, gente.size())): _novo_objeto(gente[i], _pos_livre(12.0, ARENA - 8.0), 0)
 	if Dados.FASES[fase].get("cristo", false): _montar_cristo()
 
 # custo 0 = baú de graça (caiu de elite ou de chefe); custo 1 = trancado, paga com as moedas da partida
 func _novo_objeto(tipo: String, pos: Vector3, custo: int) -> void:
 	var n := Node3D.new(); n.position = Vector3(pos.x, Lib.h(pos.x, pos.z), pos.z); add_child(n)
-	var o := {"tipo": tipo, "no": n, "custo": custo, "carga": 0.0, "usado": false, "aviso": 0.0, "lbl": null}
+	var o := {"tipo": tipo, "no": n, "custo": custo, "carga": 0.0, "usado": false, "aviso": 0.0, "lbl": null, "vida_npc": -1.0}
+	if Dados.NPCS.has(tipo): o["vida_npc"] = randf_range(50.0, 85.0)   # gente do mapa não fica pra sempre: some depois de um tempo
 	match tipo:
 		"pote":
 			Lib.esf(n, 0.42, Vector3(0, 0.4, 0), Color(0.78, 0.42, 0.22), Vector3(1, 1.15, 1), 7)
@@ -1370,7 +1372,8 @@ func _novo_objeto(tipo: String, pos: Vector3, custo: int) -> void:
 
 func _placa(pai: Node3D, alt: float, cor: Color) -> Label3D:
 	var l := Label3D.new(); l.billboard = BaseMaterial3D.BILLBOARD_ENABLED; l.font = Tela.fonte(true)
-	l.font_size = 44; l.pixel_size = 0.008; l.outline_size = 12; l.modulate = cor; l.outline_modulate = Color(0.1, 0.07, 0.05)
+	# letra e contorno bem mais grossos: de longe, o filtro de pixelização "comia" partes finas e ficava ilegível
+	l.font_size = 64; l.pixel_size = 0.0072; l.outline_size = 18; l.modulate = cor; l.outline_modulate = Color(0.1, 0.07, 0.05)
 	l.position = Vector3(0, alt, 0); pai.add_child(l)
 	return l
 
@@ -1427,6 +1430,11 @@ func _objetos(delta: float) -> void:
 				if d > 4.5: o["usado"] = false
 				elif d < 2.2 and not o["usado"]:
 					o["usado"] = true; abrir_npc(o["tipo"])
+				if o["vida_npc"] > 0.0 and d > 3.0:   # não some bem na cara de quem tá conversando perto
+					o["vida_npc"] -= delta
+					if o["vida_npc"] <= 0.0:
+						_puff(n.position, Color(0.85, 0.85, 0.95), 1.4)
+						n.queue_free(); objetos.erase(o)
 			"oratorio":
 				if o["usado"]: continue
 				if d < 3.2:
@@ -1941,7 +1949,7 @@ func _shot_tela(nome: String) -> void:
 	sem_mouse = true
 	Salvo.d["moedas"] = 345; Salvo.d["fase_max"] = 1; Salvo.d["melhorias"] = {"capoeirista": {"dano": 3, "vida": 1}, "jiujitsu": {"dano": 7, "critico": 4}}; Salvo.d["recordes"] = {"0": 100.0}
 	Salvo.d["contadores"] = {"abates": 812, "abates_saci": 150, "chefes": 1, "uso_kimura": 40, "criticos": 300}
-	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop", "herois_trancados", "herois_dica", "heroi_novo"]:
+	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop", "coopesperar", "herois_trancados", "herois_dica", "heroi_novo"]:
 		_montar_menu()
 		if nome == "herois": menus.herois()
 		elif nome == "herois_trancados":
@@ -1973,6 +1981,9 @@ func _shot_tela(nome: String) -> void:
 		elif nome == "opcoes": menus.opcoes(menus.titulo)
 		elif nome == "controles": menus._aba = "controles"; menus.opcoes(menus.titulo)
 		elif nome == "coop": menus.coop()
+		elif nome == "coopesperar":
+			menus.coop()
+			await get_tree().create_timer(3.5).timeout
 		elif nome == "pergtut": _montar_menu(); menus.herois(); menus.perguntar_tutorial()
 	else:
 		iniciar_jogo("capoeirista" if nome != "nivel2" else "cangaceiro", 3 if nome == "cristo" else 0)
@@ -2004,6 +2015,10 @@ func _shot_tela(nome: String) -> void:
 			_montar_objetos()
 			var ek := InputEventKey.new(); ek.physical_keycode = Ctrl.tecla("mapa"); ek.pressed = true
 			Input.parse_input_event(ek)
+		elif nome == "placas":
+			_novo_objeto("oratorio", player.global_position + Vector3(4.0, 0, 2.0), 0)
+			_novo_objeto("baiana", player.global_position + Vector3(-3.0, 0, 3.0), 0)
+			cam_yaw = 0.3; cam_pitch = 0.6; cam_dist = 15.0
 		elif Dados.NPCS.has(nome):
 			moedas = 70.0; _teste_fim = 0.0; Salvo.d["falas"][nome] = randi() % 5; abrir_npc(nome)
 		elif nome == "lore": abrir_escolha("lore:lobisomem")

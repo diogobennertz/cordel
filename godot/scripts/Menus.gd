@@ -28,6 +28,7 @@ func _ready() -> void:
 	Rede.entrou.connect(func(_id): if tela == "coop": coop())
 	Rede.saiu.connect(func(_id): if tela == "coop": coop())
 	Rede.falhou.connect(func(msg): _rede_erro = msg; coop())
+	Rede.mundos_mudaram.connect(func(): if tela == "coop" and not Rede.ativo(): coop())
 
 func _limpar(nome: String) -> void:
 	for c in raiz.get_children(): c.queue_free()
@@ -286,6 +287,17 @@ func coop() -> void:
 			coop()
 		vb.add_child(Tela.botao("HOSPEDAR (ser o anfitrião)", ac_host, 18, Tela.URUCUM, 380.0, 48.0))
 		vb.add_child(Tela.rotulo("— ou —", 13, Tela.PARDO))
+		var achados: Array = Rede.mundos_disponiveis()
+		if achados.size() > 0:
+			vb.add_child(Tela.rotulo("Mundos achados na sua rede:", 14, Tela.PARDO))
+			for m in achados:
+				var ip: String = m["ip"]; var nome_m: String = m["nome"]
+				var ac_entrar_achado := func():
+					var erro3 := Rede.entrar(ip)
+					if erro3 != "": _rede_erro = erro3
+					coop()
+				vb.add_child(Tela.botao("ENTRAR EM: %s" % nome_m, ac_entrar_achado, 17, Tela.ANIL, 380.0, 44.0))
+			vb.add_child(Tela.rotulo("— ou digite o endereço na mão —", 12, Tela.PARDO))
 		var le := LineEdit.new(); le.placeholder_text = "endereço de quem hospedou (ex.: 192.168.0.12)"
 		le.custom_minimum_size = Vector2(380, 42); le.alignment = HORIZONTAL_ALIGNMENT_CENTER
 		le.add_theme_font_size_override("font_size", 16)

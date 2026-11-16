@@ -154,6 +154,7 @@ func _process(delta: float) -> void:
 	_firar(delta)
 
 func _firar(delta: float) -> void:
+	if world.enemies.is_empty(): return   # sem bicho por perto: não atira/golpeia à toa (não pode mirar em gente do mapa)
 	for g in golpes:
 		g["t"] -= delta
 		if g["t"] <= 0.0:

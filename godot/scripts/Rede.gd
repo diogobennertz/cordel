@@ -8,6 +8,14 @@ extends Node
 
 const PORTA := 7777
 const MAX_JOGADORES := 5     # contando o anfitrião
+const PORTA_DESCOBERTA := 7778   # UDP à parte, só pra anunciar/achar mundo hospedado na rede local
+
+var _udp_escuta: PacketPeerUDP    # sempre ligado: escuta quem está anunciando mundo na rede
+var _udp_anuncio: PacketPeerUDP  # só quando eu sou o anfitrião: manda o anúncio
+var _anuncio_t := 0.0
+var _nome_mundo_host := ""
+var mundos_vistos := {}          # ip (String) -> {"nome": String, "visto": float}
+signal mundos_mudaram()
 
 var heroi_por_id := {}       # peer_id (int) -> id da classe escolhida por essa pessoa
 var nome_por_id := {}        # peer_id (int) -> nome que a pessoa digitou
@@ -27,6 +35,36 @@ func _ready() -> void:
 		heroi_por_id.erase(id); nome_por_id.erase(id); saiu.emit(id))
 	multiplayer.connection_failed.connect(func(): _ligado = false; Salvo.sair_mundo(); falhou.emit("Não consegui conectar. Confira o endereço e se os dois estão na mesma rede."))
 	multiplayer.server_disconnected.connect(func(): _ligado = false; Salvo.sair_mundo(); falhou.emit("O anfitrião saiu da sala."))
+	_udp_escuta = PacketPeerUDP.new()
+	if _udp_escuta.bind(PORTA_DESCOBERTA) != OK: _udp_escuta = null   # porta já em uso (ex.: 2 instâncias no mesmo PC) — sem problema, só não descobre sozinho
+
+func _process(delta: float) -> void:
+	if ativo() and sou_host():
+		_anuncio_t -= delta
+		if _anuncio_t <= 0.0: _anuncio_t = 1.5; _anunciar()
+	_escutar_anuncios()
+	var agora := Time.get_ticks_msec() / 1000.0
+	for ip in mundos_vistos.keys().duplicate():
+		if agora - mundos_vistos[ip]["visto"] > 4.0: mundos_vistos.erase(ip); mundos_mudaram.emit()
+
+func _anunciar() -> void:
+	if _udp_anuncio == null:
+		_udp_anuncio = PacketPeerUDP.new()
+		_udp_anuncio.set_broadcast_enabled(true)
+		_udp_anuncio.set_dest_address("255.255.255.255", PORTA_DESCOBERTA)
+	_udp_anuncio.put_packet(("CORDELAME_MUNDO:" + _nome_mundo_host).to_utf8_buffer())
+
+func _escutar_anuncios() -> void:
+	if _udp_escuta == null: return
+	while _udp_escuta.get_available_packet_count() > 0:
+		var pct := _udp_escuta.get_packet()
+		var ip := _udp_escuta.get_packet_ip()
+		var txt := pct.get_string_from_utf8()
+		if txt.begins_with("CORDELAME_MUNDO:") and ip != "":
+			var nome := txt.substr(17)
+			var novo := not mundos_vistos.has(ip)
+			mundos_vistos[ip] = {"nome": nome, "visto": Time.get_ticks_msec() / 1000.0}
+			if novo: mundos_mudaram.emit()
 
 @rpc("authority", "call_remote", "reliable")
 func _mandar_mundo(dados: Dictionary) -> void:
@@ -39,7 +77,8 @@ func hospedar(nome_mundo: String) -> String:
 	if erro != OK: return "Não consegui abrir a porta %d (erro %d). Outro programa já está usando ela?" % [PORTA, erro]
 	multiplayer.multiplayer_peer = peer
 	_ligado = true
-	Salvo.entrar_mundo(nome_mundo.strip_edges())
+	_nome_mundo_host = nome_mundo.strip_edges()
+	Salvo.entrar_mundo(_nome_mundo_host)
 	heroi_por_id.clear(); nome_por_id.clear()
 	return ""
 
@@ -57,6 +96,8 @@ func sair() -> void:
 	if multiplayer.multiplayer_peer: multiplayer.multiplayer_peer.close()
 	multiplayer.multiplayer_peer = null
 	_ligado = false
+	_nome_mundo_host = ""
+	if _udp_anuncio: _udp_anuncio.close(); _udp_anuncio = null
 	Salvo.sair_mundo()
 	heroi_por_id.clear(); nome_por_id.clear()
 
@@ -83,6 +124,13 @@ static func meus_enderecos() -> Array:
 	for ip in IP.get_local_addresses():
 		if ip.begins_with("192.168.") or ip.begins_with("10.") or ip.begins_with("172."):
 			r.append(ip)
+	return r
+
+# mundos hospedados vistos agora na rede local, pra listar na tela de entrar em vez de pedir o IP na mão
+func mundos_disponiveis() -> Array:
+	var r := []
+	for ip in mundos_vistos: r.append({"ip": ip, "nome": mundos_vistos[ip]["nome"]})
+	r.sort_custom(func(a, b): return a["nome"] < b["nome"])
 	return r
 
 @rpc("any_peer", "call_local", "reliable")

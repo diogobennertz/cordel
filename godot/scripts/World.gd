@@ -79,6 +79,8 @@ var mapa_grande: MiniMapa
 var mapa_fundo: Control
 var _mapa_fundo_cor: ColorRect
 var jogadores_rede := {}       # peer_id -> Jogador (só usado no co-op)
+var enemies_por_net_id := {}   # net_id -> Inimigo (bicho replicado pela rede)
+var _proximo_net_id := 0
 var painel_info: PanelContainer
 var lbl_info: Label
 var pixel: ColorRect
@@ -485,8 +487,8 @@ func iniciar_coop() -> void:
 	hud.visible = true
 	estado = "jogo"
 	jogadores_rede.clear(); player = null
-	lbl_centro.text = "CO-OP (LAN)\nAndando junto — bicho e carta entram numa próxima versão"; _piscar_centro()
-	Rede.apresentar_se(sel_heroi)
+	lbl_centro.text = "CO-OP (LAN)"; _piscar_centro()
+	Rede.apresentar_se(sel_heroi, String(Salvo.d["nome_jogador"]))
 	_mouse(true)
 
 func _coop_spawns() -> void:
@@ -507,9 +509,102 @@ func _spawnar_jogador_rede(id: int, heroi: String) -> void:
 	j.add_child(sinc)
 	add_child(j)
 	jogadores_rede[id] = j
+	var etiqueta := Label3D.new(); etiqueta.name = "Nome"
+	etiqueta.text = String(Rede.nome_por_id.get(id, "?")); etiqueta.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	etiqueta.font_size = 56; etiqueta.pixel_size = 0.0085; etiqueta.outline_size = 14; etiqueta.no_depth_test = true
+	etiqueta.position = Vector3(0, 2.25, 0); j.add_child(etiqueta)
 	if id == Rede.meu_id():
 		player = j
 		_hud_heroi()
+
+# quem é o jogador vivo mais perto desse ponto (pra mirar e pra bicho perseguir, no co-op) — sozinho, é sempre "player"
+func _alvo_mais_perto(pos: Vector3):
+	if not Rede.ativo() or jogadores_rede.is_empty(): return player
+	var melhor = player
+	var bd: float = pos.distance_squared_to(player.global_position) if player != null else INF
+	for id in jogadores_rede:
+		var j = jogadores_rede[id]
+		if j == null or not is_instance_valid(j) or j.hp <= 0.0: continue
+		var d2 := pos.distance_squared_to(j.global_position)
+		if d2 < bd: bd = d2; melhor = j
+	return melhor
+
+# ainda está na sala? (protege contra mandar RPC pra quem já desconectou no meio da luta)
+func _peer_aqui(id: int) -> bool:
+	return id == Rede.meu_id() or multiplayer.get_peers().has(id)
+
+# dano em cima de um jogador: se for outra pessoa no co-op, manda pra máquina dela de verdade aplicar
+func ferir_jogador(alvo, dmg: float) -> void:
+	if alvo == null: return
+	if Rede.ativo() and alvo != player:
+		for id in jogadores_rede:
+			if jogadores_rede[id] == alvo and id != Rede.meu_id():
+				if _peer_aqui(id): _sofrer_dano.rpc_id(id, dmg)
+				return
+	alvo.hurt(dmg)
+
+@rpc("authority", "call_remote", "reliable")
+func _sofrer_dano(dmg: float) -> void:
+	if player: player.hurt(dmg)
+
+# ---------------- bicho pela rede: o anfitrião manda nascer/morrer pra todo mundo ver ----------------
+func _replicar_bicho(e: Inimigo) -> void:
+	if not (Rede.ativo() and Rede.sou_host()): return
+	_proximo_net_id += 1
+	e.net_id = _proximo_net_id
+	enemies_por_net_id[e.net_id] = e
+	_spawnar_inimigo_rede.rpc(e.net_id, e.tipo, e.raio / 0.45, e.hp, e.max_hp_cache, e.dmg, e.speed, e.xp_val, e.moeda_val, e.is_boss, e.chefe_tipo, e.elite)
+
+@rpc("authority", "call_remote", "reliable")
+func _spawnar_inimigo_rede(net_id: int, tipo: String, escala: float, hp: float, maxhp: float, dmg: float, speed: float, xp: float, moeda: float, chefe: bool, chefe_tipo: String, elite: bool) -> void:
+	if Rede.sou_host(): return
+	var e := Inimigo.new(); e.name = "Bicho_%d" % net_id; e.world = self; add_child(e)
+	e.net_id = net_id
+	e.setup(tipo, escala, null)
+	e.position = Vector3.ZERO  # a posição de verdade já chega no próximo quadro, pela sincronia abaixo
+	e.hp = hp; e.max_hp_cache = maxhp; e.dmg = dmg; e.speed = speed; e.xp_val = xp; e.moeda_val = moeda
+	e.is_boss = chefe; e.chefe_tipo = chefe_tipo; e.elite = elite
+	e.set_multiplayer_authority(1)
+	var sinc := MultiplayerSynchronizer.new(); sinc.name = "Sincronia"
+	var cfg := SceneReplicationConfig.new()
+	for campo in ["position", "rotation", "hp"]:
+		var np := NodePath(".:%s" % campo)
+		cfg.add_property(np); cfg.property_set_replication_mode(np, SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
+	sinc.replication_config = cfg; sinc.set_multiplayer_authority(1)
+	e.add_child(sinc)
+	enemies.append(e); enemies_por_net_id[net_id] = e
+	if chefe: chefe_veio = true; self.chefe = e
+
+@rpc("authority", "call_remote", "reliable")
+func _remover_inimigo_rede(net_id: int) -> void:
+	var e = enemies_por_net_id.get(net_id)
+	enemies_por_net_id.erase(net_id)
+	if e == null or not is_instance_valid(e): return
+	if e.is_boss and not Rede.sou_host(): chefe_morto = true; chefe = null
+	enemies.erase(e)
+	if not e.dead: e.dead = true; e.queue_free()   # cliente: só some; o anfitrião já tratou on_enemy_killed de verdade
+
+@rpc("authority", "call_remote", "reliable")
+func _marcar_furia_rede() -> void:
+	furia = true
+
+# quando o dono de verdade do bicho não é esta máquina, o golpe vira um pedido pro anfitrião (ver Inimigo.take_damage)
+@rpc("any_peer", "call_remote", "reliable")
+func retransmitir_dano(net_id: int, d: float, crit: int) -> void:
+	if not Rede.sou_host(): return
+	var quem := multiplayer.get_remote_sender_id()
+	var e = enemies_por_net_id.get(net_id)
+	if e == null or not is_instance_valid(e) or e.dead: return
+	e.ultimo_atacante = quem
+	e.take_damage(d, crit)
+
+@rpc("authority", "call_remote", "reliable")
+func _premiar_abate(xp: float, moeda_ganha: float) -> void:
+	if player == null: return
+	moedas += moeda_ganha
+	player.gain_xp(xp)
+	if player.roubo > 0.0 and player.hp > 0.0: player.hp = minf(player.max_hp, player.hp + player.roubo)
+	if player.ult_t <= 0.0: player.ult = minf(1.0, player.ult + 1.0 / Dados.ULT_ABATES)
 
 # ---------------- arraial (menu) ----------------
 func _montar_menu() -> void:
@@ -575,7 +670,7 @@ func _process(delta: float) -> void:
 	if player == null: return       # co-op: esperando o próprio boneco chegar pela rede (dura um quadro só)
 	time += delta
 	if tut >= 0: _tutorial(delta)
-	elif Rede.ativo(): pass          # sem bicho nesta 1ª versão do co-op
+	elif Rede.ativo() and not Rede.sou_host(): pass   # os bichos são mandados pelo anfitrião, chegam pela rede
 	else: _dirigir(delta)
 	_update_projectiles(delta)
 	_tiros(delta)
@@ -665,6 +760,7 @@ func _notification(what: int) -> void:      # trocou de janela no meio da fase: 
 # Até o chefe: os bichos vão engrossando devagar. Chefe aos 10 minutos, com 3 para vencer; se não vencer,
 # ele enfurece e a mata despeja bicho. Chefe vencido: fase infinita, cada vez mais bicho e mais forte.
 func _dirigir(delta: float) -> void:
+	if Rede.ativo() and not Rede.sou_host(): return   # só quem hospeda manda nos bichos
 	var fm: float = Dados.FASES[fase]["mult"]
 	var forca := (1.0 + time / 75.0) * fm * praga
 	var intervalo := maxf(0.2, 0.95 - time / 800.0)
@@ -680,13 +776,14 @@ func _dirigir(delta: float) -> void:
 	spawn_t -= delta
 	if spawn_t <= 0.0 and enemies.size() < teto:
 		spawn_t = intervalo
-		_nascer(Dados.sortear_bicho(time, fase), forca, 1.0, null, false).speed *= passo
+		var novo := _nascer(Dados.sortear_bicho(time, fase), forca, 1.0, null, false); novo.speed *= passo
+		_replicar_bicho(novo)
 	# elite: criatura normal, só que com mais vida e mais dano
 	elite_t -= delta
 	if elite_t <= 0.0:
 		elite_t = 8.0 if chefe_morto else 20.0
 		var el := _nascer(Dados.sortear_bicho(time, fase), forca, 1.5, Color(0.98, 0.85, 0.2), false, 6.0, 1.6, 8.0)
-		el.moeda_val = 4.0; el.elite = true
+		el.moeda_val = 4.0; el.elite = true; _replicar_bicho(el)
 	if not chefe_veio and time >= chefe_t:
 		chefe_veio = true; furia_t = Dados.FURIA_T
 		var f: Dictionary = Dados.FASES[fase]
@@ -694,6 +791,7 @@ func _dirigir(delta: float) -> void:
 		chefe.chefe_tipo = f.get("ataque", f["chefe"])
 		chefe.hp = 700.0 * forca; chefe.max_hp_cache = chefe.hp
 		chefe.dmg = 14.0 * sqrt(forca); chefe.speed = 2.7; chefe.xp_val = 60.0; chefe.moeda_val = 150.0
+		_replicar_bicho(chefe)
 		lbl_centro.text = "%s\n%s\nVença em 3 minutos" % [f["chefe_nome"], f["chefe_titulo"]]; _piscar_centro()
 		Som.tocar("chefe"); Som.voz("v_chefe"); tremor = 0.6
 	if chefe_veio and not chefe_morto and not furia:
@@ -704,6 +802,7 @@ func _dirigir(delta: float) -> void:
 				chefe.furia = true; chefe.dmg *= 2.5; chefe.speed *= 1.6
 				chefe.hp += chefe.max_hp_cache * 0.5; chefe.max_hp_cache = maxf(chefe.max_hp_cache, chefe.hp)
 			lbl_centro.text = "O CHEFE ENFURECEU!"; _piscar_centro(); Som.tocar("chefe"); Som.voz("v_furia")
+			if Rede.ativo(): _marcar_furia_rede.rpc()
 
 func _pos_spawn() -> Vector3:
 	var a := randf() * TAU; var d := SPAWN_RAIO + randf() * 8.0
@@ -880,18 +979,16 @@ func _update_projectiles(delta: float) -> void:
 func on_enemy_killed(e) -> void:
 	enemies.erase(e); kills += 1
 	Som.tocar("morte", -8.0, 0.2, 0.07)
-	if player.roubo > 0.0 and player.hp > 0.0: player.hp = minf(player.max_hp, player.hp + player.roubo)
 	_puff(e.global_position, e.boneco.cor_base, e.raio / 0.45)
 	Salvo.contar("abates"); Salvo.contar("abates_" + e.tipo)
 	var mm := 1.0 + 0.10 * Salvo.nivel("moedas")
 	if chefe_morto: mm *= 1.0 + extra_t / 90.0        # quanto mais tempo depois do chefe, mais vale cada bicho
-	moedas += e.moeda_val * mm
-	if player.ult_t <= 0.0: player.ult = minf(1.0, player.ult + 1.0 / Dados.ULT_ABATES)
+	var moeda_ganha: float = e.moeda_val * mm
 	combo += 1; combo_t = 3.0
 	if combo > int(Salvo.d["contadores"].get("combo_max", 0)): Salvo.d["contadores"]["combo_max"] = combo
 	if Dados.COMBO_GRITOS.has(combo):
 		lbl_centro.text = "%s\n×%d — ◉ +%d" % [Dados.COMBO_GRITOS[combo], combo, combo / 5]; _piscar_centro()
-		moedas += combo / 5.0
+		moeda_ganha += combo / 5.0
 	if e.chefe_tipo == "cuca": dar_poder("mula")
 	elif e.elite and Dados.PODERES.has(e.tipo) and randf() < 0.4: dar_poder(e.tipo)
 	if e.chefe_tipo == "cuca":
@@ -905,7 +1002,16 @@ func on_enemy_killed(e) -> void:
 		Salvo.d["fase_max"] = maxi(int(Salvo.d["fase_max"]), mini(fase + 1, Dados.FASES.size() - 1))
 		Salvo.salvar()
 		lbl_centro.text = "DERROTOU O CHEFE!\nAgora aguente o quanto der — %s para sair" % Ctrl.nome("sair"); _piscar_centro()
-	spawn_firefly(e.global_position, e.xp_val)
+	# XP e moeda são compartilhados: todo mundo ganha, não só quem acertou o golpe final
+	moedas += moeda_ganha
+	if player.roubo > 0.0 and player.hp > 0.0: player.hp = minf(player.max_hp, player.hp + player.roubo)
+	if player.ult_t <= 0.0: player.ult = minf(1.0, player.ult + 1.0 / Dados.ULT_ABATES)
+	spawn_firefly(e.global_position, e.xp_val)   # continua: eu ando por cima do vaga-lume pra pegar o meu, como sempre foi
+	if Rede.ativo():
+		for id in jogadores_rede:
+			if id != Rede.meu_id() and _peer_aqui(id): _premiar_abate.rpc_id(id, e.xp_val, moeda_ganha)
+		enemies_por_net_id.erase(e.net_id)
+		_remover_inimigo_rede.rpc(e.net_id)
 
 func spawn_firefly(pos: Vector3, v: float) -> void:
 	var f := MeshInstance3D.new()
@@ -1842,6 +1948,7 @@ func _shot_debug(cls: String) -> void:
 # confere, sem precisar da tela toda, que a arrancada do tutorial funciona mesmo parado
 func _teste_coop_host() -> void:
 	sem_mouse = true    # teste automático: nunca prende o mouse do jogador de verdade
+	Salvo.d["nome_jogador"] = "Anfitriao"
 	sel_heroi = "capoeirista"; sel_fase = 0
 	var erro := Rede.hospedar()
 	if erro != "": print("ERRO HOST: ", erro); get_tree().quit(); return
@@ -1855,24 +1962,31 @@ func _teste_coop_host() -> void:
 
 func _teste_coop_join(ip: String) -> void:
 	sem_mouse = true    # teste automático: nunca prende o mouse do jogador de verdade
+	Salvo.d["nome_jogador"] = "Convidado"
 	sel_heroi = "jiujitsu"; sel_fase = 0
 	var erro := Rede.entrar(ip)
 	if erro != "": print("ERRO JOIN: ", erro); get_tree().quit(); return
 	_teste_coop_relatar()
 
 func _teste_coop_relatar() -> void:
-	for i in range(12):
+	for i in range(16):
 		await get_tree().create_timer(1.0).timeout
-		if multiplayer.multiplayer_peer: print("  status=%d peers=%s" % [multiplayer.multiplayer_peer.get_connection_status(), str(multiplayer.get_peers())])
-		if estado == "jogo" and player != null:
-			player.position += Vector3(0.4, 0, 0)
-			var linha := "COOP eu=%s id=%d tick=%d jogadores=%d" % [sel_heroi, Rede.meu_id(), i, jogadores_rede.size()]
+		if estado != "jogo" or player == null:
+			print("COOP eu=%s tick=%d AINDA SEM JOGO (estado=%s)" % [sel_heroi, i, estado]); continue
+		if not Rede.sou_host() and i == 0: player.position = Vector3(20, 0, 20)   # longe do anfitrião, pra isolar o teste
+		if Rede.sou_host() and i == 3 and jogadores_rede.size() >= 2:
+			var alvo_pos: Vector3 = player.global_position
 			for id in jogadores_rede:
-				var j = jogadores_rede[id]
-				linha += " | id%d(%s):%s" % [id, j.classe, str(j.position).left(24)]
-			print(linha)
-		else:
-			print("COOP eu=%s tick=%d AINDA SEM JOGO (estado=%s player=%s)" % [sel_heroi, i, estado, "null" if player == null else "ok"])
+				if id != Rede.meu_id(): alvo_pos = jogadores_rede[id].global_position
+			var bicho := _nascer("caipora", 0.3, 1.0, null, false)
+			bicho.position = alvo_pos; bicho.hp = 400.0; bicho.max_hp_cache = 400.0; bicho.dmg = 8.0
+			_replicar_bicho(bicho)
+			print("HOST criou bicho de teste (aguenta apanhar) em %s hp=%.0f net_id=%d" % [str(alvo_pos), bicho.hp, bicho.net_id])
+		if not Rede.sou_host() and i == 9 and enemies.size() > 0:
+			var k := _ring(player.global_position, 6.0, 1000.0, 0.0, 0.0)
+			print("CLIENTE atacou — _ring acertou %d bicho(s)" % k)
+		print("COOP eu=%s id=%d tick=%d jogadores=%d bichos=%d nivel=%d xp=%.1f moedas=%.1f vida=%.1f/%.1f" % [
+			sel_heroi, Rede.meu_id(), i, jogadores_rede.size(), enemies.size(), player.level, player.xp, moedas, player.hp, player.max_hp])
 	get_tree().quit()
 
 func _teste_dash() -> void:
@@ -2064,9 +2178,10 @@ func _tiros(delta: float) -> void:
 		t["vida"] -= delta
 		n.position += t["vel"] * delta
 		n.position.y = Lib.h(n.position.x, n.position.z) + 0.9
-		var dd: Vector3 = player.global_position - n.position; dd.y = 0
-		if dd.length() < 0.8 and player.alt < 1.3:
-			player.hurt(t["dmg"]); t["vida"] = 0.0
+		var alvo_tiro = _alvo_mais_perto(n.position)
+		var dd: Vector3 = alvo_tiro.global_position - n.position if alvo_tiro else Vector3(99, 0, 99); dd.y = 0
+		if alvo_tiro and dd.length() < 0.8 and alvo_tiro.alt < 1.3:
+			ferir_jogador(alvo_tiro, t["dmg"]); t["vida"] = 0.0
 		if t["vida"] <= 0.0:
 			n.queue_free(); tiros.erase(t)
 

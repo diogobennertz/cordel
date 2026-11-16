@@ -189,8 +189,19 @@ compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abr
   e rotação; `Player.gd` ignora input de quem não é "dono" do boneco (`get_multiplayer_authority()`).
 - **O que NÃO está pronto nesta 1ª versão**: bicho, chefe, carta, baú, moeda — nada disso está em rede ainda. Hoje é só
   "andar junto e ver todo mundo"; o resto (o jogo de verdade, compartilhado) é o próximo passo.
-- **CONFIRMADO FUNCIONANDO**: dois processos reais do jogo (com janela — no modo `--headless` a conexão trava, não sei
-  bem por quê, mas o jogo de verdade nunca roda headless, então não afeta ninguém jogando) conectaram de verdade pela
-  rede e o movimento de cada um apareceu certinho na tela do outro, nos dois sentidos. Achei e corrigi um bug no caminho:
-  cada boneco precisa de um nome igual nas duas máquinas pra rede saber "ligar os pontos" — sem isso, só um lado via o
-  outro se mexer. Testes: `-- --coop-host` e `-- --coop-join <ip>` (nenhum dos dois prende o mouse).
+- **CONFIRMADO FUNCIONANDO** (movimento, nomes, bicho, combate e recompensa): dois processos reais do jogo (com
+  janela — em `--headless` a conexão trava, não descobri bem por quê, mas o jogo de verdade nunca roda headless) se
+  conectam, cada um tem o nome escolhido escrito em cima da cabeça, e agora:
+  - O anfitrião manda nascer e morrer os bichos pra todo mundo ver (`World._replicar_bicho`, `_spawnar_inimigo_rede`,
+    `_remover_inimigo_rede`). Os bichos perseguem quem estiver mais perto, seja quem for (`World._alvo_mais_perto`).
+  - Golpe de QUALQUER jogador mata o bicho de verdade: se o bicho não é "seu" (é do anfitrião), o golpe vira um pedido
+    pela rede (`retransmitir_dano`) e o anfitrião aplica de verdade.
+  - Bicho que encosta em alguém manda a dor pela rede pra pessoa certa (`ferir_jogador`/`_sofrer_dano`), não só em quem hospeda.
+  - **XP e moeda são compartilhados**: toda vez que um bicho morre, todo mundo na sala ganha o mesmo tanto (`_premiar_abate`),
+    não só quem deu o golpe final — assim ninguém fica para trás.
+  - Protegido contra erro se alguém desconectar no meio da luta (`_peer_aqui`).
+  - Ainda NÃO entraram: cartas de subir de nível de cada um (hoje cada um ainda sobe sozinho, sem avisar o outro —
+    funciona, só não é visto pelo parceiro), baú/oratório/loja/NPC/portal/poderes (continuam só locais, cada um vê o
+    seu), chefe com barra de vida/avisos sincronizados pro convidado. Próximos passos de verdade.
+  - Testes: `-- --coop-host` e `-- --coop-join <ip>` (cria um bicho de teste, separa os jogadores e confere dano/XP/moeda
+    nos dois lados pelos registros — sem precisar jogar na mão).

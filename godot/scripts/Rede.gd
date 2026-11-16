@@ -10,6 +10,7 @@ const PORTA := 7777
 const MAX_JOGADORES := 5     # contando o anfitrião
 
 var heroi_por_id := {}       # peer_id (int) -> id da classe escolhida por essa pessoa
+var nome_por_id := {}        # peer_id (int) -> nome que a pessoa digitou
 
 signal entrou(id: int)
 signal saiu(id: int)
@@ -19,7 +20,7 @@ signal falhou(motivo: String)
 func _ready() -> void:
 	multiplayer.peer_connected.connect(func(id): entrou.emit(id))
 	multiplayer.peer_disconnected.connect(func(id):
-		heroi_por_id.erase(id); saiu.emit(id))
+		heroi_por_id.erase(id); nome_por_id.erase(id); saiu.emit(id))
 	multiplayer.connection_failed.connect(func(): falhou.emit("Não consegui conectar. Confira o endereço e se os dois estão na mesma rede."))
 	multiplayer.server_disconnected.connect(func(): falhou.emit("O anfitrião saiu da sala."))
 
@@ -28,7 +29,7 @@ func hospedar() -> String:
 	var erro := peer.create_server(PORTA, MAX_JOGADORES - 1)
 	if erro != OK: return "Não consegui abrir a porta %d (erro %d). Outro programa já está usando ela?" % [PORTA, erro]
 	multiplayer.multiplayer_peer = peer
-	heroi_por_id.clear()
+	heroi_por_id.clear(); nome_por_id.clear()
 	return ""
 
 func entrar(ip: String) -> String:
@@ -37,13 +38,13 @@ func entrar(ip: String) -> String:
 	var erro := peer.create_client(ip.strip_edges(), PORTA)
 	if erro != OK: return "Endereço inválido."
 	multiplayer.multiplayer_peer = peer
-	heroi_por_id.clear()
+	heroi_por_id.clear(); nome_por_id.clear()
 	return ""
 
 func sair() -> void:
 	if multiplayer.multiplayer_peer: multiplayer.multiplayer_peer.close()
 	multiplayer.multiplayer_peer = null
-	heroi_por_id.clear()
+	heroi_por_id.clear(); nome_por_id.clear()
 
 func ativo() -> bool:
 	return multiplayer.multiplayer_peer != null
@@ -71,11 +72,12 @@ static func meus_enderecos() -> Array:
 	return r
 
 @rpc("any_peer", "call_local", "reliable")
-func _apresentar(id: int, heroi: String) -> void:
+func _apresentar(id: int, heroi: String, nome: String) -> void:
 	heroi_por_id[id] = heroi
+	nome_por_id[id] = nome if nome.strip_edges() != "" else ("Jogador %d" % (ids().find(id) + 1))
 
-func apresentar_se(heroi: String) -> void:
-	_apresentar.rpc(meu_id(), heroi)
+func apresentar_se(heroi: String, nome: String) -> void:
+	_apresentar.rpc(meu_id(), heroi, nome)
 
 @rpc("authority", "call_local", "reliable")
 func _comecar() -> void:

@@ -241,6 +241,12 @@ func coop() -> void:
 	vb.add_child(Tela.texto("Anda junto com os amigos na mesma rede (Wi-Fi ou cabo), até 5 pessoas. Esta primeira versão só sincroniza o movimento de todo mundo — bicho, chefe e carta ainda são só da partida sozinho.", 14, 560))
 	if _rede_erro != "":
 		vb.add_child(Tela.faixa(_rede_erro, Tela.URUCUM, 14, Tela.PAPEL)); _rede_erro = ""
+	var le_nome := LineEdit.new(); le_nome.placeholder_text = "seu nome (aparece em cima do seu boneco)"
+	le_nome.text = String(Salvo.d["nome_jogador"]); le_nome.max_length = 16
+	le_nome.custom_minimum_size = Vector2(380, 42); le_nome.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	le_nome.add_theme_font_size_override("font_size", 16)
+	le_nome.text_changed.connect(func(t): Salvo.d["nome_jogador"] = t; Salvo.salvar())
+	vb.add_child(le_nome)
 	if not Rede.ativo():
 		var ac_host := func():
 			var erro := Rede.hospedar()

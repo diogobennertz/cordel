@@ -9,7 +9,7 @@ static var d := {}
 static var desligado := false     # nos testes automáticos não lê nem grava o save do jogador
 
 static func padrao() -> Dictionary:
-	return {"moedas": 0, "fase_max": 0, "melhorias": {}, "recordes": {}, "contadores": {}, "heroi": "capoeirista", "fase": 0, "feitos": {}, "tutorial": false, "vistos": {}, "falas": {}, "teclas": {}, "opcoes": OPCOES.duplicate()}
+	return {"moedas": 0, "fase_max": 0, "melhorias": {}, "recordes": {}, "contadores": {}, "heroi": "capoeirista", "fase": 0, "feitos": {}, "tutorial": false, "vistos": {}, "falas": {}, "teclas": {}, "nome_jogador": "", "opcoes": OPCOES.duplicate()}
 
 # O jogo já se chamou "Cordel" e "Peleja": se existir um save daquela época, ele é aproveitado (nada se perde na troca de nome).
 static func _antigo() -> String:

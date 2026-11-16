@@ -19,6 +19,8 @@ var max_hp_cache := 1.0
 var dead := false
 var raio := 0.45
 # chefes
+var net_id := -1               # no co-op: identifica esse bicho nas duas máquinas
+var ultimo_atacante := 0       # no co-op: quem acertou o golpe (0 = eu mesmo/anfitrião) — pra creditar o abate certo
 var chefe_tipo := ""
 var furia := false
 var hab_t := 3.0
@@ -36,9 +38,10 @@ func setup(t: String, escala: float, destaque = null) -> void:
 
 func _process(delta: float) -> void:
 	if world.estado != "jogo" or world.levelup_aberto: return
+	if Rede.ativo() and not is_multiplayer_authority(): return   # bicho de outra máquina: só mostra onde a rede mandou
 	hit_cd = maxf(0.0, hit_cd - delta)
 	stun_t = maxf(0.0, stun_t - delta)
-	var p = world.player
+	var p = world._alvo_mais_perto(global_position)
 	if p == null: return
 	var to: Vector3 = p.global_position - global_position
 	to.y = 0
@@ -88,7 +91,7 @@ func _process(delta: float) -> void:
 	if d < 0.75 + raio and hit_cd <= 0.0 and p.alt < 1.0 + raio:
 		hit_cd = 0.6
 		boneco.atacar()
-		p.hurt(dmg)
+		world.ferir_jogador(p, dmg)
 
 # Ataque próprio de cada chefe. Devolve true quando o chefe está ocupado (não anda atrás do herói).
 func _chefe(delta: float, p, to: Vector3, d: float) -> bool:
@@ -99,7 +102,7 @@ func _chefe(delta: float, p, to: Vector3, d: float) -> bool:
 				prep_t -= delta
 				if prep_t <= 0.0:
 					world.efeito_chefe(global_position, 6.5); world.tremor = 0.7
-					if d < 6.5 and p.alt < 0.6: p.hurt(dmg * 1.8)
+					if d < 6.5 and p.alt < 0.6: world.ferir_jogador(p, dmg * 1.8)
 				return true
 			if hab_t <= 0.0 and d < 7.5:
 				hab_t = 3.0 if furia else 5.0
@@ -144,6 +147,9 @@ const COR_CRIT := [Color(1, 1, 1), Color(1.0, 0.85, 0.2), Color(1.0, 0.55, 0.1),
 
 func take_damage(d: float, crit: int = 0) -> void:
 	if dead: return
+	if Rede.ativo() and not is_multiplayer_authority():
+		world.retransmitir_dano.rpc_id(1, net_id, d, crit)
+		return
 	hp -= d
 	boneco.bater()
 	world.dano_num(global_position + Vector3(0, raio * 2.0, 0), Tela.num(d) + "!".repeat(crit), COR_CRIT[crit], 40 + crit * 16, crit > 0)

@@ -1941,7 +1941,7 @@ func _shot_tela(nome: String) -> void:
 	sem_mouse = true
 	Salvo.d["moedas"] = 345; Salvo.d["fase_max"] = 1; Salvo.d["melhorias"] = {"capoeirista": {"dano": 3, "vida": 1}, "jiujitsu": {"dano": 7, "critico": 4}}; Salvo.d["recordes"] = {"0": 100.0}
 	Salvo.d["contadores"] = {"abates": 812, "abates_saci": 150, "chefes": 1, "uso_kimura": 40, "criticos": 300}
-	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop", "herois_trancados", "herois_dica"]:
+	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop", "herois_trancados", "herois_dica", "heroi_novo"]:
 		_montar_menu()
 		if nome == "herois": menus.herois()
 		elif nome == "herois_trancados":
@@ -1967,6 +1967,7 @@ func _shot_tela(nome: String) -> void:
 			else:
 				print("DEBUG dica: nenhum botao trancado encontrado")
 		elif nome == "herois_tut": menus._so_tutorial = true; menus.herois()
+		elif nome == "heroi_novo": sel_heroi = "sambista"; menus.herois()
 		elif nome == "melhorias": menus.melhorias()
 		elif nome == "feitos": menus.feitos()
 		elif nome == "opcoes": menus.opcoes(menus.titulo)

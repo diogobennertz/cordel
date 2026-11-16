@@ -20,6 +20,7 @@ static func mat(cor: Color, brilho: float = 0.0) -> StandardMaterial3D:
 	if toon:
 		m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
 		m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+		m.rim_enabled = true; m.rim = 0.4; m.rim_tint = 0.65     # brilho de contorno: dá um ar mais "produto acabado"
 		var o := StandardMaterial3D.new()          # contorno: casca escura um pouco maior, vista por dentro
 		o.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		o.albedo_color = Color(0.13, 0.08, 0.06)

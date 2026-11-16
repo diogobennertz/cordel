@@ -1,5 +1,15 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — ícones de golpe de verdade, luz de três pontos nos retratos
+- **7 ícones novos de verdade** (giro, chute em arco, onda, investida, tiro reto, tiro teleguiado,
+  estouro), desenhados no mesmo estilo xilogravura do jogo (gerados por código, não emprestados).
+  Os 84 golpes que usavam ícone emprestado de outro golpe agora usam o ícone certo do próprio tipo
+  de ataque. Só os 13 golpes originais continuam com o ícone único de sempre.
+- **Luz de três pontos** nos retratos 3D (principal + preenchimento + contorno por trás) e uma
+  sombra suave no chão — fica com mais cara de "foto de produto", menos chapado.
+- **Brilho de contorno** (rim light) nos modelos 3D de todo mundo, pra dar mais acabamento.
+- Instalei Pillow/numpy (Python) nessa máquina pra gerar os ícones — ferramenta leve, sem risco.
+
 ## 2026-11-16 — Zumbi dos Palmares, Tiradentes e Irmã Dulce (32 heróis no total)
 - Mais 3 heróis desbloqueáveis, pedidos por ele e feitos com cuidado e respeito: **Zumbi dos Palmares**
   (guerreiro quilombola, líder maior da resistência contra a escravidão — o desbloqueio mais difícil do

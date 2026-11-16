@@ -650,10 +650,27 @@ func _retrato3d(tipo: String, tam: Vector2) -> SubViewportContainer:
 	var ajuste: Dictionary = {"minhocao": {"esc": 0.3, "pos": Vector3(0, -0.4, 2.0), "rot": 0.0, "cam_y": 0.35}}.get(tipo, {"esc": 1.0, "pos": Vector3.ZERO, "rot": 0.4, "cam_y": 1.12})
 	b.scale = Vector3.ONE * float(ajuste["esc"]); b.position = ajuste["pos"]; b.rotation.y = float(ajuste["rot"])
 	var cam := Camera3D.new(); cam.fov = 30.0; cam.position = Vector3(0, float(ajuste["cam_y"]), 4.6); sv.add_child(cam)
-	var l := DirectionalLight3D.new(); l.rotation_degrees = Vector3(-30, 25, 0); l.light_energy = 1.1; sv.add_child(l)
+	# luz de três pontos (tipo foto de produto): principal + preenchimento + contorno por trás
+	var l := DirectionalLight3D.new(); l.rotation_degrees = Vector3(-32, 28, 0); l.light_energy = 1.25; l.light_color = Color(1.0, 0.98, 0.92); sv.add_child(l)
+	var fill := DirectionalLight3D.new(); fill.rotation_degrees = Vector3(-18, -150, 0); fill.light_energy = 0.45; fill.light_color = Color(0.75, 0.85, 1.0); sv.add_child(fill)
+	var rim := DirectionalLight3D.new(); rim.rotation_degrees = Vector3(25, 165, 0); rim.light_energy = 0.55; rim.light_color = Color(1.0, 0.95, 0.8); sv.add_child(rim)
 	var env := Environment.new(); env.background_mode = Environment.BG_CLEAR_COLOR
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR; env.ambient_light_color = Color.WHITE; env.ambient_light_energy = 0.75
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR; env.ambient_light_color = Color.WHITE; env.ambient_light_energy = 0.55
 	var we := WorldEnvironment.new(); we.environment = env; sv.add_child(we)
+	# sombra suave no chão (gradiente radial via shader), pra dar um ar de "foto de produto" em vez de flutuar no vazio
+	var sombra := MeshInstance3D.new(); var qm := QuadMesh.new(); qm.size = Vector2(1.5, 1.5) * float(ajuste["esc"])
+	sombra.mesh = qm; sombra.rotation.x = -PI / 2.0; sombra.position = Vector3(ajuste["pos"].x, -0.02, ajuste["pos"].z)
+	var ssh := Shader.new(); ssh.code = """
+shader_type spatial;
+render_mode unshaded, cull_disabled, blend_mix, depth_draw_never;
+void fragment() {
+	float d = length(UV - vec2(0.5));
+	ALBEDO = vec3(0.08, 0.06, 0.05);
+	ALPHA = smoothstep(0.5, 0.1, d) * 0.3;
+}
+"""
+	var sm := ShaderMaterial.new(); sm.shader = ssh
+	sombra.material_override = sm; sv.add_child(sombra)
 	return c
 
 func npc(tipo: String, fala: int) -> void:

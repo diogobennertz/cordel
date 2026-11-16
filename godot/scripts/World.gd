@@ -475,15 +475,8 @@ func _refazer_slots() -> void:
 	_slots = []
 	for g in player.golpes: _slots.append(_quadro(Dados.GOLPES[g["id"]]["arte"], "", 50.0))
 	var vao := Control.new(); vao.custom_minimum_size = Vector2(10, 0); caixa_slots.add_child(vao)
-	var artes: Array = {"capoeirista": ["au", "roda"], "jiujitsu": ["mataleao", "faixapreta"], "benzedeira": ["banho", "vela"], "cangaceiro": ["mira", "rei"], "frevista": ["atabaque", "estrela"], "cordelista": ["mira", "sol"],
-		"sambista": ["roda", "estrela"], "maracatuzeiro": ["mataleao", "vela"], "violeiro": ["mira", "sol"], "carimbozeiro": ["atabaque", "roda"],
-		"forrozeiro": ["roda", "atabaque"], "angoleiro": ["mataleao", "faixapreta"], "marujo": ["mira", "sol"],
-		"jongueira": ["roda", "estrela"], "chorao": ["mira", "sol"], "ceramista": ["mira", "sol"], "cantora": ["roda", "atabaque"],
-		"pintor": ["mira", "sol"], "maestro": ["roda", "estrela"], "violonista": ["mira", "sol"], "bimba": ["mataleao", "faixapreta"],
-		"escultor": ["roda", "estrela"], "aviador": ["roda", "atabaque"], "escritor": ["mira", "sol"], "sertanista": ["roda", "estrela"],
-		"cangaceiro_chefe": ["mira", "rei"], "cangaceira": ["roda", "estrela"], "muralista": ["mira", "sol"], "orador": ["mira", "sol"],
-		"quilombola": ["mataleao", "faixapreta"], "martir": ["roda", "estrela"], "santa": ["banho", "vela"]}[player.classe]
-	_slots.append(_quadro(artes[0], Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro(artes[1], Ctrl.nome("r").left(3), 60.0))
+	# cada herói tem seu próprio ícone de Q e de R (cor da classe), em vez de reaproveitar o de outro
+	_slots.append(_quadro("hab_q_" + player.classe, Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro("hab_r_" + player.classe, Ctrl.nome("r").left(3), 60.0))
 
 func _hud_heroi() -> void:
 	var c: Dictionary = Dados.CLASSES[player.classe]

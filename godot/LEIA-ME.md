@@ -268,6 +268,18 @@ tradução (os textos ainda estão soltos no código), coop Steam/LAN, exportaç
   de IA que tinha saído quebrado (ficava quase todo transparente) e voltou a cair no boneco 3D, que já ficou bom
   com a luz de três pontos da leva anterior.
 
+## Novidades de 16/11 (madrugada, continuação): alcance melee, carta real do Machado e ícone de Q/R próprio
+- **Alcance dos golpes corpo-a-corpo maior**: todo golpe de giro/chute/investida (`ring`/`arco`) ficou com 20% mais
+  área, e os golpes de investida/agarrão (`investida`, tipo Kimura) alcançam 15% mais longe — sentia curto perto
+  de quem joga à distância. A carta "Roda Grande" (+área dos golpes) já existia e segue empilhando em cima disso.
+- **Carta dos vermes** ("Verme que Roeu as Frias Carnes") agora cita de verdade a abertura de Machado de Assis em
+  Memórias Póstumas de Brás Cubas: "Ao verme que primeiro roeu as frias carnes do meu cadáver. — Brás Cubas".
+- **BUG REAL achado e corrigido**: as habilidades Q e R de cada herói usavam um conjunto pequeno de 11 ícones
+  reaproveitados entre heróis sem nada a ver (ex.: "Mote Cortante" do Cordelista e "Malandragem" do Sambista
+  mostravam o ÍCONE IGUAL, mesmo sendo habilidades totalmente diferentes). Agora cada um dos 32 heróis tem seu
+  próprio par de ícones de Q/R, gerados na cor da própria classe (estrela dourada pro Q, espiral pro R).
+  Conferido também que todo golpe/atributo/habilidade/melhoria/item de loja tem imagem de verdade (nenhum faltando).
+
 ## Distribuir
 `python instalador/publicar.py [endereço]` gera em `dist/`: `Cordelame-Instalar.exe` (instala sem senha de administrador e cria
 atalho) e `jogo.zip` + `versao.txt`. O jogo instalado abre por `Jogar.ps1`, que, se houver endereço em `atualizacao.txt`,

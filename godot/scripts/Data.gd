@@ -205,23 +205,23 @@ static func requisito_heroi(id: String) -> String:
 
 const GOLPES := {
 	# Capoeira
-	"armada":   {"nome": "Armada", "build": "capoeira", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.0, "knock": 1.2, "arte": "armada", "txt": "Giro que acerta e empurra todos em volta."},
-	"meialua":  {"nome": "Meia-Lua de Compasso", "build": "capoeira", "tipo": "arco", "dmg": 28.0, "cd": 1.3, "raio": 3.7, "ang": 1.8, "knock": 1.4, "arte": "meialua", "txt": "Chute largo e forte na direção do bicho mais perto."},
-	"rasteira": {"nome": "Rasteira", "build": "capoeira", "tipo": "ring", "dmg": 12.0, "cd": 2.30, "raio": 3.2, "stun": 1.2, "knock": 0.3, "arte": "rasteira", "txt": "Derruba e deixa tontos os bichos em volta."},
+	"armada":   {"nome": "Armada", "build": "capoeira", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.6, "knock": 1.2, "arte": "armada", "txt": "Giro que acerta e empurra todos em volta."},
+	"meialua":  {"nome": "Meia-Lua de Compasso", "build": "capoeira", "tipo": "arco", "dmg": 28.0, "cd": 1.3, "raio": 4.4, "ang": 1.8, "knock": 1.4, "arte": "meialua", "txt": "Chute largo e forte na direção do bicho mais perto."},
+	"rasteira": {"nome": "Rasteira", "build": "capoeira", "tipo": "ring", "dmg": 12.0, "cd": 2.30, "raio": 3.8, "stun": 1.2, "knock": 0.3, "arte": "rasteira", "txt": "Derruba e deixa tontos os bichos em volta."},
 	"berimbau": {"nome": "Toque de Berimbau", "build": "capoeira", "tipo": "onda", "dmg": 18.0, "cd": 3.20, "raio": 6.2, "knock": 2.4, "arte": "berimbau", "txt": "Onda de som que joga a bicharada para longe."},
 	# Jiu-Jitsu
-	"kimura":   {"nome": "Kimura", "build": "jiujitsu", "tipo": "investida", "dmg": 34.0, "cd": 1.50, "raio": 1.7, "alcance": 7.0, "stun": 1.2, "arte": "kimura", "txt": "Investe no bicho mais perto, torce e atordoa. Finalizar cura."},
-	"queda":    {"nome": "Queda de Baiana", "build": "jiujitsu", "tipo": "arco", "dmg": 24.0, "cd": 1.90, "raio": 2.7, "ang": 1.7, "stun": 1.0, "knock": 1.3, "arte": "queda", "txt": "Arremessa quem está na frente: atordoa e empurra."},
-	"raspagem": {"nome": "Raspagem", "build": "jiujitsu", "tipo": "ring", "dmg": 14.0, "cd": 2.40, "raio": 2.6, "stun": 1.3, "knock": 0.2, "arte": "guarda", "txt": "Varre o chão em volta e deixa todo mundo tonto."},
+	"kimura":   {"nome": "Kimura", "build": "jiujitsu", "tipo": "investida", "dmg": 34.0, "cd": 1.50, "raio": 1.7, "alcance": 8.0, "stun": 1.2, "arte": "kimura", "txt": "Investe no bicho mais perto, torce e atordoa. Finalizar cura."},
+	"queda":    {"nome": "Queda de Baiana", "build": "jiujitsu", "tipo": "arco", "dmg": 24.0, "cd": 1.90, "raio": 3.2, "ang": 1.7, "stun": 1.0, "knock": 1.3, "arte": "queda", "txt": "Arremessa quem está na frente: atordoa e empurra."},
+	"raspagem": {"nome": "Raspagem", "build": "jiujitsu", "tipo": "ring", "dmg": 14.0, "cd": 2.40, "raio": 3.1, "stun": 1.3, "knock": 0.2, "arte": "guarda", "txt": "Varre o chão em volta e deixa todo mundo tonto."},
 	# Mandinga
 	"fogofatuo":{"nome": "Fogo-Fátuo", "build": "mandinga", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 0.85, "vel": 12.0, "raio": 0.5, "vida": 3.4, "alcance": 26.0, "n": 1, "boom": 1.5, "cor": Color(0.31, 0.72, 0.95), "arte": "fogofatuo", "txt": "Fogo azul que persegue o bicho e estoura. Ganha mais fogos a cada 2 níveis."},
 	"garrafada":{"nome": "Garrafada", "build": "mandinga", "tipo": "proj_estoura", "dmg": 24.0, "cd": 2.00, "vel": 11.0, "raio": 0.45, "vida": 1.9, "alcance": 21.0, "boom": 2.7, "cor": Color(0.25, 0.62, 0.35), "arte": "garrafada", "txt": "Garrafa de erva que estoura numa área grande."},
 	"reza":     {"nome": "Reza Forte", "build": "mandinga", "tipo": "onda", "dmg": 16.0, "cd": 3.00, "raio": 5.6, "knock": 2.2, "arte": "reza", "txt": "Reza forte: fere e afasta tudo que chegou perto."},
 	# Cangaço
-	"peixeira": {"nome": "Peixeira", "build": "cangaco", "tipo": "arco", "dmg": 16.0, "cd": 0.65, "raio": 2.7, "ang": 1.2, "crit": 0.12, "arte": "peixeira", "txt": "Facada rápida na frente, com +12% de chance de crítico."},
+	"peixeira": {"nome": "Peixeira", "build": "cangaco", "tipo": "arco", "dmg": 16.0, "cd": 0.65, "raio": 3.2, "ang": 1.2, "crit": 0.12, "arte": "peixeira", "txt": "Facada rápida na frente, com +12% de chance de crítico."},
 	# Frevo
-	"tesoura":  {"nome": "Tesoura", "build": "frevo", "tipo": "arco", "dmg": 22.0, "cd": 1.0, "raio": 3.0, "ang": 1.5, "knock": 1.0, "arte": "tipo_arco", "txt": "Passo de frevo em tesoura: varre a sombrinha na frente."},
-	"parafuso": {"nome": "Parafuso", "build": "frevo", "tipo": "ring", "dmg": 16.0, "cd": 1.6, "raio": 3.4, "stun": 1.0, "knock": 0.6, "arte": "tipo_ring", "txt": "Gira feito pião e atordoa quem está em volta."},
+	"tesoura":  {"nome": "Tesoura", "build": "frevo", "tipo": "arco", "dmg": 22.0, "cd": 1.0, "raio": 3.6, "ang": 1.5, "knock": 1.0, "arte": "tipo_arco", "txt": "Passo de frevo em tesoura: varre a sombrinha na frente."},
+	"parafuso": {"nome": "Parafuso", "build": "frevo", "tipo": "ring", "dmg": 16.0, "cd": 1.6, "raio": 4.1, "stun": 1.0, "knock": 0.6, "arte": "tipo_ring", "txt": "Gira feito pião e atordoa quem está em volta."},
 	"ferrugem": {"nome": "Ferrugem", "build": "frevo", "tipo": "onda", "dmg": 15.0, "cd": 2.6, "raio": 5.0, "knock": 1.8, "arte": "tipo_onda", "txt": "Passo forte que empurra toda a roda para longe."},
 	# Cordel
 	"repente":  {"nome": "Repente", "build": "cordel", "tipo": "proj_reto", "dmg": 20.0, "cd": 0.9, "vel": 16.0, "raio": 0.35, "vida": 0.9, "n": 1, "pierce": 1, "cor": Color(0.9, 0.85, 0.6), "arte": "tipo_proj_reto", "txt": "Atira um verso afiado que atravessa um bicho."},
@@ -230,91 +230,91 @@ const GOLPES := {
 	"bacamarte":{"nome": "Bacamarte", "build": "cangaco", "tipo": "proj_reto", "dmg": 9.0, "cd": 1.40, "vel": 13.0, "raio": 0.4, "vida": 0.7, "n": 5, "spread": 0.5, "pierce": 1, "cor": Color(0.2, 0.15, 0.1), "arte": "bacamarte", "txt": "Tiro de chumbo espalhado: 5 balas em leque."},
 	"rifle":    {"nome": "Rifle Papo-Amarelo", "build": "cangaco", "tipo": "proj_reto", "dmg": 30.0, "cd": 1.60, "vel": 24.0, "raio": 0.32, "vida": 0.8, "n": 1, "spread": 0.0, "pierce": 99, "crit": 0.10, "cor": Color(0.94, 0.71, 0.1), "arte": "papoamarelo", "txt": "Bala que atravessa a fila inteira. +10% de crítico."},
 	# Samba
-	"batucada":    {"nome": "Batucada", "build": "samba", "tipo": "ring", "dmg": 20.0, "cd": 1.1, "raio": 3.1, "knock": 1.1, "arte": "tipo_ring", "txt": "Roda de batucada: acerta todo mundo em volta."},
-	"sapateado":   {"nome": "Sapateado", "build": "samba", "tipo": "arco", "dmg": 26.0, "cd": 1.2, "raio": 3.3, "ang": 1.6, "knock": 1.2, "arte": "tipo_arco", "txt": "Passo de samba na frente, rápido e forte."},
+	"batucada":    {"nome": "Batucada", "build": "samba", "tipo": "ring", "dmg": 20.0, "cd": 1.1, "raio": 3.7, "knock": 1.1, "arte": "tipo_ring", "txt": "Roda de batucada: acerta todo mundo em volta."},
+	"sapateado":   {"nome": "Sapateado", "build": "samba", "tipo": "arco", "dmg": 26.0, "cd": 1.2, "raio": 4.0, "ang": 1.6, "knock": 1.2, "arte": "tipo_arco", "txt": "Passo de samba na frente, rápido e forte."},
 	"pandeirada":  {"nome": "Pandeirada", "build": "samba", "tipo": "onda", "dmg": 17.0, "cd": 2.9, "raio": 5.4, "knock": 2.0, "arte": "tipo_onda", "txt": "Pandeiro no alto: onda de som que empurra tudo em volta."},
 	# Maracatu
-	"alfaia":      {"nome": "Alfaia", "build": "maracatu", "tipo": "ring", "dmg": 24.0, "cd": 1.3, "raio": 3.4, "stun": 0.8, "knock": 0.8, "arte": "tipo_ring", "txt": "Tambor fundo que estremece e atordoa a bicharada em volta."},
-	"calunga":     {"nome": "Calunga", "build": "maracatu", "tipo": "arco", "dmg": 26.0, "cd": 1.6, "raio": 3.2, "ang": 1.6, "stun": 0.6, "knock": 1.0, "arte": "tipo_arco", "txt": "A boneca sagrada abençoa o golpe na frente: atordoa quem recebe."},
+	"alfaia":      {"nome": "Alfaia", "build": "maracatu", "tipo": "ring", "dmg": 24.0, "cd": 1.3, "raio": 4.1, "stun": 0.8, "knock": 0.8, "arte": "tipo_ring", "txt": "Tambor fundo que estremece e atordoa a bicharada em volta."},
+	"calunga":     {"nome": "Calunga", "build": "maracatu", "tipo": "arco", "dmg": 26.0, "cd": 1.6, "raio": 3.8, "ang": 1.6, "stun": 0.6, "knock": 1.0, "arte": "tipo_arco", "txt": "A boneca sagrada abençoa o golpe na frente: atordoa quem recebe."},
 	"cortejo":     {"nome": "Cortejo", "build": "maracatu", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.8, "knock": 2.6, "arte": "tipo_onda", "txt": "O cortejo real avança e abre caminho, empurrando tudo para longe."},
 	# Viola
 	"dedilhado":   {"nome": "Dedilhado", "build": "viola", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.75, 0.55, 0.2), "arte": "tipo_proj_reto", "txt": "Corda dedilhada rápido: atira uma nota afiada na frente."},
 	"caterete":    {"nome": "Cateretê", "build": "viola", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.75, 0.55, 0.2), "arte": "tipo_proj_teleguiado", "txt": "Nota de desafio que persegue o bicho até estourar."},
 	"toada":       {"nome": "Toada", "build": "viola", "tipo": "proj_estoura", "dmg": 23.0, "cd": 2.1, "vel": 10.0, "raio": 0.42, "vida": 2.0, "alcance": 20.0, "boom": 2.6, "cor": Color(0.75, 0.55, 0.2), "arte": "tipo_proj_estoura", "txt": "Acorde pesado que estoura numa área grande."},
 	# Carimbó
-	"carimbo":     {"nome": "Carimbó", "build": "carimbo", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.0, "knock": 1.3, "arte": "tipo_ring", "txt": "Giro de carimbó: empurra todo mundo em volta."},
-	"banda_couro": {"nome": "Banda de Couro", "build": "carimbo", "tipo": "arco", "dmg": 25.0, "cd": 1.3, "raio": 3.4, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Tapa no couro do tambor, na direção do bicho mais perto."},
+	"carimbo":     {"nome": "Carimbó", "build": "carimbo", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.6, "knock": 1.3, "arte": "tipo_ring", "txt": "Giro de carimbó: empurra todo mundo em volta."},
+	"banda_couro": {"nome": "Banda de Couro", "build": "carimbo", "tipo": "arco", "dmg": 25.0, "cd": 1.3, "raio": 4.1, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Tapa no couro do tambor, na direção do bicho mais perto."},
 	"pisada_forte":{"nome": "Pisada Forte", "build": "carimbo", "tipo": "onda", "dmg": 16.0, "cd": 2.6, "raio": 5.2, "knock": 2.0, "arte": "tipo_onda", "txt": "Pisada forte que sacode o chão e afasta a bicharada."},
 	# Forró
-	"pandeirao":     {"nome": "Pandeirão", "build": "forro", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.0, "knock": 1.2, "arte": "tipo_ring", "txt": "Giro de pandeiro: acerta e empurra todo mundo em volta."},
+	"pandeirao":     {"nome": "Pandeirão", "build": "forro", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.6, "knock": 1.2, "arte": "tipo_ring", "txt": "Giro de pandeiro: acerta e empurra todo mundo em volta."},
 	"coco_embolada": {"nome": "Coco de Embolada", "build": "forro", "tipo": "onda", "dmg": 16.0, "cd": 2.8, "raio": 5.3, "knock": 1.9, "arte": "tipo_onda", "txt": "Verso cantado rápido: onda que afasta a bicharada."},
-	"baiao_rapido":  {"nome": "Baião Rápido", "build": "forro", "tipo": "arco", "dmg": 25.0, "cd": 1.1, "raio": 3.2, "ang": 1.6, "knock": 1.1, "arte": "tipo_arco", "txt": "Passo rápido de baião na direção do bicho mais perto."},
+	"baiao_rapido":  {"nome": "Baião Rápido", "build": "forro", "tipo": "arco", "dmg": 25.0, "cd": 1.1, "raio": 3.8, "ang": 1.6, "knock": 1.1, "arte": "tipo_arco", "txt": "Passo rápido de baião na direção do bicho mais perto."},
 	# Capoeira Angola
-	"cocorinha":     {"nome": "Cocorinha", "build": "angola", "tipo": "ring", "dmg": 22.0, "cd": 1.2, "raio": 2.9, "stun": 0.7, "knock": 0.6, "arte": "tipo_ring", "txt": "Agacha e varre baixo: atordoa quem chega perto."},
-	"cabecada":      {"nome": "Cabeçada", "build": "angola", "tipo": "investida", "dmg": 32.0, "cd": 1.6, "raio": 1.6, "alcance": 6.5, "stun": 1.3, "arte": "tipo_investida", "txt": "Investe de cabeça baixa no bicho mais perto e atordoa."},
+	"cocorinha":     {"nome": "Cocorinha", "build": "angola", "tipo": "ring", "dmg": 22.0, "cd": 1.2, "raio": 3.5, "stun": 0.7, "knock": 0.6, "arte": "tipo_ring", "txt": "Agacha e varre baixo: atordoa quem chega perto."},
+	"cabecada":      {"nome": "Cabeçada", "build": "angola", "tipo": "investida", "dmg": 32.0, "cd": 1.6, "raio": 1.6, "alcance": 7.5, "stun": 1.3, "arte": "tipo_investida", "txt": "Investe de cabeça baixa no bicho mais perto e atordoa."},
 	"negativa":      {"nome": "Negativa", "build": "angola", "tipo": "onda", "dmg": 17.0, "cd": 2.9, "raio": 5.5, "knock": 2.1, "arte": "tipo_onda", "txt": "Esquiva rasteira que sacode e empurra tudo em volta."},
 	# Marujo
-	"rede_pesca":    {"nome": "Rede de Pesca", "build": "maruja", "tipo": "ring", "dmg": 21.0, "cd": 1.15, "raio": 3.2, "knock": 1.0, "arte": "tipo_ring", "txt": "Lança a rede em volta, prende e machuca a bicharada."},
+	"rede_pesca":    {"nome": "Rede de Pesca", "build": "maruja", "tipo": "ring", "dmg": 21.0, "cd": 1.15, "raio": 3.8, "knock": 1.0, "arte": "tipo_ring", "txt": "Lança a rede em volta, prende e machuca a bicharada."},
 	"mare_cheia":    {"nome": "Maré Cheia", "build": "maruja", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.6, "knock": 2.3, "arte": "tipo_onda", "txt": "Onda de maré que empurra tudo para longe."},
 	"canto_mar":     {"nome": "Canto do Mar", "build": "maruja", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.3, 0.55, 0.85), "arte": "tipo_proj_teleguiado", "txt": "Nota que ecoa n'água e persegue o bicho até estourar."},
 	# Jongo
-	"ponto_jongo":    {"nome": "Ponto de Jongo", "build": "jongo", "tipo": "ring", "dmg": 22.0, "cd": 1.2, "raio": 3.0, "stun": 0.6, "knock": 0.7, "arte": "tipo_ring", "txt": "Roda de jongo bem no chão: acerta e atordoa quem chega perto."},
+	"ponto_jongo":    {"nome": "Ponto de Jongo", "build": "jongo", "tipo": "ring", "dmg": 22.0, "cd": 1.2, "raio": 3.6, "stun": 0.6, "knock": 0.7, "arte": "tipo_ring", "txt": "Roda de jongo bem no chão: acerta e atordoa quem chega perto."},
 	"adjunto":        {"nome": "Adjunto", "build": "jongo", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.4, "knock": 2.0, "arte": "tipo_onda", "txt": "Ponto cantado em resposta: onda que empurra a bicharada."},
-	"caxambu":        {"nome": "Caxambu", "build": "jongo", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.2, "ang": 1.6, "knock": 1.2, "arte": "tipo_arco", "txt": "Tambor grave que acerta forte na frente."},
+	"caxambu":        {"nome": "Caxambu", "build": "jongo", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.8, "ang": 1.6, "knock": 1.2, "arte": "tipo_arco", "txt": "Tambor grave que acerta forte na frente."},
 	# Choro
 	"flautim":        {"nome": "Flautim", "build": "choro", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.9, 0.78, 0.3), "arte": "tipo_proj_reto", "txt": "Nota rápida na flauta: atira afiado na frente."},
 	"chorinho":       {"nome": "Chorinho", "build": "choro", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.9, 0.78, 0.3), "arte": "tipo_proj_teleguiado", "txt": "Melodia que persegue o bicho até estourar."},
 	"regional":       {"nome": "Regional", "build": "choro", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.6, "knock": 2.1, "arte": "tipo_onda", "txt": "O conjunto inteiro toca junto: onda que empurra tudo."},
 	# Cerâmica de Caruaru
-	"boneco_barro":   {"nome": "Boneco de Barro", "build": "ceramica", "tipo": "ring", "dmg": 23.0, "cd": 1.25, "raio": 3.1, "stun": 0.5, "knock": 0.6, "arte": "tipo_ring", "txt": "Bonecos de barro espalhados que estouram em volta."},
-	"figurinha_barro":{"nome": "Figurinha de Barro", "build": "ceramica", "tipo": "arco", "dmg": 26.0, "cd": 1.5, "raio": 3.2, "ang": 1.5, "knock": 1.0, "arte": "tipo_arco", "txt": "Arremessa uma figurinha de barro na direção do bicho."},
+	"boneco_barro":   {"nome": "Boneco de Barro", "build": "ceramica", "tipo": "ring", "dmg": 23.0, "cd": 1.25, "raio": 3.7, "stun": 0.5, "knock": 0.6, "arte": "tipo_ring", "txt": "Bonecos de barro espalhados que estouram em volta."},
+	"figurinha_barro":{"nome": "Figurinha de Barro", "build": "ceramica", "tipo": "arco", "dmg": 26.0, "cd": 1.5, "raio": 3.8, "ang": 1.5, "knock": 1.0, "arte": "tipo_arco", "txt": "Arremessa uma figurinha de barro na direção do bicho."},
 	"panela_barro":   {"nome": "Panela de Barro", "build": "ceramica", "tipo": "proj_estoura", "dmg": 24.0, "cd": 2.0, "vel": 10.0, "raio": 0.45, "vida": 1.9, "alcance": 20.0, "boom": 2.6, "cor": Color(0.68, 0.38, 0.2), "arte": "tipo_proj_estoura", "txt": "Panela de barro que se espatifa numa área grande."},
 	# Cantora de MPB
-	"grito_elis":     {"nome": "Grito de Elis", "build": "mpb", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.1, "knock": 1.2, "arte": "tipo_ring", "txt": "Grito que sacode tudo em volta."},
+	"grito_elis":     {"nome": "Grito de Elis", "build": "mpb", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.7, "knock": 1.2, "arte": "tipo_ring", "txt": "Grito que sacode tudo em volta."},
 	"cancao_forte":   {"nome": "Canção Forte", "build": "mpb", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.2, "arte": "tipo_onda", "txt": "Canção na voz cheia: onda que empurra a bicharada."},
 	"nota_presa":     {"nome": "Nota Presa", "build": "mpb", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.68, 0.2, 0.55), "arte": "tipo_proj_teleguiado", "txt": "Nota longa que persegue o bicho até estourar."},
 	# Pintura
-	"pincelada":        {"nome": "Pincelada", "build": "pintura", "tipo": "arco", "dmg": 25.0, "cd": 1.2, "raio": 3.2, "ang": 1.5, "knock": 1.0, "arte": "tipo_arco", "txt": "Risca de tinta na direção do bicho mais perto."},
+	"pincelada":        {"nome": "Pincelada", "build": "pintura", "tipo": "arco", "dmg": 25.0, "cd": 1.2, "raio": 3.8, "ang": 1.5, "knock": 1.0, "arte": "tipo_arco", "txt": "Risca de tinta na direção do bicho mais perto."},
 	"tela_viva":        {"nome": "Tela Viva", "build": "pintura", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.4, "knock": 2.0, "arte": "tipo_onda", "txt": "A tela ganha vida: onda que empurra a bicharada."},
 	"retrato_certeiro": {"nome": "Retrato Certeiro", "build": "pintura", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.15, 0.3, 0.6), "arte": "tipo_proj_teleguiado", "txt": "Pincelada que persegue o bicho até estourar."},
 	# Música erudita
-	"batuta":     {"nome": "Batuta", "build": "erudito", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.1, "knock": 1.2, "arte": "tipo_ring", "txt": "Gesto de batuta que rege e acerta tudo em volta."},
+	"batuta":     {"nome": "Batuta", "build": "erudito", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.7, "knock": 1.2, "arte": "tipo_ring", "txt": "Gesto de batuta que rege e acerta tudo em volta."},
 	"bachianas":  {"nome": "Bachianas", "build": "erudito", "tipo": "onda", "dmg": 18.0, "cd": 2.9, "raio": 5.6, "knock": 2.1, "arte": "tipo_onda", "txt": "A orquestra inteira entra junto: onda que empurra tudo."},
-	"choros_n1":  {"nome": "Choros Nº1", "build": "erudito", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.2, "ang": 1.6, "knock": 1.1, "arte": "tipo_arco", "txt": "Movimento de orquestra que varre a frente."},
+	"choros_n1":  {"nome": "Choros Nº1", "build": "erudito", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.8, "ang": 1.6, "knock": 1.1, "arte": "tipo_arco", "txt": "Movimento de orquestra que varre a frente."},
 	# Violão / afrosamba
 	"acorde_bruto":   {"nome": "Acorde Bruto", "build": "afrosamba", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.55, 0.35, 0.1), "arte": "tipo_proj_reto", "txt": "Acorde pesado que atira uma nota afiada na frente."},
 	"afro_samba":     {"nome": "Afrosamba", "build": "afrosamba", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.55, 0.35, 0.1), "arte": "tipo_proj_teleguiado", "txt": "Levada que persegue o bicho até estourar."},
 	"valsa_sem_nome": {"nome": "Valsa Sem Nome", "build": "afrosamba", "tipo": "proj_estoura", "dmg": 23.0, "cd": 2.1, "vel": 10.0, "raio": 0.42, "vida": 2.0, "alcance": 20.0, "boom": 2.6, "cor": Color(0.55, 0.35, 0.1), "arte": "tipo_proj_estoura", "txt": "Acorde pesado que estoura numa área grande."},
 	# Capoeira Regional
-	"ponteio":            {"nome": "Ponteio", "build": "regional", "tipo": "ring", "dmg": 21.0, "cd": 1.1, "raio": 3.0, "knock": 1.1, "arte": "tipo_ring", "txt": "Ginga afiada que acerta todo mundo em volta."},
-	"cintura_desprezada": {"nome": "Cintura Desprezada", "build": "regional", "tipo": "investida", "dmg": 33.0, "cd": 1.6, "raio": 1.7, "alcance": 6.5, "stun": 1.3, "arte": "tipo_investida", "txt": "A queda clássica de Bimba: investe e atordoa."},
-	"chapeu_couro":       {"nome": "Chapéu de Couro", "build": "regional", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.3, "ang": 1.6, "knock": 1.2, "arte": "tipo_arco", "txt": "Chute alto e firme na direção do bicho mais perto."},
+	"ponteio":            {"nome": "Ponteio", "build": "regional", "tipo": "ring", "dmg": 21.0, "cd": 1.1, "raio": 3.6, "knock": 1.1, "arte": "tipo_ring", "txt": "Ginga afiada que acerta todo mundo em volta."},
+	"cintura_desprezada": {"nome": "Cintura Desprezada", "build": "regional", "tipo": "investida", "dmg": 33.0, "cd": 1.6, "raio": 1.7, "alcance": 7.5, "stun": 1.3, "arte": "tipo_investida", "txt": "A queda clássica de Bimba: investe e atordoa."},
+	"chapeu_couro":       {"nome": "Chapéu de Couro", "build": "regional", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 4.0, "ang": 1.6, "knock": 1.2, "arte": "tipo_arco", "txt": "Chute alto e firme na direção do bicho mais perto."},
 	# Escultura barroca
-	"cinzelada":    {"nome": "Cinzelada", "build": "escultura", "tipo": "ring", "dmg": 23.0, "cd": 1.25, "raio": 3.1, "stun": 0.6, "knock": 0.7, "arte": "tipo_ring", "txt": "Golpes de cinzel em volta, firmes e certeiros."},
-	"profeta_pedra":{"nome": "Profeta de Pedra", "build": "escultura", "tipo": "arco", "dmg": 27.0, "cd": 1.4, "raio": 3.3, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Golpe de pedra na direção do bicho mais perto."},
+	"cinzelada":    {"nome": "Cinzelada", "build": "escultura", "tipo": "ring", "dmg": 23.0, "cd": 1.25, "raio": 3.7, "stun": 0.6, "knock": 0.7, "arte": "tipo_ring", "txt": "Golpes de cinzel em volta, firmes e certeiros."},
+	"profeta_pedra":{"nome": "Profeta de Pedra", "build": "escultura", "tipo": "arco", "dmg": 27.0, "cd": 1.4, "raio": 4.0, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Golpe de pedra na direção do bicho mais perto."},
 	"pedra_sabao":  {"nome": "Pedra-Sabão", "build": "escultura", "tipo": "proj_estoura", "dmg": 24.0, "cd": 2.0, "vel": 10.0, "raio": 0.45, "vida": 1.9, "alcance": 20.0, "boom": 2.6, "cor": Color(0.5, 0.45, 0.4), "arte": "tipo_proj_estoura", "txt": "Lasca de pedra-sabão que se espatifa numa área grande."},
 	# Aviação pioneira
-	"voo_rasante":    {"nome": "Voo Rasante", "build": "aviacao", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.1, "knock": 1.3, "arte": "tipo_ring", "txt": "Passagem rasante que empurra tudo em volta."},
+	"voo_rasante":    {"nome": "Voo Rasante", "build": "aviacao", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.7, "knock": 1.3, "arte": "tipo_ring", "txt": "Passagem rasante que empurra tudo em volta."},
 	"bis14":          {"nome": "14-Bis", "build": "aviacao", "tipo": "onda", "dmg": 16.0, "cd": 2.6, "raio": 5.2, "knock": 2.0, "arte": "tipo_onda", "txt": "Vento da hélice que afasta a bicharada."},
-	"balao_dirigivel":{"nome": "Balão Dirigível", "build": "aviacao", "tipo": "arco", "dmg": 25.0, "cd": 1.3, "raio": 3.4, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Sombra do dirigível passa sobre o bicho mais perto."},
+	"balao_dirigivel":{"nome": "Balão Dirigível", "build": "aviacao", "tipo": "arco", "dmg": 25.0, "cd": 1.3, "raio": 4.1, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Sombra do dirigível passa sobre o bicho mais perto."},
 	# Literatura
 	"ironia_fina":        {"nome": "Ironia Fina", "build": "literatura", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.15, 0.15, 0.15), "arte": "tipo_proj_reto", "txt": "Pena afiada que atira uma farpa certeira na frente."},
 	"dom_casmurro":       {"nome": "Dom Casmurro", "build": "literatura", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.15, 0.15, 0.15), "arte": "tipo_proj_teleguiado", "txt": "Dúvida que persegue o bicho até estourar."},
 	"memorias_postumas":  {"nome": "Memórias Póstumas", "build": "literatura", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.6, "knock": 2.1, "arte": "tipo_onda", "txt": "Narração de além-túmulo: onda que empurra tudo."},
 	# Exploração / sertanismo
-	"bussola_certeira":  {"nome": "Bússola Certeira", "build": "sertanismo", "tipo": "ring", "dmg": 21.0, "cd": 1.15, "raio": 3.0, "knock": 1.0, "arte": "tipo_ring", "txt": "Giro de bússola que acerta tudo em volta."},
-	"linha_telegrafica": {"nome": "Linha Telegráfica", "build": "sertanismo", "tipo": "arco", "dmg": 26.0, "cd": 1.4, "raio": 3.3, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Chicotada de fio telegráfico na direção do bicho mais perto."},
+	"bussola_certeira":  {"nome": "Bússola Certeira", "build": "sertanismo", "tipo": "ring", "dmg": 21.0, "cd": 1.15, "raio": 3.6, "knock": 1.0, "arte": "tipo_ring", "txt": "Giro de bússola que acerta tudo em volta."},
+	"linha_telegrafica": {"nome": "Linha Telegráfica", "build": "sertanismo", "tipo": "arco", "dmg": 26.0, "cd": 1.4, "raio": 4.0, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Chicotada de fio telegráfico na direção do bicho mais perto."},
 	"sinal_fumaca":      {"nome": "Sinal de Fumaça", "build": "sertanismo", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.2, "arte": "tipo_onda", "txt": "Fumaça que sobe e empurra a bicharada."},
 	# Cangaço (Lampião)
 	"tiro_duplo":     {"nome": "Tiro Duplo", "build": "cangaco_chefe", "tipo": "proj_reto", "dmg": 14.0, "cd": 0.9, "vel": 16.0, "raio": 0.33, "vida": 0.8, "n": 2, "spread": 0.3, "pierce": 1, "cor": Color(0.5, 0.38, 0.15), "arte": "tipo_proj_reto", "txt": "Dois tiros rápidos na frente, um de cada pistola."},
 	"cerco":          {"nome": "Cerco", "build": "cangaco_chefe", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.1, "arte": "tipo_onda", "txt": "O bando cerca em volta: onda que empurra a bicharada."},
-	"mira_cangaceiro":{"nome": "Mira de Cangaceiro", "build": "cangaco_chefe", "tipo": "arco", "dmg": 27.0, "cd": 1.3, "raio": 3.2, "ang": 1.5, "crit": 0.1, "arte": "tipo_arco", "txt": "Tiro certeiro na direção do bicho mais perto."},
+	"mira_cangaceiro":{"nome": "Mira de Cangaceiro", "build": "cangaco_chefe", "tipo": "arco", "dmg": 27.0, "cd": 1.3, "raio": 3.8, "ang": 1.5, "crit": 0.1, "arte": "tipo_arco", "txt": "Tiro certeiro na direção do bicho mais perto."},
 	# Cangaço (Maria Bonita)
-	"faca_cintura":   {"nome": "Faca na Cintura", "build": "cangaca", "tipo": "ring", "dmg": 22.0, "cd": 1.15, "raio": 3.0, "knock": 0.9, "arte": "tipo_ring", "txt": "Faca rápida em volta, certeira e ligeira."},
-	"danca_cerco":    {"nome": "Dança do Cerco", "build": "cangaca", "tipo": "arco", "dmg": 27.0, "cd": 1.2, "raio": 3.3, "ang": 1.6, "knock": 1.1, "arte": "tipo_arco", "txt": "Passo de dança que acerta na direção do bicho mais perto."},
+	"faca_cintura":   {"nome": "Faca na Cintura", "build": "cangaca", "tipo": "ring", "dmg": 22.0, "cd": 1.15, "raio": 3.6, "knock": 0.9, "arte": "tipo_ring", "txt": "Faca rápida em volta, certeira e ligeira."},
+	"danca_cerco":    {"nome": "Dança do Cerco", "build": "cangaca", "tipo": "arco", "dmg": 27.0, "cd": 1.2, "raio": 4.0, "ang": 1.6, "knock": 1.1, "arte": "tipo_arco", "txt": "Passo de dança que acerta na direção do bicho mais perto."},
 	"grito_guerra":   {"nome": "Grito de Guerra", "build": "cangaca", "tipo": "onda", "dmg": 17.0, "cd": 2.7, "raio": 5.4, "knock": 2.0, "arte": "tipo_onda", "txt": "Grito que anima o bando e empurra a bicharada."},
 	# Mural baiano
-	"traco_vivo":     {"nome": "Traço Vivo", "build": "mural", "tipo": "arco", "dmg": 26.0, "cd": 1.2, "raio": 3.2, "ang": 1.5, "knock": 1.0, "arte": "tipo_arco", "txt": "Risco colorido na direção do bicho mais perto."},
+	"traco_vivo":     {"nome": "Traço Vivo", "build": "mural", "tipo": "arco", "dmg": 26.0, "cd": 1.2, "raio": 3.8, "ang": 1.5, "knock": 1.0, "arte": "tipo_arco", "txt": "Risco colorido na direção do bicho mais perto."},
 	"painel_vivo":    {"nome": "Painel Vivo", "build": "mural", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.1, "arte": "tipo_onda", "txt": "O painel ganha vida: onda que empurra a bicharada."},
 	"mural_certeiro": {"nome": "Mural Certeiro", "build": "mural", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.85, 0.5, 0.15), "arte": "tipo_proj_teleguiado", "txt": "Pincelada colorida que persegue o bicho até estourar."},
 	# Oratória
@@ -322,15 +322,15 @@ const GOLPES := {
 	"discurso_haia":      {"nome": "Discurso de Haia", "build": "oratoria", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.2, 0.2, 0.22), "arte": "tipo_proj_teleguiado", "txt": "Tese que persegue o bicho até estourar."},
 	"voto_vencido":       {"nome": "Voto Vencido", "build": "oratoria", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.6, "knock": 2.1, "arte": "tipo_onda", "txt": "Mesmo vencido, ecoa forte: onda que empurra tudo."},
 	# Resistência quilombola (Zumbi dos Palmares)
-	"golpe_quilombo": {"nome": "Golpe do Quilombo", "build": "quilombo", "tipo": "ring", "dmg": 24.0, "cd": 1.2, "raio": 3.3, "stun": 0.6, "knock": 0.9, "arte": "tipo_ring", "txt": "Golpe forte e firme em volta: não recua, não cede."},
-	"lanca_certeira": {"nome": "Lança Certeira", "build": "quilombo", "tipo": "investida", "dmg": 34.0, "cd": 1.6, "raio": 1.8, "alcance": 7.0, "stun": 1.3, "arte": "tipo_investida", "txt": "Investe com a lança no bicho mais perto e não solta."},
+	"golpe_quilombo": {"nome": "Golpe do Quilombo", "build": "quilombo", "tipo": "ring", "dmg": 24.0, "cd": 1.2, "raio": 4.0, "stun": 0.6, "knock": 0.9, "arte": "tipo_ring", "txt": "Golpe forte e firme em volta: não recua, não cede."},
+	"lanca_certeira": {"nome": "Lança Certeira", "build": "quilombo", "tipo": "investida", "dmg": 34.0, "cd": 1.6, "raio": 1.8, "alcance": 8.0, "stun": 1.3, "arte": "tipo_investida", "txt": "Investe com a lança no bicho mais perto e não solta."},
 	"grito_palmares": {"nome": "Grito de Palmares", "build": "quilombo", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.8, "knock": 2.4, "arte": "tipo_onda", "txt": "Grito que ecoa pela mata: onda que empurra tudo em volta."},
 	# Inconfidência (Tiradentes)
-	"bandeira_liberdade": {"nome": "Bandeira da Liberdade", "build": "inconfidencia", "tipo": "ring", "dmg": 20.0, "cd": 1.1, "raio": 3.2, "knock": 1.3, "arte": "tipo_ring", "txt": "Ergue a bandeira e varre tudo em volta."},
-	"espada_certeira":    {"nome": "Espada Certeira", "build": "inconfidencia", "tipo": "arco", "dmg": 27.0, "cd": 1.3, "raio": 3.3, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Golpe de espada na direção do bicho mais perto."},
+	"bandeira_liberdade": {"nome": "Bandeira da Liberdade", "build": "inconfidencia", "tipo": "ring", "dmg": 20.0, "cd": 1.1, "raio": 3.8, "knock": 1.3, "arte": "tipo_ring", "txt": "Ergue a bandeira e varre tudo em volta."},
+	"espada_certeira":    {"nome": "Espada Certeira", "build": "inconfidencia", "tipo": "arco", "dmg": 27.0, "cd": 1.3, "raio": 4.0, "ang": 1.5, "knock": 1.1, "arte": "tipo_arco", "txt": "Golpe de espada na direção do bicho mais perto."},
 	"grito_ouropreto":    {"nome": "Grito de Ouro Preto", "build": "inconfidencia", "tipo": "onda", "dmg": 17.0, "cd": 2.6, "raio": 5.5, "knock": 2.1, "arte": "tipo_onda", "txt": "O grito de liberdade ecoa: onda que empurra a bicharada."},
 	# Caridade (Irmã Dulce)
-	"bencao_forte":     {"nome": "Bênção Forte", "build": "caridade", "tipo": "ring", "dmg": 18.0, "cd": 1.1, "raio": 3.2, "knock": 1.4, "arte": "tipo_ring", "txt": "Bênção que protege e afasta o mal em volta."},
+	"bencao_forte":     {"nome": "Bênção Forte", "build": "caridade", "tipo": "ring", "dmg": 18.0, "cd": 1.1, "raio": 3.8, "knock": 1.4, "arte": "tipo_ring", "txt": "Bênção que protege e afasta o mal em volta."},
 	"manto_protetor":   {"nome": "Manto Protetor", "build": "caridade", "tipo": "onda", "dmg": 15.0, "cd": 2.6, "raio": 5.6, "knock": 2.6, "arte": "tipo_onda", "txt": "O manto se abre e empurra tudo que ameaça por perto."},
 	"oracao_certeira":  {"nome": "Oração Certeira", "build": "caridade", "tipo": "proj_teleguiado", "dmg": 16.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.3, "cor": Color(0.9, 0.92, 0.98), "arte": "tipo_proj_teleguiado", "txt": "Uma luz guiada por oração que busca o perigo até afastá-lo."},
 }
@@ -355,7 +355,7 @@ const STATS := {
 	"regen":      {"nome": "Chá de Boldo",    "v": 0.5,  "txt": "+%.1f de vida por segundo", "pct": false, "arte": "i_cha"},
 	"ima":        {"nome": "Chama Vaga-Lume", "v": 0.25, "txt": "+%d%% de alcance para pegar XP", "pct": true, "arte": "estrela"},
 	"area":       {"nome": "Roda Grande",     "v": 0.08, "txt": "+%d%% de área dos golpes", "pct": true, "arte": "atabaque"},
-	"vermes":     {"nome": "Vermes que Comem Carne", "v": 0.4, "txt": "Cura %.1f de vida a cada bicho derrubado", "pct": false, "arte": "arretado"},
+	"vermes":     {"nome": "Verme que Roeu as Frias Carnes", "v": 0.4, "txt": "Cura %.1f de vida a cada bicho derrubado", "pct": false, "arte": "arretado"},
 	"pulo":       {"nome": "Pulo do Saci",    "v": 1.0, "txt": "+%d pulo no ar", "pct": false, "arte": "chinelo", "fixo": true},
 }
 
@@ -513,7 +513,7 @@ static func feitos_prontos() -> int:
 
 # Frase de rodapé das cartas (a piada do folheto).
 const PIADAS := {
-	"vermes": "Machado de Assis que o diga.", "pulo": "Com uma perna só ele já pulava assim.",
+	"vermes": "Ao verme que primeiro roeu as frias carnes do meu cadáver. — Brás Cubas", "pulo": "Com uma perna só ele já pulava assim.",
 	"dano": "Quem bate esquece. Quem apanha, não.", "vida": "Saco vazio não para em pé.",
 	"velocidade": "Deus ajuda quem cedo madruga. E quem corre.", "ataque": "Devagar se vai ao longe. Mas quem tem tempo?",
 	"critico": "Um olho no peixe, outro no gato.", "critdano": "Em casa de ferreiro, a faca é das boas.",

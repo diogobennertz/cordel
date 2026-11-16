@@ -110,6 +110,46 @@ const CLASSES := {
 		"inicial": "ponteio", "desbloqueia": {"cintura_desprezada": 3, "chapeu_couro": 6},
 		"desc": "Ponteio, cintura desprezada e chapéu de couro: o pai da capoeira regional."
 	},
+	"escultor": {
+		"nome": "Escultor Barroco", "apelido": "Aleijadinho", "pulo": "Pulo comum de escultor — nada de especial ao cair.", "cor": Color(0.5, 0.45, 0.4), "maxhp": 128.0, "speed": 5.3, "armor": 0.14,
+		"inicial": "cinzelada", "desbloqueia": {"profeta_pedra": 3, "pedra_sabao": 6},
+		"desc": "Cinzelada, profeta de pedra e pedra-sabão: firme e forte, esculpe a bicharada."
+	},
+	"aviador": {
+		"nome": "Aviador Pioneiro", "apelido": "Santos Dumont", "pulo": "Pulo comum de aviador — nada de especial ao cair.", "cor": Color(0.8, 0.72, 0.5), "maxhp": 106.0, "speed": 6.2, "dodge": 0.18,
+		"inicial": "voo_rasante", "desbloqueia": {"bis14": 3, "balao_dirigivel": 6},
+		"desc": "Voo rasante, 14-Bis e balão dirigível: o mais ligeiro no ar, difícil de pegar."
+	},
+	"escritor": {
+		"nome": "Escritor Contista", "apelido": "Machado de Assis", "pulo": "Pulo comum de escritor — nada de especial ao cair.", "cor": Color(0.15, 0.15, 0.15), "maxhp": 110.0, "speed": 5.5, "regen": 0.5,
+		"inicial": "ironia_fina", "desbloqueia": {"dom_casmurro": 3, "memorias_postumas": 6},
+		"desc": "Ironia fina, Dom Casmurro e Memórias Póstumas: ataca de longe com a pena afiada."
+	},
+	"sertanista": {
+		"nome": "Sertanista Explorador", "apelido": "Marechal Rondon", "pulo": "Pulo comum de sertanista — nada de especial ao cair.", "cor": Color(0.35, 0.4, 0.2), "maxhp": 132.0, "speed": 5.4, "armor": 0.12,
+		"inicial": "bussola_certeira", "desbloqueia": {"linha_telegrafica": 3, "sinal_fumaca": 6},
+		"desc": "Bússola, linha telegráfica e sinal de fumaça: firme e forte, abre caminho no sertão."
+	},
+	"cangaceiro_chefe": {
+		"nome": "Capitão do Cangaço", "apelido": "Lampião", "pulo": "Pulo comum de cangaceiro — nada de especial ao cair.", "cor": Color(0.5, 0.38, 0.15), "maxhp": 120.0, "speed": 5.7, "crit": 0.1,
+		"inicial": "tiro_duplo", "desbloqueia": {"cerco": 3, "mira_cangaceiro": 6},
+		"desc": "Tiro duplo, cerco e mira de cangaceiro: ataca de longe, rápido no gatilho."
+	},
+	"cangaceira": {
+		"nome": "Cangaceira", "apelido": "Maria Bonita", "pulo": "Pulo comum de cangaceira — nada de especial ao cair.", "cor": Color(0.82, 0.25, 0.2), "maxhp": 115.0, "speed": 6.0, "dodge": 0.15,
+		"inicial": "faca_cintura", "desbloqueia": {"danca_cerco": 3, "grito_guerra": 6},
+		"desc": "Faca na cintura, dança do cerco e grito de guerra: ligeira, difícil de pegar."
+	},
+	"muralista": {
+		"nome": "Muralista Baiano", "apelido": "Carybé", "pulo": "Pulo comum de muralista — nada de especial ao cair.", "cor": Color(0.85, 0.5, 0.15), "maxhp": 112.0, "speed": 5.6, "regen": 0.4,
+		"inicial": "traco_vivo", "desbloqueia": {"painel_vivo": 3, "mural_certeiro": 6},
+		"desc": "Traço vivo, painel vivo e mural certeiro: colore a Bahia inteira em volta."
+	},
+	"orador": {
+		"nome": "Jurista Orador", "apelido": "Rui Barbosa", "pulo": "Pulo comum de orador — nada de especial ao cair.", "cor": Color(0.2, 0.2, 0.22), "maxhp": 108.0, "speed": 5.3, "regen": 0.6,
+		"inicial": "argumento_certeiro", "desbloqueia": {"discurso_haia": 3, "voto_vencido": 6},
+		"desc": "Argumento certeiro, discurso de Haia e voto vencido: ataca de longe, sustenta a tese."
+	},
 }
 
 # Heróis desbloqueáveis: ficam de contorno preto na grade até cumprir o feito. "ach" já é o nome
@@ -126,6 +166,14 @@ const DESBLOQUEIOS := {
 	"maestro":    {"txt": "Derrube 400 sacis", "ach": "ACH_HEROI_MAESTRO", "tipo": "contador", "c": "abates_saci", "meta": 400},
 	"violonista": {"txt": "Dê 500.000 de dano numa única corrida", "ach": "ACH_HEROI_VIOLONISTA", "tipo": "dano_run", "meta": 500000.0},
 	"bimba":      {"txt": "Solte 500 armadas", "ach": "ACH_HEROI_BIMBA", "tipo": "contador", "c": "uso_armada", "meta": 500},
+	"escultor":   {"txt": "Derrube 250 lobisomens", "ach": "ACH_HEROI_ESCULTOR", "tipo": "contador", "c": "abates_lobisomem", "meta": 250},
+	"aviador":    {"txt": "Derrube 600 caiporas", "ach": "ACH_HEROI_AVIADOR", "tipo": "contador", "c": "abates_caipora", "meta": 600},
+	"escritor":   {"txt": "Aplique 400 kimuras", "ach": "ACH_HEROI_ESCRITOR", "tipo": "contador", "c": "uso_kimura", "meta": 400},
+	"sertanista": {"txt": "Vença a Cuca 10 vezes", "ach": "ACH_HEROI_SERTANISTA", "tipo": "contador", "c": "abates_cuca", "meta": 10},
+	"cangaceiro_chefe": {"txt": "Dê 1.000.000 de dano numa única corrida", "ach": "ACH_HEROI_LAMPIAO", "tipo": "dano_run", "meta": 1000000.0},
+	"cangaceira":       {"txt": "Vença 30 chefes", "ach": "ACH_HEROI_MARIABONITA", "tipo": "contador", "c": "chefes", "meta": 30},
+	"muralista":        {"txt": "Abra 80 baús", "ach": "ACH_HEROI_CARYBE", "tipo": "contador", "c": "baus", "meta": 80},
+	"orador":           {"txt": "Acerte 6.000 críticos", "ach": "ACH_HEROI_RUIBARBOSA", "tipo": "contador", "c": "criticos", "meta": 6000},
 }
 static func heroi_desbloqueado(id: String) -> bool:
 	if not DESBLOQUEIOS.has(id): return true
@@ -223,6 +271,38 @@ const GOLPES := {
 	"ponteio":            {"nome": "Ponteio", "build": "regional", "tipo": "ring", "dmg": 21.0, "cd": 1.1, "raio": 3.0, "knock": 1.1, "arte": "rasteira", "txt": "Ginga afiada que acerta todo mundo em volta."},
 	"cintura_desprezada": {"nome": "Cintura Desprezada", "build": "regional", "tipo": "investida", "dmg": 33.0, "cd": 1.6, "raio": 1.7, "alcance": 6.5, "stun": 1.3, "arte": "kimura", "txt": "A queda clássica de Bimba: investe e atordoa."},
 	"chapeu_couro":       {"nome": "Chapéu de Couro", "build": "regional", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.3, "ang": 1.6, "knock": 1.2, "arte": "meialua", "txt": "Chute alto e firme na direção do bicho mais perto."},
+	# Escultura barroca
+	"cinzelada":    {"nome": "Cinzelada", "build": "escultura", "tipo": "ring", "dmg": 23.0, "cd": 1.25, "raio": 3.1, "stun": 0.6, "knock": 0.7, "arte": "rasteira", "txt": "Golpes de cinzel em volta, firmes e certeiros."},
+	"profeta_pedra":{"nome": "Profeta de Pedra", "build": "escultura", "tipo": "arco", "dmg": 27.0, "cd": 1.4, "raio": 3.3, "ang": 1.5, "knock": 1.1, "arte": "queda", "txt": "Golpe de pedra na direção do bicho mais perto."},
+	"pedra_sabao":  {"nome": "Pedra-Sabão", "build": "escultura", "tipo": "proj_estoura", "dmg": 24.0, "cd": 2.0, "vel": 10.0, "raio": 0.45, "vida": 1.9, "alcance": 20.0, "boom": 2.6, "cor": Color(0.5, 0.45, 0.4), "arte": "garrafada", "txt": "Lasca de pedra-sabão que se espatifa numa área grande."},
+	# Aviação pioneira
+	"voo_rasante":    {"nome": "Voo Rasante", "build": "aviacao", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.1, "knock": 1.3, "arte": "armada", "txt": "Passagem rasante que empurra tudo em volta."},
+	"bis14":          {"nome": "14-Bis", "build": "aviacao", "tipo": "onda", "dmg": 16.0, "cd": 2.6, "raio": 5.2, "knock": 2.0, "arte": "reza", "txt": "Vento da hélice que afasta a bicharada."},
+	"balao_dirigivel":{"nome": "Balão Dirigível", "build": "aviacao", "tipo": "arco", "dmg": 25.0, "cd": 1.3, "raio": 3.4, "ang": 1.5, "knock": 1.1, "arte": "meialua", "txt": "Sombra do dirigível passa sobre o bicho mais perto."},
+	# Literatura
+	"ironia_fina":        {"nome": "Ironia Fina", "build": "literatura", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.15, 0.15, 0.15), "arte": "bacamarte", "txt": "Pena afiada que atira uma farpa certeira na frente."},
+	"dom_casmurro":       {"nome": "Dom Casmurro", "build": "literatura", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.15, 0.15, 0.15), "arte": "fogofatuo", "txt": "Dúvida que persegue o bicho até estourar."},
+	"memorias_postumas":  {"nome": "Memórias Póstumas", "build": "literatura", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.6, "knock": 2.1, "arte": "reza", "txt": "Narração de além-túmulo: onda que empurra tudo."},
+	# Exploração / sertanismo
+	"bussola_certeira":  {"nome": "Bússola Certeira", "build": "sertanismo", "tipo": "ring", "dmg": 21.0, "cd": 1.15, "raio": 3.0, "knock": 1.0, "arte": "guarda", "txt": "Giro de bússola que acerta tudo em volta."},
+	"linha_telegrafica": {"nome": "Linha Telegráfica", "build": "sertanismo", "tipo": "arco", "dmg": 26.0, "cd": 1.4, "raio": 3.3, "ang": 1.5, "knock": 1.1, "arte": "peixeira", "txt": "Chicotada de fio telegráfico na direção do bicho mais perto."},
+	"sinal_fumaca":      {"nome": "Sinal de Fumaça", "build": "sertanismo", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.2, "arte": "berimbau", "txt": "Fumaça que sobe e empurra a bicharada."},
+	# Cangaço (Lampião)
+	"tiro_duplo":     {"nome": "Tiro Duplo", "build": "cangaco_chefe", "tipo": "proj_reto", "dmg": 14.0, "cd": 0.9, "vel": 16.0, "raio": 0.33, "vida": 0.8, "n": 2, "spread": 0.3, "pierce": 1, "cor": Color(0.5, 0.38, 0.15), "arte": "bacamarte", "txt": "Dois tiros rápidos na frente, um de cada pistola."},
+	"cerco":          {"nome": "Cerco", "build": "cangaco_chefe", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.1, "arte": "reza", "txt": "O bando cerca em volta: onda que empurra a bicharada."},
+	"mira_cangaceiro":{"nome": "Mira de Cangaceiro", "build": "cangaco_chefe", "tipo": "arco", "dmg": 27.0, "cd": 1.3, "raio": 3.2, "ang": 1.5, "crit": 0.1, "arte": "queda", "txt": "Tiro certeiro na direção do bicho mais perto."},
+	# Cangaço (Maria Bonita)
+	"faca_cintura":   {"nome": "Faca na Cintura", "build": "cangaca", "tipo": "ring", "dmg": 22.0, "cd": 1.15, "raio": 3.0, "knock": 0.9, "arte": "rasteira", "txt": "Faca rápida em volta, certeira e ligeira."},
+	"danca_cerco":    {"nome": "Dança do Cerco", "build": "cangaca", "tipo": "arco", "dmg": 27.0, "cd": 1.2, "raio": 3.3, "ang": 1.6, "knock": 1.1, "arte": "peixeira", "txt": "Passo de dança que acerta na direção do bicho mais perto."},
+	"grito_guerra":   {"nome": "Grito de Guerra", "build": "cangaca", "tipo": "onda", "dmg": 17.0, "cd": 2.7, "raio": 5.4, "knock": 2.0, "arte": "berimbau", "txt": "Grito que anima o bando e empurra a bicharada."},
+	# Mural baiano
+	"traco_vivo":     {"nome": "Traço Vivo", "build": "mural", "tipo": "arco", "dmg": 26.0, "cd": 1.2, "raio": 3.2, "ang": 1.5, "knock": 1.0, "arte": "queda", "txt": "Risco colorido na direção do bicho mais perto."},
+	"painel_vivo":    {"nome": "Painel Vivo", "build": "mural", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.1, "arte": "reza", "txt": "O painel ganha vida: onda que empurra a bicharada."},
+	"mural_certeiro": {"nome": "Mural Certeiro", "build": "mural", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.85, 0.5, 0.15), "arte": "fogofatuo", "txt": "Pincelada colorida que persegue o bicho até estourar."},
+	# Oratória
+	"argumento_certeiro": {"nome": "Argumento Certeiro", "build": "oratoria", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.2, 0.2, 0.22), "arte": "bacamarte", "txt": "Argumento afiado que atira reto na frente."},
+	"discurso_haia":      {"nome": "Discurso de Haia", "build": "oratoria", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.2, 0.2, 0.22), "arte": "fogofatuo", "txt": "Tese que persegue o bicho até estourar."},
+	"voto_vencido":       {"nome": "Voto Vencido", "build": "oratoria", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.6, "knock": 2.1, "arte": "berimbau", "txt": "Mesmo vencido, ecoa forte: onda que empurra tudo."},
 }
 
 # Dano do golpe no nível atual (sobe 25% por nível acima do 1).
@@ -316,6 +396,22 @@ const HABILIDADES := {
 		"r": {"nome": "Afrosamba Infinito", "dur": 5.0, "txt": "5 s soltando acordes para todos os lados"}},
 	"bimba": {"q": {"nome": "Cintura Desprezada", "cd": 9.0, "txt": "agarra o bicho mais forte por perto e aplica a queda clássica"},
 		"r": {"nome": "Academia da Regional", "dur": 4.5, "txt": "4,5 s de ginga firme acertando em volta sem parar"}},
+	"escultor": {"q": {"nome": "Golpe de Cinzel", "cd": 8.0, "txt": "giro de cinzel intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Doze Profetas", "dur": 6.0, "txt": "6 s esculpindo sem parar, pedra atrás de pedra"}},
+	"aviador": {"q": {"nome": "Rasante Certeiro", "cd": 8.0, "txt": "giro de voo intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Voo Sem Fim", "dur": 6.0, "txt": "6 s sobrevoando sem parar, de asa em asa"}},
+	"escritor": {"q": {"nome": "Farpa Certeira", "cd": 7.0, "txt": "uma farpa de pena que atravessa tudo"},
+		"r": {"nome": "Capitu nos Olhos", "dur": 5.0, "txt": "5 s soltando farpas para todos os lados"}},
+	"sertanista": {"q": {"nome": "Expedição Certeira", "cd": 7.0, "txt": "giro de bússola intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Integração Sem Fim", "dur": 6.0, "txt": "6 s abrindo picada sem parar, de trilha em trilha"}},
+	"cangaceiro_chefe": {"q": {"nome": "Tiro Certeiro do Capitão", "cd": 7.0, "txt": "um tiro crítico que atravessa tudo"},
+		"r": {"nome": "Bando Inteiro", "dur": 5.0, "txt": "5 s atirando para todos os lados"}},
+	"cangaceira": {"q": {"nome": "Faca Certeira", "cd": 8.0, "txt": "giro de faca intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Roda do Bando", "dur": 6.0, "txt": "6 s girando sem parar, faca na mão"}},
+	"muralista": {"q": {"nome": "Traço Certeiro", "cd": 7.0, "txt": "uma pincelada que atravessa tudo"},
+		"r": {"nome": "Mural Infinito", "dur": 5.0, "txt": "5 s pintando para todos os lados"}},
+	"orador": {"q": {"nome": "Réplica Certeira", "cd": 7.0, "txt": "um argumento que atravessa tudo"},
+		"r": {"nome": "Tribuna Infinita", "dur": 5.0, "txt": "5 s discursando para todos os lados"}},
 }
 const ULT_ABATES := 60          # abates para carregar o ultimate
 
@@ -416,6 +512,18 @@ const PIADAS := {
 	"acorde_bruto": "Acorde bruto também afina.", "afro_samba": "Samba com raiz na África não para.",
 	"valsa_sem_nome": "Valsa sem nome, mas com nome todo mundo lembra.", "ponteio": "Ginga boa não tem pressa.",
 	"cintura_desprezada": "Cintura desprezada não erra a queda.", "chapeu_couro": "Chapéu de couro não cai da cabeça.",
+	"cinzelada": "Pedra boa não quebra à toa.", "profeta_pedra": "Doze profetas, nenhum erra o alvo.",
+	"pedra_sabao": "Pedra-sabão também faz estrago.", "voo_rasante": "Quem voa baixo não cai alto.",
+	"bis14": "Antes do balão, veio o 14-Bis.", "balao_dirigivel": "Balão que sobe, sombra que cobre.",
+	"ironia_fina": "Ironia fina corta mais que faca.", "dom_casmurro": "Será que foi? Bentinho nunca disse.",
+	"memorias_postumas": "Defunto autor não erra a crônica.", "bussola_certeira": "Quem tem bússola não se perde.",
+	"linha_telegrafica": "Fio que leva notícia, leva também castigo.", "sinal_fumaca": "Fumaça no ar, aviso lá longe.",
+	"tiro_duplo": "Duas balas, um só tiro de confiança.", "cerco": "Cerco bom não deixa saída.",
+	"mira_cangaceiro": "Mira de cangaceiro não erra duas vezes.", "faca_cintura": "Faca na cintura, segurança na alma.",
+	"danca_cerco": "Dança boa também corta caminho.", "grito_guerra": "Grito de guerra, bando inteiro responde.",
+	"traco_vivo": "Traço certo não sai da parede.", "painel_vivo": "Parede que respira, conta história.",
+	"mural_certeiro": "Mural bom não se apaga fácil.", "argumento_certeiro": "Argumento bom não precisa gritar.",
+	"discurso_haia": "Discurso bom atravessa oceano.", "voto_vencido": "Voto vencido hoje, lido amanhã.",
 }
 
 # Bodega do Lampião: o que se compra com as moedas da partida.

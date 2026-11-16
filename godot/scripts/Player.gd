@@ -125,7 +125,9 @@ func _process(delta: float) -> void:
 			"sambista": 9.0, "maracatuzeiro": 7.0, "violeiro": 8.5, "carimbozeiro": 10.5,
 			"forrozeiro": 9.5, "angoleiro": 7.2, "marujo": 8.5,
 			"jongueira": 8.0, "chorao": 8.5, "ceramista": 7.5, "cantora": 8.8,
-			"pintor": 8.5, "maestro": 8.0, "violonista": 8.5, "bimba": 9.5}[classe]
+			"pintor": 8.5, "maestro": 8.0, "violonista": 8.5, "bimba": 9.5,
+			"escultor": 7.5, "aviador": 10.5, "escritor": 8.5, "sertanista": 8.0,
+			"cangaceiro_chefe": 8.5, "cangaceira": 9.0, "muralista": 8.5, "orador": 8.0}[classe]
 		if alt <= 0.0:
 			vy = forca; alt = 0.01; pulos_feitos = 0; Som.tocar("pulo")
 			if classe == "capoeirista": boneco.girar()

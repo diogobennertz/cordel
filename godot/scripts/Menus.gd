@@ -244,7 +244,7 @@ func _carta_fase(i: int, fmax: int) -> Button:
 	for lado in ["left", "right", "top", "bottom"]: m.add_theme_constant_override("margin_" + lado, 9)
 	b.add_child(m)
 	var hb := HBoxContainer.new(); hb.add_theme_constant_override("separation", 10); m.add_child(hb)
-	var im := Tela.imagem("s_" + String(f["chefe"]), Vector2(52, 62))
+	var im := _retrato_bicho(String(f["chefe"]), Vector2(52, 62))
 	if fechada: im.modulate = Color(0.1, 0.08, 0.06, 0.75)
 	hb.add_child(im)
 	var v := VBoxContainer.new(); v.alignment = BoxContainer.ALIGNMENT_CENTER; v.add_theme_constant_override("separation", 2); hb.add_child(v)
@@ -635,12 +635,21 @@ func loja() -> void:
 func _retrato_heroi(id: String, tam: Vector2) -> Control:
 	return _retrato3d(id, tam)
 
+# bicho/chefe: usa o retrato 2D se já existir; senão (chefes novos, tipo o Minhocão) mostra o boneco 3D
+func _retrato_bicho(tipo: String, tam: Vector2) -> Control:
+	if Tela.tex("s_" + tipo): return Tela.imagem("s_" + tipo, tam)
+	return _retrato3d(tipo, tam)
+
 func _retrato3d(tipo: String, tam: Vector2) -> SubViewportContainer:
 	var c := SubViewportContainer.new(); c.custom_minimum_size = tam; c.stretch = true; c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var sv := SubViewport.new(); sv.own_world_3d = true; sv.transparent_bg = true; sv.size = Vector2i(tam)
 	sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS; c.add_child(sv)
-	var b := Boneco.criar(tipo); sv.add_child(b); b.rotation.y = 0.4
-	var cam := Camera3D.new(); cam.fov = 30.0; cam.position = Vector3(0, 1.12, 4.6); sv.add_child(cam)
+	var b := Boneco.criar(tipo)
+	sv.add_child(b)
+	# bichos gigantes (corpo comprido, saindo da origem) precisam encolher, recentralizar e virar de frente pra caber no retrato
+	var ajuste: Dictionary = {"minhocao": {"esc": 0.3, "pos": Vector3(0, -0.4, 2.0), "rot": 0.0, "cam_y": 0.35}}.get(tipo, {"esc": 1.0, "pos": Vector3.ZERO, "rot": 0.4, "cam_y": 1.12})
+	b.scale = Vector3.ONE * float(ajuste["esc"]); b.position = ajuste["pos"]; b.rotation.y = float(ajuste["rot"])
+	var cam := Camera3D.new(); cam.fov = 30.0; cam.position = Vector3(0, float(ajuste["cam_y"]), 4.6); sv.add_child(cam)
 	var l := DirectionalLight3D.new(); l.rotation_degrees = Vector3(-30, 25, 0); l.light_energy = 1.1; sv.add_child(l)
 	var env := Environment.new(); env.background_mode = Environment.BG_CLEAR_COLOR
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR; env.ambient_light_color = Color.WHITE; env.ambient_light_energy = 0.75
@@ -698,7 +707,7 @@ func lore(tipo: String) -> void:
 	vb.add_child(Tela.faixa(l["de"], Tela.URUCUM, 14))
 	var hb := HBoxContainer.new(); hb.add_theme_constant_override("separation", 18); vb.add_child(hb)
 	var qd := PanelContainer.new(); qd.add_theme_stylebox_override("panel", Tela.caixa(Tela.PAPEL2, 3, Tela.TINTA, 4)); hb.add_child(qd)
-	qd.add_child(Tela.imagem("s_" + tipo, Vector2(170, 200)))
+	qd.add_child(_retrato_bicho(tipo, Vector2(170, 200)))
 	var v := VBoxContainer.new(); v.add_theme_constant_override("separation", 12); v.alignment = BoxContainer.ALIGNMENT_CENTER; hb.add_child(v)
 	v.add_child(Tela.texto(l["txt"], 17, 470, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 	v.add_child(Tela.texto("No jogo: " + String(l["jeito"]), 15, 470, Tela.ANIL, HORIZONTAL_ALIGNMENT_LEFT))

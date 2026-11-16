@@ -1,5 +1,17 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — mais 8 heróis desbloqueáveis (total 19 de ~20), correções visuais
+- Mais 8 heróis desbloqueáveis: Aleijadinho (escultor), Santos Dumont (aviador), Machado de Assis
+  (escritor), Marechal Rondon (sertanista), Lampião (capitão do cangaço), Maria Bonita (cangaceira),
+  Carybé (muralista baiano) e Rui Barbosa (jurista orador). **29 heróis no total**: 10 desde o
+  início + 19 desbloqueáveis — bem perto da meta de ~20 desbloqueáveis.
+- **Pixelização do jogo reduzida** um pouco, pra não ficar tão quadriculado.
+- Corrigido um bug real no retrato do maestro (Villa-Lobos): a camisa branca estava enorme e
+  cobria o fraque preto inteiro. Ajustado também o martelo do escultor, que parecia um bolha solta.
+- Corrigido: a carta de lenda e a carta de fase do Minhocão (chefe final) apareciam praticamente em
+  branco — o bicho é gigante demais pro retrato padrão. Agora encolhe e recentraliza só pra esses
+  casos.
+
 ## 2026-11-16 — mais 4 heróis desbloqueáveis (total 11 de ~20)
 - Cândido Portinari (pintor), Heitor Villa-Lobos (maestro erudito), Baden Powell (violonista de
   afrosamba) e Mestre Bimba (o pai da capoeira regional) — todos desbloqueáveis por feito.

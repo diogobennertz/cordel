@@ -367,8 +367,8 @@ func _montar(tipo: String, destaque) -> void:
 			var pm3 := Color(0.72, 0.5, 0.3)
 			_humano(pm3, Color(0.12, 0.1, 0.1), Color(0.12, 0.1, 0.1), pm3, Color(0.12, 0.1, 0.1))
 			cor_base = Color(0.3, 0.1, 0.12)
-			Lib.cx(corpo, Vector3(0.14, 0.08, 0.05), Vector3(0, 1.08, 0.3), BRANCO)                      # gravata borboleta
-			Lib.cx(corpo, Vector3(0.44, 0.5, 0.05), Vector3(0, 0.95, 0.29), BRANCO, Vector3(0, 0, 0.1))  # camisa branca
+			Lib.cx(corpo, Vector3(0.16, 0.22, 0.03), Vector3(0, 1.0, 0.29), BRANCO, Vector3(0, 0, 0.08))   # camisa branca, só uma tira no peito
+			Lib.cx(corpo, Vector3(0.1, 0.07, 0.04), Vector3(0, 1.1, 0.32), BRANCO)                        # gravata borboleta
 			Lib.cil(braco_d, 0.01, 0.015, 0.45, Vector3(0, -0.38, 0.1), Color(0.6, 0.45, 0.25), 6, Vector3(0, 0, 0.9))   # batuta
 		"violonista":   # violonista de afrosamba: camisa aberta, colar, violão de nylon nas costas
 			var pv2 := Color(0.5, 0.32, 0.18)
@@ -384,6 +384,71 @@ func _montar(tipo: String, destaque) -> void:
 			_cinto(Color(0.85, 0.2, 0.15), 0.7)
 			Lib.cil(corpo, 0.355, 0.355, 0.1, Vector3(0, 0.63, 0), Color(0.95, 0.8, 0.15), 12)            # faixa amarela abaixo
 			Lib.cx(corpo, Vector3(0.1, 0.06, 0.05), Vector3(0, CY - 0.14, 0.385), PRETO)                  # bigode
+		"escultor":     # escultor barroco: roupa clara coberta de pó de pedra, cinzel e martelo nas mãos
+			var pe3 := Color(0.6, 0.4, 0.25)
+			_humano(pe3, Color(0.75, 0.72, 0.68), Color(0.4, 0.3, 0.2), pe3, Color(0.75, 0.72, 0.68))
+			cor_base = Color(0.5, 0.45, 0.4)
+			Lib.cil(braco_d, 0.02, 0.025, 0.4, Vector3(0, -0.4, 0.1), Color(0.5, 0.45, 0.4), 6)           # cinzel
+			Lib.cx(braco_e, Vector3(0.1, 0.07, 0.07), Vector3(0, -0.52, 0.08), Color(0.4, 0.3, 0.2))        # martelo (cabeça)
+			Lib.cil(braco_e, 0.02, 0.02, 0.3, Vector3(0, -0.3, 0.08), Color(0.4, 0.3, 0.2), 6)
+		"aviador":      # aviador pioneiro: jaqueta de couro, óculos de aviador, cachecol
+			var pa2 := Color(0.72, 0.5, 0.3)
+			_humano(pa2, Color(0.55, 0.4, 0.25), Color(0.3, 0.22, 0.14), COURO_ESC, Color(0.55, 0.4, 0.25))
+			cor_base = Color(0.8, 0.72, 0.5)
+			Lib.cx(corpo, Vector3(0.18, 0.3, 0.05), Vector3(0, 1.05, 0.28), BRANCO, Vector3(0, 0, 0.3))   # cachecol
+			Lib.cil(corpo, 0.4, 0.42, 0.06, Vector3(0, CY + 0.08, 0), Color(0.3, 0.22, 0.14), 14)         # touca de aviador
+			Lib.esf(corpo, 0.3, Vector3(0, CY + 0.12, 0.08), Color(0.3, 0.22, 0.14), Vector3(1, 0.85, 1), 10, 0.0, true)
+			for sx in [-1.0, 1.0]:
+				Lib.esf(corpo, 0.1, Vector3(0.16 * sx, CY + 0.03, 0.37), Color(0.2, 0.5, 0.7), Vector3.ONE, 8, 2.0)   # óculos
+		"escritor":     # escritor contista: terno escuro do século 19, pena na mão
+			var pes := Color(0.68, 0.46, 0.28)
+			_humano(pes, Color(0.12, 0.12, 0.12), Color(0.12, 0.12, 0.12), pes, Color(0.12, 0.12, 0.12))
+			cor_base = Color(0.15, 0.15, 0.15)
+			Lib.cx(corpo, Vector3(0.1, 0.3, 0.05), Vector3(0, 1.0, 0.28), BRANCO, Vector3(0, 0, 0.1))     # camisa branca
+			Lib.cil(braco_d, 0.0, 0.015, 0.3, Vector3(0, -0.3, 0.14), Color(0.9, 0.85, 0.6), 5, Vector3(0, 0, 0.5))   # pena de escrever
+		"sertanista":   # sertanista explorador: uniforme de expedição, chapéu de abas largas, bússola na mão
+			var pse := Color(0.6, 0.4, 0.22)
+			_humano(pse, Color(0.35, 0.4, 0.2), Color(0.3, 0.32, 0.17), COURO_ESC, Color(0.35, 0.4, 0.2))
+			cor_base = Color(0.35, 0.4, 0.2)
+			_cinto(COURO_ESC, 0.68)
+			Lib.cil(corpo, 0.5, 0.56, 0.05, Vector3(0, CY + 0.3, 0), Color(0.35, 0.4, 0.2), 14)           # chapéu de abas largas
+			Lib.cil(corpo, 0.24, 0.28, 0.2, Vector3(0, CY + 0.4, 0), Color(0.35, 0.4, 0.2), 12)
+			Lib.cil(braco_e, 0.1, 0.1, 0.03, Vector3(0, -0.42, 0.1), Color(0.85, 0.72, 0.2), 10)          # bússola na mão
+		"cangaceiro_chefe": # Lampião: chapéu de couro com estrelas, lenço no pescoço, duas pistolas
+			var plp := Color(0.6, 0.4, 0.22)
+			_humano(plp, Color(0.5, 0.38, 0.15), Color(0.3, 0.22, 0.12), COURO_ESC, Color(0.5, 0.38, 0.15))
+			cor_base = Color(0.5, 0.38, 0.15)
+			Lib.cx(corpo, Vector3(0.3, 0.1, 0.05), Vector3(0, 1.08, 0.3), Color(0.85, 0.2, 0.15))        # lenço vermelho
+			Lib.cil(corpo, 0.5, 0.56, 0.06, Vector3(0, CY + 0.3, 0), COURO_ESC, 14)                      # chapéu de couro
+			Lib.cil(corpo, 0.26, 0.3, 0.2, Vector3(0, CY + 0.4, 0), COURO_ESC, 12)
+			for k in range(5): Lib.esf(corpo, 0.035, Vector3(cos(k * TAU / 5.0) * 0.3, CY + 0.46, sin(k * TAU / 5.0) * 0.3), OURO, Vector3.ONE, 4)   # estrelas no chapéu
+			Lib.esf(braco_d, 0.09, Vector3(0, -0.46, 0.12), PRETO, Vector3(1, 0.7, 1.3), 6)              # pistola
+			Lib.esf(braco_e, 0.09, Vector3(0, -0.46, 0.12), PRETO, Vector3(1, 0.7, 1.3), 6)
+		"cangaceira":   # Maria Bonita: saia florida, lenço colorido, colar de moedas, faca na cintura
+			var pmb := Color(0.62, 0.42, 0.24)
+			_humano(pmb, Color(0.82, 0.25, 0.2), Color(0.95, 0.8, 0.2), pmb, Color(0.82, 0.25, 0.2))
+			cor_base = Color(0.82, 0.25, 0.2)
+			Lib.cil(corpo, 0.42, 0.5, 0.5, Vector3(0, 0.46, 0), Color(0.95, 0.8, 0.2), 10)                # saia florida
+			Lib.cx(corpo, Vector3(0.3, 0.1, 0.05), Vector3(0, 1.05, 0.3), Color(0.2, 0.55, 0.3))          # lenço colorido
+			for k in range(4): Lib.esf(corpo, 0.03, Vector3(0, 0.95 - k * 0.04, 0.3), OURO, Vector3.ONE, 4)   # colar de moedas
+			Lib.esf(braco_d, 0.09, Vector3(0, -0.46, 0.12), Color(0.8, 0.8, 0.82), Vector3(1.2, 0.6, 0.5), 6)   # faca na mão
+		"muralista":    # Carybé: camisa colorida de manchas, boina, pincel grosso na mão
+			var pcb2 := Color(0.6, 0.38, 0.2)
+			_humano(pcb2, Color(0.9, 0.6, 0.2), Color(0.2, 0.5, 0.65), pcb2, Color(0.9, 0.6, 0.2))
+			cor_base = Color(0.85, 0.5, 0.15)
+			for sp2 in [Vector3(-0.15, 0.95, 0.4), Vector3(0.1, 1.05, 0.38), Vector3(0.0, 0.8, 0.4)]:
+				Lib.esf(corpo, 0.06, sp2, Color(0.82, 0.2, 0.15) if sp2.x < 0 else Color(0.95, 0.8, 0.2), Vector3.ONE, 6)
+			Lib.cil(corpo, 0.42, 0.44, 0.08, Vector3(0, CY + 0.32, 0), Color(0.2, 0.5, 0.65), 12)          # boina
+			Lib.esf(corpo, 0.3, Vector3(0, CY + 0.37, 0), Color(0.2, 0.5, 0.65), Vector3(1, 0.5, 1), 10, 0.0, true)
+			Lib.cil(braco_d, 0.02, 0.03, 0.5, Vector3(0, -0.4, 0.12), Color(0.5, 0.32, 0.18), 6, Vector3(0, 0, 0.6))   # pincel grosso
+		"orador":       # Rui Barbosa: fraque preto formal, colarinho alto, óculos redondos
+			var pr2 := Color(0.72, 0.52, 0.32)
+			_humano(pr2, Color(0.1, 0.1, 0.12), Color(0.1, 0.1, 0.12), pr2, Color(0.1, 0.1, 0.12))
+			cor_base = Color(0.2, 0.2, 0.22)
+			Lib.cx(corpo, Vector3(0.14, 0.3, 0.05), Vector3(0, 1.0, 0.28), BRANCO)                       # colarinho alto
+			for sx2 in [-1.0, 1.0]:
+				Lib.esf(corpo, 0.1, Vector3(0.16 * sx2, CY + 0.03, 0.37), Color(0.3, 0.3, 0.3), Vector3.ONE, 8, 1.5)   # óculos redondos
+			Lib.cx(corpo, Vector3(0.3, 0.06, 0.05), Vector3(0, CY - 0.14, 0.385), BRANCO)                 # bigode branco
 		"zepilintra":   # Seu Zé Pilintra: terno branco, chapéu de fita vermelha, gravata vermelha e bengala
 			var pz := Color(0.28, 0.17, 0.1)
 			_humano(pz, BRANCO, BRANCO, BRANCO, BRANCO)

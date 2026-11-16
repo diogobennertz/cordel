@@ -87,6 +87,7 @@ var _start_ant := false
 var tiros: Array = []          # bolas de fogo dos chefes
 var sel_heroi := "capoeirista"
 var sel_fase := 0
+var _nomes_galeria := ["frevista", "cordelista", "capoeirista", "jiujitsu", "benzedeira", "cangaceiro", "sambista", "maracatuzeiro", "violeiro", "carimbozeiro"]
 var _bot_lim := 300.0
 var _env: Environment
 var _psm: ProceduralSkyMaterial
@@ -165,6 +166,12 @@ func _ready() -> void:
 		_shot_chefe()
 	elif "--galeria" in args:
 		_galeria()
+	elif "--galeria2" in args:
+		_nomes_galeria = ["forrozeiro", "angoleiro", "marujo", "jongueira", "chorao", "ceramista", "cantora", "pintor", "maestro"]
+		_galeria()
+	elif "--galeria3" in args:
+		_nomes_galeria = ["violonista", "bimba", "escultor", "aviador", "escritor", "sertanista", "cangaceiro_chefe", "cangaceira", "muralista", "orador"]
+		_galeria()
 	elif "--teste" in args:
 		_teste(args[args.find("--teste") + 1] if args.find("--teste") + 1 < args.size() else "capoeirista")
 	else:
@@ -205,7 +212,9 @@ func bot_dir() -> Vector3:
 		"sambista": 2.3, "maracatuzeiro": 5.0, "violeiro": 9.5, "carimbozeiro": 2.3,
 		"forrozeiro": 2.3, "angoleiro": 5.0, "marujo": 9.5,
 		"jongueira": 2.3, "chorao": 9.5, "ceramista": 9.5, "cantora": 2.3,
-		"pintor": 9.5, "maestro": 2.3, "violonista": 9.5, "bimba": 5.0}[player.classe]
+		"pintor": 9.5, "maestro": 2.3, "violonista": 9.5, "bimba": 5.0,
+		"escultor": 2.3, "aviador": 2.3, "escritor": 9.5, "sertanista": 2.3,
+		"cangaceiro_chefe": 9.5, "cangaceira": 2.3, "muralista": 9.5, "orador": 9.5}[player.classe]
 	if player.hp < player.max_hp * 0.35: quer += 5.0
 	var dir := Vector3.ZERO
 	var alvo = _nearest(pp, 80.0)
@@ -466,7 +475,9 @@ func _refazer_slots() -> void:
 		"sambista": ["roda", "estrela"], "maracatuzeiro": ["mataleao", "vela"], "violeiro": ["mira", "sol"], "carimbozeiro": ["atabaque", "roda"],
 		"forrozeiro": ["roda", "atabaque"], "angoleiro": ["mataleao", "faixapreta"], "marujo": ["mira", "sol"],
 		"jongueira": ["roda", "estrela"], "chorao": ["mira", "sol"], "ceramista": ["mira", "sol"], "cantora": ["roda", "atabaque"],
-		"pintor": ["mira", "sol"], "maestro": ["roda", "estrela"], "violonista": ["mira", "sol"], "bimba": ["mataleao", "faixapreta"]}[player.classe]
+		"pintor": ["mira", "sol"], "maestro": ["roda", "estrela"], "violonista": ["mira", "sol"], "bimba": ["mataleao", "faixapreta"],
+		"escultor": ["roda", "estrela"], "aviador": ["roda", "atabaque"], "escritor": ["mira", "sol"], "sertanista": ["roda", "estrela"],
+		"cangaceiro_chefe": ["mira", "rei"], "cangaceira": ["roda", "estrela"], "muralista": ["mira", "sol"], "orador": ["mira", "sol"]}[player.classe]
 	_slots.append(_quadro(artes[0], Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro(artes[1], Ctrl.nome("r").left(3), 60.0))
 
 func _hud_heroi() -> void:
@@ -758,7 +769,7 @@ func aplicar_opcoes() -> void:
 func _pixel() -> void:
 	if pixel == null: return
 	pixel.visible = Tela.opc("pixel") > 0.5 and estado != "menu"
-	pixel.material.set_shader_parameter("px", maxf(2.0, round(DisplayServer.window_get_size().y / 300.0)))
+	pixel.material.set_shader_parameter("px", maxf(1.5, round(DisplayServer.window_get_size().y / 480.0)))   # pixelização mais sutil (era /300, mínimo 2.0)
 
 func _notification(what: int) -> void:      # trocou de janela no meio da fase: pausa sozinho
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and menus != null and estado == "jogo" and not levelup_aberto and _teste_fim == 0.0 and not sem_mouse:
@@ -1990,6 +2001,7 @@ func _shot_tela(nome: String) -> void:
 		elif Dados.NPCS.has(nome):
 			moedas = 70.0; _teste_fim = 0.0; Salvo.d["falas"][nome] = randi() % 5; abrir_npc(nome)
 		elif nome == "lore": abrir_escolha("lore:lobisomem")
+		elif nome == "lore2": abrir_escolha("lore:minhocao")
 		elif nome == "inv":
 			for sid in ["dano", "dano", "critico", "vermes", "pulo", "area", "vida"]: player.aplicar_carta({"tipo": "stat", "id": sid, "rar": randi() % 5})
 		elif nome == "feitos": pass
@@ -2096,7 +2108,7 @@ func _teste_dash() -> void:
 
 func _galeria() -> void:
 	cam_fixa = true
-	var nomes := ["frevista", "cordelista", "capoeirista", "jiujitsu", "benzedeira", "cangaceiro", "sambista", "maracatuzeiro", "violeiro", "carimbozeiro"]
+	var nomes := _nomes_galeria
 	for i in range(nomes.size()):
 		var b := Boneco.criar(nomes[i]); add_child(b)
 		var x := (i - (nomes.size() - 1) / 2.0) * 1.5
@@ -2293,6 +2305,50 @@ func usar_especial(p: Jogador) -> void:
 				if al14 != null and is_instance_valid(al14) and not al14.dead:
 					al14.stun_t = maxf(al14.stun_t, 0.6 if al14.is_boss else 2.5)
 					ferir(al14, 155.0 * s))
+		"escultor":
+			p.iframes = 0.7; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"aviador":
+			p.iframes = 0.75; p.dash_t = 0.23; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.1 * p.area_mult, 36.0 * s, 0.5, 2.0)
+			_efeito_anel(pos, 4.1 * p.area_mult, cor); _efeito_anel(pos, 2.5, Color.WHITE)
+		"escritor":
+			var alvo16 = _mais_forte(pos, 28.0)
+			var dir16: Vector3 = p.frente
+			if alvo16:
+				dir16 = alvo16.global_position - pos; dir16.y = 0; dir16 = dir16.normalized()
+			_disparar(pos, dir16 * 30.0, TIRO_Q, 210.0 * s)
+			p.boneco.atacar()
+		"sertanista":
+			p.iframes = 0.7; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"cangaceiro_chefe":
+			var alvo17 = _mais_forte(pos, 28.0)
+			var dir17: Vector3 = p.frente
+			if alvo17:
+				dir17 = alvo17.global_position - pos; dir17.y = 0; dir17 = dir17.normalized()
+			_disparar(pos, dir17 * 32.0, TIRO_Q, 215.0 * s)
+			p.boneco.atacar()
+		"cangaceira":
+			p.iframes = 0.72; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"muralista":
+			var alvo18 = _mais_forte(pos, 28.0)
+			var dir18: Vector3 = p.frente
+			if alvo18:
+				dir18 = alvo18.global_position - pos; dir18.y = 0; dir18 = dir18.normalized()
+			_disparar(pos, dir18 * 30.0, TIRO_Q, 210.0 * s)
+			p.boneco.atacar()
+		"orador":
+			var alvo19 = _mais_forte(pos, 28.0)
+			var dir19: Vector3 = p.frente
+			if alvo19:
+				dir19 = alvo19.global_position - pos; dir19.y = 0; dir19 = dir19.normalized()
+			_disparar(pos, dir19 * 30.0, TIRO_Q, 210.0 * s)
+			p.boneco.atacar()
 	p.q_cd = hq["cd"]
 	Som.tocar("especial")
 	Salvo.contar("uso_especial_" + p.classe)
@@ -2438,6 +2494,42 @@ func _hab_update(delta: float) -> void:
 				var k15 := _ring(p.global_position, 2.3, 90.0 * s, 1.0, 0.0)
 				_efeito_anel(p.global_position, 2.3, cor)
 				if k15 > 0: p.curar(p.max_hp * 0.015 * k15)
+		"escultor":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.4 * p.area_mult, cor)
+		"aviador":
+			p.ult_tick = 0.28; p.boneco.girar()
+			_ring(pos, 4.2 * p.area_mult, 14.0 * s, 0.0, 0.5)
+			_efeito_anel(pos, 4.2 * p.area_mult, cor)
+		"escritor":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a16 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a16), 0, sin(a16)) * 16.0, BALA_ULT, 13.0 * s)
+		"sertanista":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.4 * p.area_mult, cor)
+		"cangaceiro_chefe":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a17 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a17), 0, sin(a17)) * 16.0, BALA_ULT, 14.0 * s)
+		"cangaceira":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.4 * p.area_mult, cor)
+		"muralista":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a18 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a18), 0, sin(a18)) * 16.0, BALA_ULT, 13.0 * s)
+		"orador":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a19 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a19), 0, sin(a19)) * 16.0, BALA_ULT, 13.0 * s)
 
 # ---------------- ataques dos chefes ----------------
 func aviso_chefe(pos: Vector3, raio: float, txt: String) -> void:

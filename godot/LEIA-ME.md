@@ -189,12 +189,8 @@ compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abr
   e rotação; `Player.gd` ignora input de quem não é "dono" do boneco (`get_multiplayer_authority()`).
 - **O que NÃO está pronto nesta 1ª versão**: bicho, chefe, carta, baú, moeda — nada disso está em rede ainda. Hoje é só
   "andar junto e ver todo mundo"; o resto (o jogo de verdade, compartilhado) é o próximo passo.
-- **NÃO CONSEGUI CONFIRMAR QUE CONECTA DE VERDADE**: testei com dois processos reais do jogo nesta máquina, um hospedando
-  e outro entrando por 127.0.0.1. O cliente ficou preso pra sempre tentando conectar (`get_connection_status()` = 1,
-  "conectando", nunca virou "conectado"). A porta do anfitrião abre e escuta certinho (confirmei no `netstat`), então
-  não é erro de código — tem algo nesta máquina (firewall do Windows e/ou antivírus) barrando a conversa entre os dois
-  processos, e eu não tenho permissão para mexer em firewall/configuração de segurança. Testes: `-- --coop-host` e
-  `-- --coop-join <ip>`.
-- Pra confirmar de verdade: abra o jogo em dois computadores (ou duas janelas, se der) na mesma rede e tente
-  Hospedar/Entrar pela tela normal — o Windows deve perguntar "permitir esse programa na rede?" na hora, e aí dá pra
-  clicar Permitir (isso eu não consigo fazer sozinho). Me conte o que acontece.
+- **CONFIRMADO FUNCIONANDO**: dois processos reais do jogo (com janela — no modo `--headless` a conexão trava, não sei
+  bem por quê, mas o jogo de verdade nunca roda headless, então não afeta ninguém jogando) conectaram de verdade pela
+  rede e o movimento de cada um apareceu certinho na tela do outro, nos dois sentidos. Achei e corrigi um bug no caminho:
+  cada boneco precisa de um nome igual nas duas máquinas pra rede saber "ligar os pontos" — sem isso, só um lado via o
+  outro se mexer. Testes: `-- --coop-host` e `-- --coop-join <ip>` (nenhum dos dois prende o mouse).

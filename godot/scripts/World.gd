@@ -109,6 +109,7 @@ var fogo: Node3D
 var _nums := 0
 
 func _ready() -> void:
+	get_tree().root.close_requested.connect(func(): Input.mouse_mode = Input.MOUSE_MODE_VISIBLE)
 	randomize()
 	var a0 := OS.get_cmdline_user_args()
 	Salvo.desligado = a0.size() > 0          # qualquer modo de teste: não mexe no save do jogador
@@ -494,9 +495,9 @@ func _coop_spawns() -> void:
 			_spawnar_jogador_rede(id, Rede.heroi_por_id[id])
 
 func _spawnar_jogador_rede(id: int, heroi: String) -> void:
-	var j := Jogador.new(); j.world = self; j.configurar(heroi)
+	var j := Jogador.new(); j.name = "Jogador_%d" % id; j.world = self; j.configurar(heroi)
 	j.set_multiplayer_authority(id)
-	var sinc := MultiplayerSynchronizer.new()
+	var sinc := MultiplayerSynchronizer.new(); sinc.name = "Sincronia"
 	var cfg := SceneReplicationConfig.new()
 	for campo in ["position", "rotation"]:
 		var np := NodePath(".:%s" % campo)
@@ -1840,6 +1841,7 @@ func _shot_debug(cls: String) -> void:
 
 # confere, sem precisar da tela toda, que a arrancada do tutorial funciona mesmo parado
 func _teste_coop_host() -> void:
+	sem_mouse = true    # teste automático: nunca prende o mouse do jogador de verdade
 	sel_heroi = "capoeirista"; sel_fase = 0
 	var erro := Rede.hospedar()
 	if erro != "": print("ERRO HOST: ", erro); get_tree().quit(); return
@@ -1852,6 +1854,7 @@ func _teste_coop_host() -> void:
 	_teste_coop_relatar()
 
 func _teste_coop_join(ip: String) -> void:
+	sem_mouse = true    # teste automático: nunca prende o mouse do jogador de verdade
 	sel_heroi = "jiujitsu"; sel_fase = 0
 	var erro := Rede.entrar(ip)
 	if erro != "": print("ERRO JOIN: ", erro); get_tree().quit(); return

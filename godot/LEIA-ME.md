@@ -119,3 +119,19 @@ deve ficar em tabela (`Data.gd`) para a tradução ser só trocar a tabela.
 ## Ainda falta
 Itens ativos, cenário diferente por fase, mais chefes e personagens desbloqueáveis por feito, sons/vozes definitivos,
 tradução (os textos ainda estão soltos no código), coop Steam/LAN, exportação "de verdade" (.exe próprio) e, bem depois, celular.
+
+
+## Novidades de 16/11 (manhã)
+- **Gente do mapa** (aliados, três sorteados por partida): Seu Zé Pilintra, Pomba Gira, Preto Velho, Baiana do Acarajé,
+  Zé do Repente e Vaqueiro Aboiador. Cada um tem retrato 3D, balão com 5 falas que se alternam e 3 ofertas (`Dados.NPCS`).
+- **Poderes temporários** (`Dados.PODERES`): vencer a Cuca vira você na Mula sem Cabeça (rastro de fogo); elites podem dar
+  Fúria do Lobisomem, Canto da Iara, Pé de Curupira, Redemoinho do Saci, Encanto do Boto, Couro de Corpo-Seco, Protegido da Mata.
+- **Melhorias por personagem** (`Salvo.nivel` / `Salvo.subir`); as moedas continuam sendo uma só carteira.
+- **Fase 4, Corcovado**, com o Cristo Redentor ao fundo. Tutorial também na capa.
+- Testes novos: `-- --bot <classe> --tut` (tutorial inteiro), `--extras` (pombas, guarda do Seu Zé), `--poder todos`,
+  `--tela <nome do aliado> --npc <nome>`.
+
+## Distribuir
+`python instalador/publicar.py [endereço]` gera em `dist/`: `Cordelame-Instalar.exe` (instala sem senha de administrador e cria
+atalho) e `jogo.zip` + `versao.txt`. O jogo instalado abre por `Jogar.ps1`, que, se houver endereço em `atualizacao.txt`,
+compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abrir. O endereço precisa ser acessível sem login.

@@ -78,6 +78,7 @@ var minimapa: MiniMapa
 var mapa_grande: MiniMapa
 var mapa_fundo: Control
 var _mapa_fundo_cor: ColorRect
+var jogadores_rede := {}       # peer_id -> Jogador (só usado no co-op)
 var painel_info: PanelContainer
 var lbl_info: Label
 var pixel: ColorRect
@@ -135,6 +136,7 @@ func _ready() -> void:
 	_montar_arraial()
 	_montar_camera()
 	_montar_hud()
+	Rede.partida_comecou.connect(iniciar_coop)
 	_seguir_camera(1.0)
 	var args := OS.get_cmdline_user_args()
 	if "--shot" in args:
@@ -143,6 +145,10 @@ func _ready() -> void:
 		_bot(args[args.find("--bot") + 1] if args.find("--bot") + 1 < args.size() else "capoeirista")
 	elif "--teste-dash" in args:
 		_teste_dash()
+	elif "--coop-host" in args:
+		_teste_coop_host()
+	elif "--coop-join" in args:
+		_teste_coop_join(args[args.find("--coop-join") + 1])
 	elif "--borda" in args:
 		_borda()
 	elif "--menu" in args:
@@ -470,6 +476,40 @@ func _label(tam: int, al: int) -> Label:
 	l.horizontal_alignment = al
 	return l
 
+# ---------------- co-op por LAN: cada pessoa vira um Jogador sincronizado pela rede ----------------
+func iniciar_coop() -> void:
+	menus.fechar()
+	fase = clampi(sel_fase, 0, Dados.FASES.size() - 1)
+	_aplicar_luz(int(Dados.FASES[fase]["luz"]))
+	hud.visible = true
+	estado = "jogo"
+	jogadores_rede.clear(); player = null
+	lbl_centro.text = "CO-OP (LAN)\nAndando junto — bicho e carta entram numa próxima versão"; _piscar_centro()
+	Rede.apresentar_se(sel_heroi)
+	_mouse(true)
+
+func _coop_spawns() -> void:
+	for id in Rede.ids():
+		if not jogadores_rede.has(id) and Rede.heroi_por_id.has(id):
+			_spawnar_jogador_rede(id, Rede.heroi_por_id[id])
+
+func _spawnar_jogador_rede(id: int, heroi: String) -> void:
+	var j := Jogador.new(); j.world = self; j.configurar(heroi)
+	j.set_multiplayer_authority(id)
+	var sinc := MultiplayerSynchronizer.new()
+	var cfg := SceneReplicationConfig.new()
+	for campo in ["position", "rotation"]:
+		var np := NodePath(".:%s" % campo)
+		cfg.add_property(np); cfg.property_set_replication_mode(np, SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
+	sinc.replication_config = cfg
+	sinc.set_multiplayer_authority(id)
+	j.add_child(sinc)
+	add_child(j)
+	jogadores_rede[id] = j
+	if id == Rede.meu_id():
+		player = j
+		_hud_heroi()
+
 # ---------------- arraial (menu) ----------------
 func _montar_menu() -> void:
 	if Salvo.d.has("heroi") and Dados.CLASSES.has(Salvo.d["heroi"]): sel_heroi = Salvo.d["heroi"]
@@ -530,8 +570,11 @@ func _process(delta: float) -> void:
 			get_tree().reload_current_scene()
 		return
 	if estado != "jogo" or levelup_aberto: return
+	if Rede.ativo(): _coop_spawns()
+	if player == null: return       # co-op: esperando o próprio boneco chegar pela rede (dura um quadro só)
 	time += delta
 	if tut >= 0: _tutorial(delta)
+	elif Rede.ativo(): pass          # sem bicho nesta 1ª versão do co-op
 	else: _dirigir(delta)
 	_update_projectiles(delta)
 	_tiros(delta)
@@ -1736,7 +1779,7 @@ func _shot_tela(nome: String) -> void:
 	sem_mouse = true
 	Salvo.d["moedas"] = 345; Salvo.d["fase_max"] = 1; Salvo.d["melhorias"] = {"capoeirista": {"dano": 3, "vida": 1}, "jiujitsu": {"dano": 7, "critico": 4}}; Salvo.d["recordes"] = {"0": 100.0}
 	Salvo.d["contadores"] = {"abates": 812, "abates_saci": 150, "chefes": 1, "uso_kimura": 40, "criticos": 300}
-	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut"]:
+	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop"]:
 		_montar_menu()
 		if nome == "herois": menus.herois()
 		elif nome == "herois_tut": menus._so_tutorial = true; menus.herois()
@@ -1744,6 +1787,7 @@ func _shot_tela(nome: String) -> void:
 		elif nome == "feitos": menus.feitos()
 		elif nome == "opcoes": menus.opcoes(menus.titulo)
 		elif nome == "controles": menus._aba = "controles"; menus.opcoes(menus.titulo)
+		elif nome == "coop": menus.coop()
 		elif nome == "pergtut": _montar_menu(); menus.herois(); menus.perguntar_tutorial()
 	else:
 		iniciar_jogo("capoeirista" if nome != "nivel2" else "cangaceiro", 3 if nome == "cristo" else 0)
@@ -1795,6 +1839,39 @@ func _shot_debug(cls: String) -> void:
 	_salvar("shot_" + cls)
 
 # confere, sem precisar da tela toda, que a arrancada do tutorial funciona mesmo parado
+func _teste_coop_host() -> void:
+	sel_heroi = "capoeirista"; sel_fase = 0
+	var erro := Rede.hospedar()
+	if erro != "": print("ERRO HOST: ", erro); get_tree().quit(); return
+	var espera := 0
+	while Rede.ids().size() < 2 and espera < 12:
+		await get_tree().create_timer(1.0).timeout
+		espera += 1
+	print("HOST viu %d na sala depois de %ds: %s" % [Rede.ids().size(), espera, str(Rede.ids())])
+	Rede.comecar()
+	_teste_coop_relatar()
+
+func _teste_coop_join(ip: String) -> void:
+	sel_heroi = "jiujitsu"; sel_fase = 0
+	var erro := Rede.entrar(ip)
+	if erro != "": print("ERRO JOIN: ", erro); get_tree().quit(); return
+	_teste_coop_relatar()
+
+func _teste_coop_relatar() -> void:
+	for i in range(12):
+		await get_tree().create_timer(1.0).timeout
+		if multiplayer.multiplayer_peer: print("  status=%d peers=%s" % [multiplayer.multiplayer_peer.get_connection_status(), str(multiplayer.get_peers())])
+		if estado == "jogo" and player != null:
+			player.position += Vector3(0.4, 0, 0)
+			var linha := "COOP eu=%s id=%d tick=%d jogadores=%d" % [sel_heroi, Rede.meu_id(), i, jogadores_rede.size()]
+			for id in jogadores_rede:
+				var j = jogadores_rede[id]
+				linha += " | id%d(%s):%s" % [id, j.classe, str(j.position).left(24)]
+			print(linha)
+		else:
+			print("COOP eu=%s tick=%d AINDA SEM JOGO (estado=%s player=%s)" % [sel_heroi, i, estado, "null" if player == null else "ok"])
+	get_tree().quit()
+
 func _teste_dash() -> void:
 	iniciar_jogo("capoeirista")
 	player.frente = Vector3(0, 0, 1)

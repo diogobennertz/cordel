@@ -17,10 +17,14 @@ var _so_tutorial := false     # true: foi pro "escolha de herói" só pra fazer 
 func _init() -> void:
 	layer = 10
 
+var _rede_erro := ""
 func _ready() -> void:
 	raiz = Control.new(); raiz.set_anchors_preset(Control.PRESET_FULL_RECT)
 	raiz.theme = Tela.tema(); raiz.visible = false
 	add_child(raiz)
+	Rede.entrou.connect(func(_id): if tela == "coop": coop())
+	Rede.saiu.connect(func(_id): if tela == "coop": coop())
+	Rede.falhou.connect(func(msg): _rede_erro = msg; coop())
 
 func _limpar(nome: String) -> void:
 	for c in raiz.get_children(): c.queue_free()
@@ -82,6 +86,7 @@ func titulo() -> void:
 		["MELHORIAS", melhorias, Tela.ANIL, 20, 340.0, 46.0],
 		["FEITOS" + (" (%d)" % Dados.feitos_prontos() if Dados.feitos_prontos() > 0 else ""), feitos, Tela.BARRO, 20, 340.0, 46.0],
 		["TUTORIAL", ac_tut, Tela.MATA, 18, 340.0, 42.0],
+		["CO-OP (LAN)", coop, Tela.ANIL, 18, 340.0, 42.0],
 		["OPÇÕES", ac_opc, Tela.MATA, 18, 340.0, 42.0],
 		["SAIR", ac_sair, Tela.PARDO, 18, 340.0, 42.0],
 	]
@@ -226,6 +231,49 @@ func _carta_fase(i: int, fmax: int) -> Button:
 	b.pressed.connect(func():
 		w.sel_fase = i; Salvo.d["fase"] = i; herois())
 	return b
+
+# ---------------- co-op por LAN (base: anda junto, bicho/carta vêm depois) ----------------
+func coop() -> void:
+	_limpar("coop")
+	Tela.fundo_papel(raiz)
+	var vb := _centro(12)
+	vb.add_child(Tela.rotulo("CO-OP (LAN) — EXPERIMENTAL", 32, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
+	vb.add_child(Tela.texto("Anda junto com os amigos na mesma rede (Wi-Fi ou cabo), até 5 pessoas. Esta primeira versão só sincroniza o movimento de todo mundo — bicho, chefe e carta ainda são só da partida sozinho.", 14, 560))
+	if _rede_erro != "":
+		vb.add_child(Tela.faixa(_rede_erro, Tela.URUCUM, 14, Tela.PAPEL)); _rede_erro = ""
+	if not Rede.ativo():
+		var ac_host := func():
+			var erro := Rede.hospedar()
+			if erro != "": _rede_erro = erro
+			coop()
+		vb.add_child(Tela.botao("HOSPEDAR (ser o anfitrião)", ac_host, 18, Tela.URUCUM, 380.0, 48.0))
+		vb.add_child(Tela.rotulo("— ou —", 13, Tela.PARDO))
+		var le := LineEdit.new(); le.placeholder_text = "endereço de quem hospedou (ex.: 192.168.0.12)"
+		le.custom_minimum_size = Vector2(380, 42); le.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		le.add_theme_font_size_override("font_size", 16)
+		vb.add_child(le)
+		var ac_join := func():
+			var erro2 := Rede.entrar(le.text)
+			if erro2 != "": _rede_erro = erro2
+			coop()
+		vb.add_child(Tela.botao("ENTRAR", ac_join, 18, Tela.ANIL, 380.0, 46.0))
+	else:
+		if Rede.sou_host():
+			var ips: Array = Rede.meus_enderecos()
+			var txt_ips := "(sem endereço de rede local — confira o Wi-Fi)"
+			if ips.size() > 0:
+				txt_ips = String(ips[0])
+				for i in range(1, ips.size()): txt_ips += ", " + String(ips[i])
+			vb.add_child(Tela.faixa("Passe pros amigos: %s  ·  porta %d" % [txt_ips, Rede.PORTA], Tela.IPE, 15, Tela.TINTA))
+		vb.add_child(Tela.rotulo("%d na sala" % Rede.ids().size(), 20, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
+		if Rede.sou_host():
+			vb.add_child(Tela.botao("COMEÇAR", Rede.comecar, 22, Tela.URUCUM, 300.0, 52.0))
+		else:
+			vb.add_child(Tela.rotulo("Esperando o anfitrião começar…", 15, Tela.PARDO, HORIZONTAL_ALIGNMENT_CENTER, true))
+		var ac_sair := func(): Rede.sair(); coop()
+		vb.add_child(Tela.botao("SAIR DA SALA", ac_sair, 15, Tela.PARDO, 300.0, 42.0))
+	var ac_voltar := func(): Rede.sair(); titulo()
+	vb.add_child(Tela.botao("VOLTAR", ac_voltar, 16, Tela.PARDO, 220.0, 42.0))
 
 # ---------------- melhorias permanentes ----------------
 func melhorias() -> void:
@@ -639,4 +687,5 @@ func esc() -> void:
 		"loja", "lore", "npc": w.fechar_loja()
 		"opcoes": Salvo.salvar(); _volta.call()
 		"herois", "melhorias", "feitos": titulo()
+		"coop": Rede.sair(); titulo()
 		"pergtut": herois()

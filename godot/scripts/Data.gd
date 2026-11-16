@@ -15,7 +15,7 @@ const CLASSES := {
 		"desc": "Luta colada: investe, fecha a guarda e se cura ao finalizar."
 	},
 	"benzedeira": {
-		"nome": "Benzedeira", "apelido": "Vó Zefa", "pulo": "Segure o pulo para planar devagar por cima da bicharada.", "cor": Color(0.31, 0.82, 0.77), "maxhp": 102.0, "speed": 5.7, "regen": 1.0,
+		"nome": "Benzedeira", "apelido": "Maria das Dores", "pulo": "Segure o pulo para planar devagar por cima da bicharada.", "cor": Color(0.31, 0.82, 0.77), "maxhp": 102.0, "speed": 5.7, "regen": 1.0,
 		"inicial": "fogofatuo", "desbloqueia": {"garrafada": 3, "reza": 6},
 		"desc": "Ataca de bem longe: fogo-fátuo teleguiado, garrafada e reza."
 	},

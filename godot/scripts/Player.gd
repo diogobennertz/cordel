@@ -74,6 +74,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if world.levelup_aberto or world.estado != "jogo":
 		return
+	if Rede.ativo() and get_multiplayer_authority() != multiplayer.get_unique_id():
+		return   # boneco de outra pessoa no co-op: a posição dela já chega pronta pela rede
 	iframes = maxf(0.0, iframes - delta)
 	dash_cd = maxf(0.0, dash_cd - delta)
 	guarda_t = maxf(0.0, guarda_t - delta)

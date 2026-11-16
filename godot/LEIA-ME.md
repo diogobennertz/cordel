@@ -180,3 +180,21 @@ compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abr
     nome do jogo. Ataca de longe com versos (Repente/Glosa/Desafio).
   - Os dois já têm boneco 3D de verdade, golpes, Q, R, pulo e passam no robô de teste. O retrato deles no menu ainda é
     um render 3D provisório (os outros 4 têm ilustração 2D desenhada à mão) — troca sozinho assim que eu desenhar a arte certa.
+
+
+## Co-op em LAN (começado agora, AINDA NÃO CONFIRMADO funcionando de verdade)
+- Base real usando o sistema de multiplayer do próprio Godot (ENet): `scripts/Rede.gd` (autoload `Rede`) hospeda/entra
+  numa sala por IP local, até 5 pessoas; `Menus.coop()` é a tela (botão "CO-OP (LAN)" na capa); `World.iniciar_coop()` +
+  `_spawnar_jogador_rede()` criam um `Jogador` por pessoa conectada, com `MultiplayerSynchronizer` replicando posição
+  e rotação; `Player.gd` ignora input de quem não é "dono" do boneco (`get_multiplayer_authority()`).
+- **O que NÃO está pronto nesta 1ª versão**: bicho, chefe, carta, baú, moeda — nada disso está em rede ainda. Hoje é só
+  "andar junto e ver todo mundo"; o resto (o jogo de verdade, compartilhado) é o próximo passo.
+- **NÃO CONSEGUI CONFIRMAR QUE CONECTA DE VERDADE**: testei com dois processos reais do jogo nesta máquina, um hospedando
+  e outro entrando por 127.0.0.1. O cliente ficou preso pra sempre tentando conectar (`get_connection_status()` = 1,
+  "conectando", nunca virou "conectado"). A porta do anfitrião abre e escuta certinho (confirmei no `netstat`), então
+  não é erro de código — tem algo nesta máquina (firewall do Windows e/ou antivírus) barrando a conversa entre os dois
+  processos, e eu não tenho permissão para mexer em firewall/configuração de segurança. Testes: `-- --coop-host` e
+  `-- --coop-join <ip>`.
+- Pra confirmar de verdade: abra o jogo em dois computadores (ou duas janelas, se der) na mesma rede e tente
+  Hospedar/Entrar pela tela normal — o Windows deve perguntar "permitir esse programa na rede?" na hora, e aí dá pra
+  clicar Permitir (isso eu não consigo fazer sozinho). Me conte o que acontece.

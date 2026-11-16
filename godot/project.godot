@@ -11,6 +11,10 @@ run/main_scene="res://scenes/World.tscn"
 config/features=PackedStringArray("4.2")
 config/icon="res://art/capoeirista.png"
 
+[autoload]
+
+Rede="*res://scripts/Rede.gd"
+
 [display]
 
 window/size/viewport_width=1280

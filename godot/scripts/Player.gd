@@ -166,6 +166,13 @@ func _anim(delta: float, moving: bool) -> void:
 	boneco.rotation.y = lerp_angle(boneco.rotation.y, atan2(frente.x, frente.z), clampf(delta * 14.0, 0, 1))
 	boneco.animar(delta, moving and alt <= 0.0, speed / 5.5)
 
+# usado pelo tutorial: a arrancada funciona mesmo parado, na direção para onde o herói está olhando
+func forcar_dash() -> void:
+	if dash_cd > 0.0 or dash_t > 0.0: return
+	dash_t = 0.18; dash_cd = 1.4
+	dash_dir = frente if frente.length() > 0.1 else Vector3(0, 0, 1)
+	iframes = 0.3; Som.tocar("dash")
+
 func comecar_investida(alvo: Vector3, vel: float, aoChegar: Callable) -> void:
 	var dir: Vector3 = alvo - global_position; dir.y = 0
 	var d := dir.length()

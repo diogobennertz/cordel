@@ -24,9 +24,9 @@ func _draw() -> void:
 		if not is_instance_valid(e): continue
 		n += 1
 		if n > 140 and not e.is_boss: continue
-		if e.is_boss: draw_circle(_p(e.position.x, e.position.z, r), 5.0, Color(1.0, 0.2, 0.6))
-		elif e.elite: draw_circle(_p(e.position.x, e.position.z, r), 3.0, Color(1.0, 0.85, 0.2))
-		else: draw_circle(_p(e.position.x, e.position.z, r), 1.6, Color(0.95, 0.3, 0.2))
+		if e.is_boss: draw_circle(_p(e.position.x, e.position.z, r), 7.0, Color(1.0, 0.2, 0.6))
+		elif e.elite: draw_circle(_p(e.position.x, e.position.z, r), 4.2, Color(1.0, 0.85, 0.2))
+		else: draw_circle(_p(e.position.x, e.position.z, r), 2.2, Color(0.95, 0.3, 0.2))
 	for o in w.objetos:
 		var p: Vector2 = _p(o["no"].position.x, o["no"].position.z, r)
 		match o["tipo"]:
@@ -34,9 +34,11 @@ func _draw() -> void:
 			"oratorio":
 				if not o["usado"]: draw_rect(Rect2(p - Vector2(3, 3), Vector2(6, 6)), Color(0.55, 0.85, 1.0))
 			"loja": draw_rect(Rect2(p - Vector2(4, 4), Vector2(8, 8)), Color(1.0, 0.55, 0.15))
+			"portal": draw_circle(p, 5.0, Color(0.75, 0.4, 1.0))
 			_:
 				if Dados.NPCS.has(o["tipo"]): draw_rect(Rect2(p - Vector2(4, 4), Vector2(8, 8)), Color.WHITE)
-			"portal": draw_circle(p, 4.5, Color(0.75, 0.4, 1.0))
 	var pp: Vector3 = w.player.position
 	var pj := _p(pp.x, pp.z, r)
-	draw_circle(pj, 4.0, Tela.TINTA); draw_circle(pj, 2.8, Color.WHITE)
+	draw_circle(pj, 5.5, Tela.TINTA); draw_circle(pj, 3.8, Color.WHITE)
+	var seta: Vector2 = Vector2(0, -1).rotated(0.0)
+	draw_line(pj, pj + seta * 9.0, Color.WHITE, 2.5)

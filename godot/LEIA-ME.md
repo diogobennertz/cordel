@@ -143,3 +143,16 @@ compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abr
 - Para publicar uma versão nova depois de mexer no jogo: `bash instalador/publicar_github.sh "mensagem"` (sobe o código, gera o
   instalador, sobe a atualização e cria a release — tudo de uma vez). Quem já instalou recebe a atualização sozinho ao abrir o jogo.
 - Para testar o instalador sem bagunçar o atalho de quem está desenvolvendo: `powershell instalador/testar.ps1`.
+
+
+## Correções de 16/11 (tarde)
+- **Tutorial travava** no passo da arrancada: apertar Shift sem segurar uma direção não fazia nada (a arrancada exige
+  estar andando). Agora, nesse passo, a arrancada funciona mesmo parado (`Jogador.forcar_dash()`).
+- **Tutorial travava (benzedeira e qualquer jogo à distância)** no passo do XP: os bichos morriam de longe, mas os
+  vaga-lumes nunca eram alcançados. Agora, depois que os bichos do passo morrem, os vaga-lumes vêm sozinhos até o herói.
+- **Passo do XP não nascia bicho nenhum**: antes, o passo criava os vaga-lumes do nada; agora nascem bichos de verdade,
+  que soltam os vaga-lumes ao morrer — como o próprio texto do tutorial explica.
+- **Minimapa**: o ícone do portal não aparecia (erro de ordem no `match`); agora aparece, e o minimapa inteiro ficou
+  bem maior (de ~122px para ~192px), com os pontos maiores e uma seta mostrando o herói.
+- **Mapa maior**: a clareira jogável cresceu de raio 42 para 60 (mais que o dobro de área); grama e flores mais densas.
+- Novo teste: `-- --teste-dash` confere isoladamente a arrancada parada.

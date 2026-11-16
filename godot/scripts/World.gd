@@ -138,6 +138,8 @@ func _ready() -> void:
 		_shot_debug(args[args.find("--shot") + 1] if args.find("--shot") + 1 < args.size() else "cangaceiro")
 	elif "--bot" in args:
 		_bot(args[args.find("--bot") + 1] if args.find("--bot") + 1 < args.size() else "capoeirista")
+	elif "--teste-dash" in args:
+		_teste_dash()
 	elif "--borda" in args:
 		_borda()
 	elif "--menu" in args:
@@ -370,10 +372,10 @@ func _montar_hud() -> void:
 	barra_chefe.position = Vector2(3, 3); barra_chefe.size = Vector2(494, 12); barra_chefe_bg.add_child(barra_chefe)
 	# minimapa no canto de cima, à direita, com abates e moedas embaixo
 	minimapa = MiniMapa.new(); minimapa.w = self; minimapa.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	minimapa.anchor_left = 1; minimapa.anchor_right = 1; minimapa.offset_left = -136; minimapa.offset_right = -14; minimapa.offset_top = 12; minimapa.offset_bottom = 134
+	minimapa.anchor_left = 1; minimapa.anchor_right = 1; minimapa.offset_left = -208; minimapa.offset_right = -14; minimapa.offset_top = 12; minimapa.offset_bottom = 206
 	hud.add_child(minimapa)
 	lbl_dir = _label(17, HORIZONTAL_ALIGNMENT_RIGHT)
-	lbl_dir.anchor_left = 1; lbl_dir.anchor_right = 1; lbl_dir.offset_left = -400; lbl_dir.offset_right = -14; lbl_dir.offset_top = 138; hud.add_child(lbl_dir)
+	lbl_dir.anchor_left = 1; lbl_dir.anchor_right = 1; lbl_dir.offset_left = -400; lbl_dir.offset_right = -14; lbl_dir.offset_top = 210; hud.add_child(lbl_dir)
 	# mini inventário: cartas de atributo pegas, no canto de cima à esquerda
 	caixa_inv = HFlowContainer.new(); caixa_inv.position = Vector2(12, 12); caixa_inv.size = Vector2(300, 80)
 	caixa_inv.add_theme_constant_override("h_separation", 4); caixa_inv.add_theme_constant_override("v_separation", 4)
@@ -977,7 +979,7 @@ func _montar_capim() -> void:
 	# tufos de capim
 	var cm := CylinderMesh.new(); cm.top_radius = 0.0; cm.bottom_radius = 0.14; cm.height = 0.5; cm.radial_segments = 3; cm.rings = 1
 	var mm := MultiMesh.new(); mm.transform_format = MultiMesh.TRANSFORM_3D; mm.use_colors = true
-	mm.mesh = cm; mm.instance_count = 6000
+	mm.mesh = cm; mm.instance_count = 8600
 	for i in range(6000):
 		var x := rng.randf_range(-ARENA - 10.0, ARENA + 10.0); var z := rng.randf_range(-ARENA - 10.0, ARENA + 10.0)
 		var y := Lib.h(x, z)
@@ -991,7 +993,7 @@ func _montar_capim() -> void:
 	# florzinhas
 	var sm := SphereMesh.new(); sm.radius = 0.1; sm.height = 0.2; sm.radial_segments = 5; sm.rings = 3
 	var mf := MultiMesh.new(); mf.transform_format = MultiMesh.TRANSFORM_3D; mf.use_colors = true
-	mf.mesh = sm; mf.instance_count = 1200
+	mf.mesh = sm; mf.instance_count = 1700
 	var cores := [Color(0.95, 0.2, 0.25), Color(1.0, 0.85, 0.15), Color(0.98, 0.98, 0.95), Color(0.98, 0.5, 0.75), Color(0.6, 0.4, 0.95), Color(1.0, 0.55, 0.1)]
 	for i in range(1200):
 		var x2 := rng.randf_range(-ARENA - 6.0, ARENA + 6.0); var z2 := rng.randf_range(-ARENA - 6.0, ARENA + 6.0)
@@ -1540,14 +1542,17 @@ func _tutorial(delta: float) -> void:
 		0: feito = p.position.distance_to(_tut_pos) > 5.0 or (p.bot and tut_t > 1.0)
 		1: feito = absf(cam_yaw - _tut_a) > 1.0 or (p.bot and tut_t > 1.0)
 		2: feito = p.alt > 0.6 or (p.bot and tut_t > 1.0)
-		3: feito = p.dash_t > 0.0 or (p.bot and tut_t > 1.0)
+		3:
+			if Ctrl.ap("dash") and p.dash_cd <= 0.0 and p.dash_t <= 0.0: p.forcar_dash()
+			feito = p.dash_t > 0.0 or (p.bot and tut_t > 1.0)
 		4:
 			if tut_t < delta * 1.5: _tut_bichos(8)
 			feito = tut_t > 1.0 and enemies.is_empty()
 		5:
-			if tut_t < delta * 1.5:
-				for i in range(12): spawn_firefly(p.global_position + Vector3(cos(i * 0.52) * 4.0, 0, sin(i * 0.52) * 4.0), 1.0)
-			feito = p.level >= 2 and not levelup_aberto and fireflies.size() < 4
+			if tut_t < delta * 1.5: _tut_bichos(12)    # bichos de verdade: ao morrer, deixam os vaga-lumes (como o texto explica)
+			if enemies.is_empty() and tut_t > 1.2:
+				for fr in fireflies: fr["mag"] = true   # ninguém fica preso catando vaga-lume de longe (ex.: benzedeira só atira)
+			feito = p.level >= 2 and not levelup_aberto and fireflies.size() < 4 and enemies.is_empty()
 		6:
 			if tut_t < delta * 1.5: p.q_cd = 0.0; _tut_bichos(8)
 			if enemies.is_empty() and p.q_cd <= 0.0 and tut_t > 2.0: _tut_bichos(8)
@@ -1755,6 +1760,14 @@ func _shot_debug(cls: String) -> void:
 		enemies[-1].position = player.global_position + Vector3(cos(a) * (5.5 + i % 3 * 2.0), 0, sin(a) * (5.5 + i % 3 * 2.0))
 		enemies[-1].hp = 9999
 	_salvar("shot_" + cls)
+
+# confere, sem precisar da tela toda, que a arrancada do tutorial funciona mesmo parado
+func _teste_dash() -> void:
+	iniciar_jogo("capoeirista")
+	player.frente = Vector3(0, 0, 1)
+	player.forcar_dash()
+	print("TESTE ARRANCADA — dash_t:%.2f dash_dir:%s (esperado dash_t > 0)" % [player.dash_t, player.dash_dir])
+	get_tree().quit()
 
 func _galeria() -> void:
 	cam_fixa = true

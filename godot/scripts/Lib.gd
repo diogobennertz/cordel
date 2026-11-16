@@ -3,7 +3,7 @@ class_name Lib
 # Ajudantes compartilhados: peças low-poly (caixa, esfera, cápsula, cilindro), materiais e a altura do terreno.
 
 static var _mats := {}
-const RAIO := 42.0             # raio da clareira jogável; depois disso é mata fechada
+const RAIO := 60.0             # raio da clareira jogável; depois disso é mata fechada
 static var toon := false     # ligado enquanto se monta um boneco: sombra chapada + contorno escuro
 
 # Material liso, sem brilho. Um por cor, reaproveitado.

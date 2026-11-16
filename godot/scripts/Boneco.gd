@@ -449,6 +449,30 @@ func _montar(tipo: String, destaque) -> void:
 			for sx2 in [-1.0, 1.0]:
 				Lib.esf(corpo, 0.1, Vector3(0.16 * sx2, CY + 0.03, 0.37), Color(0.3, 0.3, 0.3), Vector3.ONE, 8, 1.5)   # óculos redondos
 			Lib.cx(corpo, Vector3(0.3, 0.06, 0.05), Vector3(0, CY - 0.14, 0.385), BRANCO)                 # bigode branco
+		"quilombola":   # Zumbi dos Palmares: pano vermelho e preto, colar de búzios, lança na mão — líder, com dignidade
+			var pq := Color(0.2, 0.12, 0.08)
+			_humano(pq, Color(0.6, 0.12, 0.1), pq, pq, Color(0.6, 0.12, 0.1))
+			cor_base = Color(0.6, 0.12, 0.1)
+			Lib.cx(corpo, Vector3(0.4, 0.55, 0.42), Vector3(0, 0.6, 0.0), Color(0.15, 0.1, 0.08))          # pano na cintura
+			for k in range(5): Lib.esf(corpo, 0.028, Vector3(0, 0.95 - k * 0.035, 0.3), Color(0.9, 0.86, 0.75), Vector3.ONE, 4)   # colar de búzios
+			Lib.cil(braco_d, 0.0, 0.025, 0.95, Vector3(0, -0.6, 0.12), Color(0.4, 0.26, 0.15), 6, Vector3(0, 0, 0.15))   # haste da lança
+			Lib.cx(braco_d, Vector3(0.04, 0.16, 0.02), Vector3(0, -1.05, 0.15), Color(0.75, 0.72, 0.68))   # ponta da lança
+		"martir":       # Tiradentes: colete azul e branco da Inconfidência, barba, bandeira na mão
+			var pt3 := Color(0.72, 0.52, 0.32)
+			_humano(pt3, Color(0.9, 0.9, 0.88), Color(0.15, 0.3, 0.6), pt3, Color(0.9, 0.9, 0.88))
+			cor_base = Color(0.15, 0.3, 0.6)
+			Lib.cx(corpo, Vector3(0.44, 0.5, 0.05), Vector3(0, 0.95, 0.29), Color(0.15, 0.3, 0.6), Vector3(0, 0, 0.1))   # colete azul
+			Lib.cx(corpo, Vector3(0.22, 0.12, 0.05), Vector3(0, CY - 0.22, 0.38), pt3, Vector3(0, 0, 0))   # barba
+			Lib.cil(braco_d, 0.0, 0.02, 0.8, Vector3(0, -0.55, 0.1), Color(0.4, 0.26, 0.15), 6, Vector3(0, 0, 0.2))   # haste da bandeira
+			Lib.cx(braco_d, Vector3(0.28, 0.2, 0.01), Vector3(0.1, -0.9, 0.12), BRANCO)                    # bandeira
+		"santa":        # Irmã Dulce: hábito branco e azul de freira, véu, mãos postas
+			var ps3 := Color(0.75, 0.56, 0.4)
+			_humano(ps3, BRANCO, BRANCO, BRANCO, BRANCO)
+			cor_base = Color(0.85, 0.88, 0.95)
+			Lib.cil(corpo, 0.4, 0.5, 0.52, Vector3(0, 0.46, 0), BRANCO, 10)                                # hábito (saia longa)
+			Lib.cx(corpo, Vector3(0.1, 0.5, 0.42), Vector3(0, 0.78, 0), Color(0.3, 0.5, 0.75))             # cinto/faixa azul
+			Lib.esf(corpo, 0.34, Vector3(0, CY + 0.08, 0), BRANCO, Vector3(1.15, 1.1, 1.1), 10, 0.0, true)   # véu
+			Lib.cil(corpo, 0.4, 0.32, 0.1, Vector3(0, CY + 0.3, -0.05), Color(0.3, 0.5, 0.75), 10)         # borda azul do véu
 		"zepilintra":   # Seu Zé Pilintra: terno branco, chapéu de fita vermelha, gravata vermelha e bengala
 			var pz := Color(0.28, 0.17, 0.1)
 			_humano(pz, BRANCO, BRANCO, BRANCO, BRANCO)

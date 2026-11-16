@@ -150,6 +150,21 @@ const CLASSES := {
 		"inicial": "argumento_certeiro", "desbloqueia": {"discurso_haia": 3, "voto_vencido": 6},
 		"desc": "Argumento certeiro, discurso de Haia e voto vencido: ataca de longe, sustenta a tese."
 	},
+	"quilombola": {
+		"nome": "Guerreiro Quilombola", "apelido": "Zumbi dos Palmares", "pulo": "Pulo comum de guerreiro — nada de especial ao cair.", "cor": Color(0.15, 0.1, 0.08), "maxhp": 150.0, "speed": 5.6, "armor": 0.2,
+		"inicial": "golpe_quilombo", "desbloqueia": {"lanca_certeira": 3, "grito_palmares": 6},
+		"desc": "O maior líder da resistência contra a escravidão no Brasil: forte, firme, não recua."
+	},
+	"martir": {
+		"nome": "Mártir da Inconfidência", "apelido": "Tiradentes", "pulo": "Pulo comum de mártir — nada de especial ao cair.", "cor": Color(0.15, 0.3, 0.6), "maxhp": 118.0, "speed": 5.6, "dodge": 0.12,
+		"inicial": "bandeira_liberdade", "desbloqueia": {"espada_certeira": 3, "grito_ouropreto": 6},
+		"desc": "Libertas Quae Sera Tamen: deu a vida pela independência. Ataca com a bandeira em punho."
+	},
+	"santa": {
+		"nome": "Santa dos Pobres", "apelido": "Irmã Dulce", "pulo": "Pulo comum de freira — nada de especial ao cair.", "cor": Color(0.85, 0.88, 0.95), "maxhp": 120.0, "speed": 5.2, "regen": 1.0,
+		"inicial": "bencao_forte", "desbloqueia": {"manto_protetor": 3, "oracao_certeira": 6},
+		"desc": "A canonizada baiana que cuidou dos pobres a vida inteira: protege e cura quem está perto."
+	},
 }
 
 # Heróis desbloqueáveis: ficam de contorno preto na grade até cumprir o feito. "ach" já é o nome
@@ -174,6 +189,9 @@ const DESBLOQUEIOS := {
 	"cangaceira":       {"txt": "Vença 30 chefes", "ach": "ACH_HEROI_MARIABONITA", "tipo": "contador", "c": "chefes", "meta": 30},
 	"muralista":        {"txt": "Abra 80 baús", "ach": "ACH_HEROI_CARYBE", "tipo": "contador", "c": "baus", "meta": 80},
 	"orador":           {"txt": "Acerte 6.000 críticos", "ach": "ACH_HEROI_RUIBARBOSA", "tipo": "contador", "c": "criticos", "meta": 6000},
+	"quilombola":       {"txt": "Vença 50 chefes", "ach": "ACH_HEROI_ZUMBI", "tipo": "contador", "c": "chefes", "meta": 50},
+	"martir":           {"txt": "Dê 1.500.000 de dano numa única corrida", "ach": "ACH_HEROI_TIRADENTES", "tipo": "dano_run", "meta": 1500000.0},
+	"santa":            {"txt": "Receba 50 bençãos de oratório", "ach": "ACH_HEROI_IRMADULCE", "tipo": "contador", "c": "oratorios", "meta": 50},
 }
 static func heroi_desbloqueado(id: String) -> bool:
 	if not DESBLOQUEIOS.has(id): return true
@@ -303,6 +321,18 @@ const GOLPES := {
 	"argumento_certeiro": {"nome": "Argumento Certeiro", "build": "oratoria", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.2, 0.2, 0.22), "arte": "bacamarte", "txt": "Argumento afiado que atira reto na frente."},
 	"discurso_haia":      {"nome": "Discurso de Haia", "build": "oratoria", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.2, 0.2, 0.22), "arte": "fogofatuo", "txt": "Tese que persegue o bicho até estourar."},
 	"voto_vencido":       {"nome": "Voto Vencido", "build": "oratoria", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.6, "knock": 2.1, "arte": "berimbau", "txt": "Mesmo vencido, ecoa forte: onda que empurra tudo."},
+	# Resistência quilombola (Zumbi dos Palmares)
+	"golpe_quilombo": {"nome": "Golpe do Quilombo", "build": "quilombo", "tipo": "ring", "dmg": 24.0, "cd": 1.2, "raio": 3.3, "stun": 0.6, "knock": 0.9, "arte": "rasteira", "txt": "Golpe forte e firme em volta: não recua, não cede."},
+	"lanca_certeira": {"nome": "Lança Certeira", "build": "quilombo", "tipo": "investida", "dmg": 34.0, "cd": 1.6, "raio": 1.8, "alcance": 7.0, "stun": 1.3, "arte": "kimura", "txt": "Investe com a lança no bicho mais perto e não solta."},
+	"grito_palmares": {"nome": "Grito de Palmares", "build": "quilombo", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.8, "knock": 2.4, "arte": "berimbau", "txt": "Grito que ecoa pela mata: onda que empurra tudo em volta."},
+	# Inconfidência (Tiradentes)
+	"bandeira_liberdade": {"nome": "Bandeira da Liberdade", "build": "inconfidencia", "tipo": "ring", "dmg": 20.0, "cd": 1.1, "raio": 3.2, "knock": 1.3, "arte": "armada", "txt": "Ergue a bandeira e varre tudo em volta."},
+	"espada_certeira":    {"nome": "Espada Certeira", "build": "inconfidencia", "tipo": "arco", "dmg": 27.0, "cd": 1.3, "raio": 3.3, "ang": 1.5, "knock": 1.1, "arte": "queda", "txt": "Golpe de espada na direção do bicho mais perto."},
+	"grito_ouropreto":    {"nome": "Grito de Ouro Preto", "build": "inconfidencia", "tipo": "onda", "dmg": 17.0, "cd": 2.6, "raio": 5.5, "knock": 2.1, "arte": "reza", "txt": "O grito de liberdade ecoa: onda que empurra a bicharada."},
+	# Caridade (Irmã Dulce)
+	"bencao_forte":     {"nome": "Bênção Forte", "build": "caridade", "tipo": "ring", "dmg": 18.0, "cd": 1.1, "raio": 3.2, "knock": 1.4, "arte": "guarda", "txt": "Bênção que protege e afasta o mal em volta."},
+	"manto_protetor":   {"nome": "Manto Protetor", "build": "caridade", "tipo": "onda", "dmg": 15.0, "cd": 2.6, "raio": 5.6, "knock": 2.6, "arte": "reza", "txt": "O manto se abre e empurra tudo que ameaça por perto."},
+	"oracao_certeira":  {"nome": "Oração Certeira", "build": "caridade", "tipo": "proj_teleguiado", "dmg": 16.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.3, "cor": Color(0.9, 0.92, 0.98), "arte": "fogofatuo", "txt": "Uma luz guiada por oração que busca o perigo até afastá-lo."},
 }
 
 # Dano do golpe no nível atual (sobe 25% por nível acima do 1).
@@ -412,6 +442,12 @@ const HABILIDADES := {
 		"r": {"nome": "Mural Infinito", "dur": 5.0, "txt": "5 s pintando para todos os lados"}},
 	"orador": {"q": {"nome": "Réplica Certeira", "cd": 7.0, "txt": "um argumento que atravessa tudo"},
 		"r": {"nome": "Tribuna Infinita", "dur": 5.0, "txt": "5 s discursando para todos os lados"}},
+	"quilombola": {"q": {"nome": "Golpe do Líder", "cd": 9.0, "txt": "agarra o bicho mais forte por perto com a lança e não solta"},
+		"r": {"nome": "Resistência de Palmares", "dur": 4.5, "txt": "4,5 s de golpes firmes acertando em volta sem parar"}},
+	"martir": {"q": {"nome": "Carga da Bandeira", "cd": 8.0, "txt": "giro de bandeira intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Libertas Quae Sera Tamen", "dur": 6.0, "txt": "6 s de espada em punho, sem parar, pela liberdade"}},
+	"santa": {"q": {"nome": "Bênção de Dulce", "cd": 12.0, "txt": "cura 30% da vida e afasta tudo que ameaça por perto"},
+		"r": {"nome": "Manto dos Pobres", "dur": 4.0, "txt": "4 s protegendo sem parar, soltando luz de oração"}},
 }
 const ULT_ABATES := 60          # abates para carregar o ultimate
 
@@ -524,6 +560,11 @@ const PIADAS := {
 	"traco_vivo": "Traço certo não sai da parede.", "painel_vivo": "Parede que respira, conta história.",
 	"mural_certeiro": "Mural bom não se apaga fácil.", "argumento_certeiro": "Argumento bom não precisa gritar.",
 	"discurso_haia": "Discurso bom atravessa oceano.", "voto_vencido": "Voto vencido hoje, lido amanhã.",
+	"golpe_quilombo": "Quem resiste, não se curva.", "lanca_certeira": "Palmares não caiu de uma vez.",
+	"grito_palmares": "Liberdade não se pede, se conquista.", "bandeira_liberdade": "Libertas Quae Sera Tamen.",
+	"espada_certeira": "Melhor morrer de pé do que viver de joelhos.", "grito_ouropreto": "Inconfidência não se esquece.",
+	"bencao_forte": "Quem tem fé não desiste de cuidar.", "manto_protetor": "O manto é grande, cabe todo mundo.",
+	"oracao_certeira": "Fé e caridade não erram o caminho.",
 }
 
 # Bodega do Lampião: o que se compra com as moedas da partida.

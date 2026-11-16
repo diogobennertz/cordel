@@ -1,5 +1,12 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — Zumbi dos Palmares, Tiradentes e Irmã Dulce (32 heróis no total)
+- Mais 3 heróis desbloqueáveis, pedidos por ele e feitos com cuidado e respeito: **Zumbi dos Palmares**
+  (guerreiro quilombola, líder maior da resistência contra a escravidão — o desbloqueio mais difícil do
+  jogo: vencer 50 chefes), **Tiradentes** (mártir da Inconfidência Mineira, "Libertas Quae Sera Tamen")
+  e **Irmã Dulce** (a santa baiana dos pobres — golpes de bênção e cura, no mesmo estilo protetor da
+  benzedeira). Agora são **32 heróis no total**: 10 desde o início + 22 desbloqueáveis.
+
 ## 2026-11-16 — mais 8 heróis desbloqueáveis (total 19 de ~20), correções visuais
 - Mais 8 heróis desbloqueáveis: Aleijadinho (escultor), Santos Dumont (aviador), Machado de Assis
   (escritor), Marechal Rondon (sertanista), Lampião (capitão do cangaço), Maria Bonita (cangaceira),

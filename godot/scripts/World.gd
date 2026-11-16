@@ -172,6 +172,9 @@ func _ready() -> void:
 	elif "--galeria3" in args:
 		_nomes_galeria = ["violonista", "bimba", "escultor", "aviador", "escritor", "sertanista", "cangaceiro_chefe", "cangaceira", "muralista", "orador"]
 		_galeria()
+	elif "--galeria4" in args:
+		_nomes_galeria = ["quilombola", "martir", "santa"]
+		_galeria()
 	elif "--teste" in args:
 		_teste(args[args.find("--teste") + 1] if args.find("--teste") + 1 < args.size() else "capoeirista")
 	else:
@@ -214,7 +217,8 @@ func bot_dir() -> Vector3:
 		"jongueira": 2.3, "chorao": 9.5, "ceramista": 9.5, "cantora": 2.3,
 		"pintor": 9.5, "maestro": 2.3, "violonista": 9.5, "bimba": 5.0,
 		"escultor": 2.3, "aviador": 2.3, "escritor": 9.5, "sertanista": 2.3,
-		"cangaceiro_chefe": 9.5, "cangaceira": 2.3, "muralista": 9.5, "orador": 9.5}[player.classe]
+		"cangaceiro_chefe": 9.5, "cangaceira": 2.3, "muralista": 9.5, "orador": 9.5,
+		"quilombola": 5.0, "martir": 2.3, "santa": 10.0}[player.classe]
 	if player.hp < player.max_hp * 0.35: quer += 5.0
 	var dir := Vector3.ZERO
 	var alvo = _nearest(pp, 80.0)
@@ -477,7 +481,8 @@ func _refazer_slots() -> void:
 		"jongueira": ["roda", "estrela"], "chorao": ["mira", "sol"], "ceramista": ["mira", "sol"], "cantora": ["roda", "atabaque"],
 		"pintor": ["mira", "sol"], "maestro": ["roda", "estrela"], "violonista": ["mira", "sol"], "bimba": ["mataleao", "faixapreta"],
 		"escultor": ["roda", "estrela"], "aviador": ["roda", "atabaque"], "escritor": ["mira", "sol"], "sertanista": ["roda", "estrela"],
-		"cangaceiro_chefe": ["mira", "rei"], "cangaceira": ["roda", "estrela"], "muralista": ["mira", "sol"], "orador": ["mira", "sol"]}[player.classe]
+		"cangaceiro_chefe": ["mira", "rei"], "cangaceira": ["roda", "estrela"], "muralista": ["mira", "sol"], "orador": ["mira", "sol"],
+		"quilombola": ["mataleao", "faixapreta"], "martir": ["roda", "estrela"], "santa": ["banho", "vela"]}[player.classe]
 	_slots.append(_quadro(artes[0], Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro(artes[1], Ctrl.nome("r").left(3), 60.0))
 
 func _hud_heroi() -> void:
@@ -2349,6 +2354,25 @@ func usar_especial(p: Jogador) -> void:
 				dir19 = alvo19.global_position - pos; dir19.y = 0; dir19 = dir19.normalized()
 			_disparar(pos, dir19 * 30.0, TIRO_Q, 210.0 * s)
 			p.boneco.atacar()
+		"quilombola":
+			var alvo20 = _mais_forte(pos, 9.0)
+			if alvo20 == null: return
+			var alvo20_id: int = alvo20.get_instance_id()
+			p.comecar_investida(alvo20.global_position, 18.0, func():
+				_efeito_anel(p.global_position, 2.4, cor)
+				var al20 = instance_from_id(alvo20_id)
+				if al20 != null and is_instance_valid(al20) and not al20.dead:
+					al20.stun_t = maxf(al20.stun_t, 0.6 if al20.is_boss else 2.5)
+					ferir(al20, 160.0 * s)
+					if al20.dead: p.curar(p.max_hp * 0.10))
+		"martir":
+			p.iframes = 0.72; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"santa":
+			p.curar(p.max_hp * 0.3)
+			_ring(pos, 5.5 * p.area_mult, 20.0 * s, 0.8, 3.5)
+			_efeito_anel(pos, 5.5 * p.area_mult, Color(0.5, 1.0, 0.6))
 	p.q_cd = hq["cd"]
 	Som.tocar("especial")
 	Salvo.contar("uso_especial_" + p.classe)
@@ -2530,6 +2554,25 @@ func _hab_update(delta: float) -> void:
 			for i in range(8):
 				var a19 := i * TAU / 8.0 + time * 2.0
 				_disparar(pos, Vector3(cos(a19), 0, sin(a19)) * 16.0, BALA_ULT, 13.0 * s)
+		"quilombola":
+			p.ult_tick = 0.2; p.iframes = 0.45
+			var alvo21 = _nearest(pos, 14.0)
+			if alvo21:
+				var d21: Vector3 = alvo21.global_position - pos; d21.y = 0
+				p.position += d21 * 0.85
+				if d21.length() > 0.1: p.frente = d21.normalized()
+				p.boneco.atacar()
+				var k21 := _ring(p.global_position, 2.2, 110.0 * s, 1.0, 0.0)
+				_efeito_anel(p.global_position, 2.2, cor)
+				if k21 > 0: p.curar(p.max_hp * 0.02 * k21)
+		"martir":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.4 * p.area_mult, cor)
+		"santa":
+			p.ult_tick = 0.15
+			var a20 := randf() * TAU
+			_disparar(pos, Vector3(cos(a20), 0, sin(a20)) * 12.0, FOGO_ULT, 22.0 * s, _nearest(pos, 30.0))
 
 # ---------------- ataques dos chefes ----------------
 func aviso_chefe(pos: Vector3, raio: float, txt: String) -> void:

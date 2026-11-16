@@ -90,6 +90,26 @@ const CLASSES := {
 		"inicial": "grito_elis", "desbloqueia": {"cancao_forte": 3, "nota_presa": 6},
 		"desc": "Grito, canção forte e nota presa: a voz mais marcante, acerta tudo em volta."
 	},
+	"pintor": {
+		"nome": "Pintor Modernista", "apelido": "Cândido Portinari", "pulo": "Pulo comum de pintor — nada de especial ao cair.", "cor": Color(0.15, 0.3, 0.6), "maxhp": 110.0, "speed": 5.6, "regen": 0.4,
+		"inicial": "pincelada", "desbloqueia": {"tela_viva": 3, "retrato_certeiro": 6},
+		"desc": "Pincelada, tela viva e retrato certeiro: ataca de longe com tinta e pincel."
+	},
+	"maestro": {
+		"nome": "Maestro Erudito", "apelido": "Heitor Villa-Lobos", "pulo": "Pulo comum de maestro — nada de especial ao cair.", "cor": Color(0.3, 0.1, 0.12), "maxhp": 115.0, "speed": 5.5, "armor": 0.1,
+		"inicial": "batuta", "desbloqueia": {"bachianas": 3, "choros_n1": 6},
+		"desc": "Batuta, bachianas e choros: rege a orquestra inteira contra a bicharada."
+	},
+	"violonista": {
+		"nome": "Violonista de Afrosamba", "apelido": "Baden Powell", "pulo": "Pulo comum de violonista — nada de especial ao cair.", "cor": Color(0.55, 0.35, 0.1), "maxhp": 108.0, "speed": 5.9, "crit": 0.08,
+		"inicial": "acorde_bruto", "desbloqueia": {"afro_samba": 3, "valsa_sem_nome": 6},
+		"desc": "Acorde bruto, afrosamba e valsa sem nome: viola de nylon de longe, afiada."
+	},
+	"bimba": {
+		"nome": "Mestre de Capoeira Regional", "apelido": "Mestre Bimba", "pulo": "Pulo comum de mestre — nada de especial ao cair.", "cor": Color(0.85, 0.2, 0.15), "maxhp": 138.0, "speed": 5.8, "dodge": 0.15,
+		"inicial": "ponteio", "desbloqueia": {"cintura_desprezada": 3, "chapeu_couro": 6},
+		"desc": "Ponteio, cintura desprezada e chapéu de couro: o pai da capoeira regional."
+	},
 }
 
 # Heróis desbloqueáveis: ficam de contorno preto na grade até cumprir o feito. "ach" já é o nome
@@ -102,6 +122,10 @@ const DESBLOQUEIOS := {
 	"chorao":     {"txt": "Acerte 3.000 críticos", "ach": "ACH_HEROI_CHORAO", "tipo": "contador", "c": "criticos", "meta": 3000},
 	"ceramista":  {"txt": "Abra 50 baús", "ach": "ACH_HEROI_CERAMISTA", "tipo": "contador", "c": "baus", "meta": 50},
 	"cantora":    {"txt": "Vença 20 chefes", "ach": "ACH_HEROI_CANTORA", "tipo": "contador", "c": "chefes", "meta": 20},
+	"pintor":     {"txt": "Faça uma sequência de 200 abates", "ach": "ACH_HEROI_PINTOR", "tipo": "contador", "c": "combo_max", "meta": 200},
+	"maestro":    {"txt": "Derrube 400 sacis", "ach": "ACH_HEROI_MAESTRO", "tipo": "contador", "c": "abates_saci", "meta": 400},
+	"violonista": {"txt": "Dê 500.000 de dano numa única corrida", "ach": "ACH_HEROI_VIOLONISTA", "tipo": "dano_run", "meta": 500000.0},
+	"bimba":      {"txt": "Solte 500 armadas", "ach": "ACH_HEROI_BIMBA", "tipo": "contador", "c": "uso_armada", "meta": 500},
 }
 static func heroi_desbloqueado(id: String) -> bool:
 	if not DESBLOQUEIOS.has(id): return true
@@ -183,6 +207,22 @@ const GOLPES := {
 	"grito_elis":     {"nome": "Grito de Elis", "build": "mpb", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.1, "knock": 1.2, "arte": "armada", "txt": "Grito que sacode tudo em volta."},
 	"cancao_forte":   {"nome": "Canção Forte", "build": "mpb", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.2, "arte": "berimbau", "txt": "Canção na voz cheia: onda que empurra a bicharada."},
 	"nota_presa":     {"nome": "Nota Presa", "build": "mpb", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.68, 0.2, 0.55), "arte": "fogofatuo", "txt": "Nota longa que persegue o bicho até estourar."},
+	# Pintura
+	"pincelada":        {"nome": "Pincelada", "build": "pintura", "tipo": "arco", "dmg": 25.0, "cd": 1.2, "raio": 3.2, "ang": 1.5, "knock": 1.0, "arte": "peixeira", "txt": "Risca de tinta na direção do bicho mais perto."},
+	"tela_viva":        {"nome": "Tela Viva", "build": "pintura", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.4, "knock": 2.0, "arte": "berimbau", "txt": "A tela ganha vida: onda que empurra a bicharada."},
+	"retrato_certeiro": {"nome": "Retrato Certeiro", "build": "pintura", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.15, 0.3, 0.6), "arte": "fogofatuo", "txt": "Pincelada que persegue o bicho até estourar."},
+	# Música erudita
+	"batuta":     {"nome": "Batuta", "build": "erudito", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.1, "knock": 1.2, "arte": "armada", "txt": "Gesto de batuta que rege e acerta tudo em volta."},
+	"bachianas":  {"nome": "Bachianas", "build": "erudito", "tipo": "onda", "dmg": 18.0, "cd": 2.9, "raio": 5.6, "knock": 2.1, "arte": "reza", "txt": "A orquestra inteira entra junto: onda que empurra tudo."},
+	"choros_n1":  {"nome": "Choros Nº1", "build": "erudito", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.2, "ang": 1.6, "knock": 1.1, "arte": "queda", "txt": "Movimento de orquestra que varre a frente."},
+	# Violão / afrosamba
+	"acorde_bruto":   {"nome": "Acorde Bruto", "build": "afrosamba", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.55, 0.35, 0.1), "arte": "bacamarte", "txt": "Acorde pesado que atira uma nota afiada na frente."},
+	"afro_samba":     {"nome": "Afrosamba", "build": "afrosamba", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.55, 0.35, 0.1), "arte": "fogofatuo", "txt": "Levada que persegue o bicho até estourar."},
+	"valsa_sem_nome": {"nome": "Valsa Sem Nome", "build": "afrosamba", "tipo": "proj_estoura", "dmg": 23.0, "cd": 2.1, "vel": 10.0, "raio": 0.42, "vida": 2.0, "alcance": 20.0, "boom": 2.6, "cor": Color(0.55, 0.35, 0.1), "arte": "garrafada", "txt": "Acorde pesado que estoura numa área grande."},
+	# Capoeira Regional
+	"ponteio":            {"nome": "Ponteio", "build": "regional", "tipo": "ring", "dmg": 21.0, "cd": 1.1, "raio": 3.0, "knock": 1.1, "arte": "rasteira", "txt": "Ginga afiada que acerta todo mundo em volta."},
+	"cintura_desprezada": {"nome": "Cintura Desprezada", "build": "regional", "tipo": "investida", "dmg": 33.0, "cd": 1.6, "raio": 1.7, "alcance": 6.5, "stun": 1.3, "arte": "kimura", "txt": "A queda clássica de Bimba: investe e atordoa."},
+	"chapeu_couro":       {"nome": "Chapéu de Couro", "build": "regional", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.3, "ang": 1.6, "knock": 1.2, "arte": "meialua", "txt": "Chute alto e firme na direção do bicho mais perto."},
 }
 
 # Dano do golpe no nível atual (sobe 25% por nível acima do 1).
@@ -268,6 +308,14 @@ const HABILIDADES := {
 		"r": {"nome": "Fornada de Barro", "dur": 5.0, "txt": "5 s arremessando barro para todos os lados"}},
 	"cantora": {"q": {"nome": "Giro Vocal", "cd": 8.0, "txt": "giro intocável que acerta todo mundo em volta"},
 		"r": {"nome": "Canção Infinita", "dur": 6.0, "txt": "6 s cantando sem parar, de voz em voz"}},
+	"pintor": {"q": {"nome": "Traço Certeiro", "cd": 7.0, "txt": "uma pincelada que atravessa tudo"},
+		"r": {"nome": "Obra-Prima", "dur": 5.0, "txt": "5 s pintando para todos os lados"}},
+	"maestro": {"q": {"nome": "Regência Firme", "cd": 8.0, "txt": "giro de batuta intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Sinfonia Completa", "dur": 6.0, "txt": "6 s regendo sem parar, a orquestra inteira em volta"}},
+	"violonista": {"q": {"nome": "Dedilhado Certeiro", "cd": 7.0, "txt": "um acorde que atravessa tudo"},
+		"r": {"nome": "Afrosamba Infinito", "dur": 5.0, "txt": "5 s soltando acordes para todos os lados"}},
+	"bimba": {"q": {"nome": "Cintura Desprezada", "cd": 9.0, "txt": "agarra o bicho mais forte por perto e aplica a queda clássica"},
+		"r": {"nome": "Academia da Regional", "dur": 4.5, "txt": "4,5 s de ginga firme acertando em volta sem parar"}},
 }
 const ULT_ABATES := 60          # abates para carregar o ultimate
 
@@ -362,6 +410,12 @@ const PIADAS := {
 	"boneco_barro": "Barro bom não quebra fácil. Esse quebra.", "figurinha_barro": "Figurinha de Caruaru não erra o alvo.",
 	"panela_barro": "Panela rachada ainda ferve.", "grito_elis": "Grito que vem do peito não cala.",
 	"cancao_forte": "Canção forte ninguém esquece.", "nota_presa": "Nota presa na garganta, solta no ar.",
+	"pincelada": "Quem pinta bem, acerta de longe.", "tela_viva": "Toda tela boa tem vida própria.",
+	"retrato_certeiro": "Retrato bom não sai borrado.", "batuta": "Quem rege bem, não erra o tempo.",
+	"bachianas": "Bach encontrou o Brasil e gostou.", "choros_n1": "Primeiro choro, primeira lição.",
+	"acorde_bruto": "Acorde bruto também afina.", "afro_samba": "Samba com raiz na África não para.",
+	"valsa_sem_nome": "Valsa sem nome, mas com nome todo mundo lembra.", "ponteio": "Ginga boa não tem pressa.",
+	"cintura_desprezada": "Cintura desprezada não erra a queda.", "chapeu_couro": "Chapéu de couro não cai da cabeça.",
 }
 
 # Bodega do Lampião: o que se compra com as moedas da partida.

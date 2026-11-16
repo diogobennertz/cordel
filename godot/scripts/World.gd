@@ -204,7 +204,8 @@ func bot_dir() -> Vector3:
 	var quer: float = {"capoeirista": 2.2, "cangaceiro": 2.0 if player.golpes.size() < 2 else 5.0, "jiujitsu": 5.0, "benzedeira": 10.0, "frevista": 2.4, "cordelista": 9.0,
 		"sambista": 2.3, "maracatuzeiro": 5.0, "violeiro": 9.5, "carimbozeiro": 2.3,
 		"forrozeiro": 2.3, "angoleiro": 5.0, "marujo": 9.5,
-		"jongueira": 2.3, "chorao": 9.5, "ceramista": 9.5, "cantora": 2.3}[player.classe]
+		"jongueira": 2.3, "chorao": 9.5, "ceramista": 9.5, "cantora": 2.3,
+		"pintor": 9.5, "maestro": 2.3, "violonista": 9.5, "bimba": 5.0}[player.classe]
 	if player.hp < player.max_hp * 0.35: quer += 5.0
 	var dir := Vector3.ZERO
 	var alvo = _nearest(pp, 80.0)
@@ -464,7 +465,8 @@ func _refazer_slots() -> void:
 	var artes: Array = {"capoeirista": ["au", "roda"], "jiujitsu": ["mataleao", "faixapreta"], "benzedeira": ["banho", "vela"], "cangaceiro": ["mira", "rei"], "frevista": ["atabaque", "estrela"], "cordelista": ["mira", "sol"],
 		"sambista": ["roda", "estrela"], "maracatuzeiro": ["mataleao", "vela"], "violeiro": ["mira", "sol"], "carimbozeiro": ["atabaque", "roda"],
 		"forrozeiro": ["roda", "atabaque"], "angoleiro": ["mataleao", "faixapreta"], "marujo": ["mira", "sol"],
-		"jongueira": ["roda", "estrela"], "chorao": ["mira", "sol"], "ceramista": ["mira", "sol"], "cantora": ["roda", "atabaque"]}[player.classe]
+		"jongueira": ["roda", "estrela"], "chorao": ["mira", "sol"], "ceramista": ["mira", "sol"], "cantora": ["roda", "atabaque"],
+		"pintor": ["mira", "sol"], "maestro": ["roda", "estrela"], "violonista": ["mira", "sol"], "bimba": ["mataleao", "faixapreta"]}[player.classe]
 	_slots.append(_quadro(artes[0], Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro(artes[1], Ctrl.nome("r").left(3), 60.0))
 
 func _hud_heroi() -> void:
@@ -2263,6 +2265,34 @@ func usar_especial(p: Jogador) -> void:
 			p.iframes = 0.72; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
 			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
 			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"pintor":
+			var alvo12 = _mais_forte(pos, 28.0)
+			var dir12: Vector3 = p.frente
+			if alvo12:
+				dir12 = alvo12.global_position - pos; dir12.y = 0; dir12 = dir12.normalized()
+			_disparar(pos, dir12 * 30.0, TIRO_Q, 210.0 * s)
+			p.boneco.atacar()
+		"maestro":
+			p.iframes = 0.7; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"violonista":
+			var alvo13 = _mais_forte(pos, 28.0)
+			var dir13: Vector3 = p.frente
+			if alvo13:
+				dir13 = alvo13.global_position - pos; dir13.y = 0; dir13 = dir13.normalized()
+			_disparar(pos, dir13 * 30.0, TIRO_Q, 210.0 * s)
+			p.boneco.atacar()
+		"bimba":
+			var alvo14 = _mais_forte(pos, 9.0)
+			if alvo14 == null: return
+			var alvo14_id: int = alvo14.get_instance_id()
+			p.comecar_investida(alvo14.global_position, 18.0, func():
+				_efeito_anel(p.global_position, 2.3, cor)
+				var al14 = instance_from_id(alvo14_id)
+				if al14 != null and is_instance_valid(al14) and not al14.dead:
+					al14.stun_t = maxf(al14.stun_t, 0.6 if al14.is_boss else 2.5)
+					ferir(al14, 155.0 * s))
 	p.q_cd = hq["cd"]
 	Som.tocar("especial")
 	Salvo.contar("uso_especial_" + p.classe)
@@ -2383,6 +2413,31 @@ func _hab_update(delta: float) -> void:
 			p.ult_tick = 0.3; p.boneco.girar()
 			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
 			_efeito_anel(pos, 4.4 * p.area_mult, cor)
+		"pintor":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a12 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a12), 0, sin(a12)) * 16.0, BALA_ULT, 13.0 * s)
+		"maestro":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.4 * p.area_mult, cor)
+		"violonista":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a13 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a13), 0, sin(a13)) * 16.0, BALA_ULT, 13.0 * s)
+		"bimba":
+			p.ult_tick = 0.22; p.iframes = 0.4
+			var alvo15 = _nearest(pos, 13.0)
+			if alvo15:
+				var d15: Vector3 = alvo15.global_position - pos; d15.y = 0
+				p.position += d15 * 0.7
+				if d15.length() > 0.1: p.frente = d15.normalized()
+				p.boneco.atacar()
+				var k15 := _ring(p.global_position, 2.3, 90.0 * s, 1.0, 0.0)
+				_efeito_anel(p.global_position, 2.3, cor)
+				if k15 > 0: p.curar(p.max_hp * 0.015 * k15)
 
 # ---------------- ataques dos chefes ----------------
 func aviso_chefe(pos: Vector3, raio: float, txt: String) -> void:

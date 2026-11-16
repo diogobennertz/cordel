@@ -1,5 +1,11 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — mais 4 heróis desbloqueáveis (total 11 de ~20)
+- Cândido Portinari (pintor), Heitor Villa-Lobos (maestro erudito), Baden Powell (violonista de
+  afrosamba) e Mestre Bimba (o pai da capoeira regional) — todos desbloqueáveis por feito.
+- Agora são **21 heróis no total**: 10 desde o início + 11 desbloqueáveis. Faltam mais uns 9 pra
+  fechar a meta de ~20 desbloqueáveis — seguem pras próximas levas.
+
 ## 2026-11-16 — todo mundo no mesmo estilo (3D), mais 4 heróis desbloqueáveis
 - **Todos os heróis agora usam o mesmo retrato 3D ao vivo** (grade de escolha, ficha e o retrato
   do canto na hora de jogar) — nenhum usa mais o sprite 2D desenhado à mão. Agora é tudo igual.

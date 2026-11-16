@@ -203,7 +203,8 @@ func bot_dir() -> Vector3:
 	var pp: Vector3 = player.global_position
 	var quer: float = {"capoeirista": 2.2, "cangaceiro": 2.0 if player.golpes.size() < 2 else 5.0, "jiujitsu": 5.0, "benzedeira": 10.0, "frevista": 2.4, "cordelista": 9.0,
 		"sambista": 2.3, "maracatuzeiro": 5.0, "violeiro": 9.5, "carimbozeiro": 2.3,
-		"forrozeiro": 2.3, "angoleiro": 5.0, "marujo": 9.5}[player.classe]
+		"forrozeiro": 2.3, "angoleiro": 5.0, "marujo": 9.5,
+		"jongueira": 2.3, "chorao": 9.5, "ceramista": 9.5, "cantora": 2.3}[player.classe]
 	if player.hp < player.max_hp * 0.35: quer += 5.0
 	var dir := Vector3.ZERO
 	var alvo = _nearest(pp, 80.0)
@@ -462,14 +463,15 @@ func _refazer_slots() -> void:
 	var vao := Control.new(); vao.custom_minimum_size = Vector2(10, 0); caixa_slots.add_child(vao)
 	var artes: Array = {"capoeirista": ["au", "roda"], "jiujitsu": ["mataleao", "faixapreta"], "benzedeira": ["banho", "vela"], "cangaceiro": ["mira", "rei"], "frevista": ["atabaque", "estrela"], "cordelista": ["mira", "sol"],
 		"sambista": ["roda", "estrela"], "maracatuzeiro": ["mataleao", "vela"], "violeiro": ["mira", "sol"], "carimbozeiro": ["atabaque", "roda"],
-		"forrozeiro": ["roda", "atabaque"], "angoleiro": ["mataleao", "faixapreta"], "marujo": ["mira", "sol"]}[player.classe]
+		"forrozeiro": ["roda", "atabaque"], "angoleiro": ["mataleao", "faixapreta"], "marujo": ["mira", "sol"],
+		"jongueira": ["roda", "estrela"], "chorao": ["mira", "sol"], "ceramista": ["mira", "sol"], "cantora": ["roda", "atabaque"]}[player.classe]
 	_slots.append(_quadro(artes[0], Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro(artes[1], Ctrl.nome("r").left(3), 60.0))
 
 func _hud_heroi() -> void:
 	var c: Dictionary = Dados.CLASSES[player.classe]
 	retrato.add_theme_stylebox_override("panel", Tela.caixa(c["cor"], 4, Tela.TINTA, 4, 6))
 	for f in retrato.get_children(): f.queue_free()
-	var im := Tela.imagem("s_" + player.classe, Vector2(62, 78)); im.position = Vector2(3, 3); im.size = Vector2(62, 78); retrato.add_child(im)
+	var im := menus._retrato_heroi(player.classe, Vector2(62, 78)); im.position = Vector2(3, 3); im.size = Vector2(62, 78); retrato.add_child(im)
 	lbl_nome.text = String(c["apelido"]).to_upper()
 	_refazer_slots()
 
@@ -2239,6 +2241,28 @@ func usar_especial(p: Jogador) -> void:
 				dir8 = alvo8.global_position - pos; dir8.y = 0; dir8 = dir8.normalized()
 			_disparar(pos, dir8 * 30.0, TIRO_Q, 210.0 * s)
 			p.boneco.atacar()
+		"jongueira":
+			p.iframes = 0.72; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"chorao":
+			var alvo10 = _mais_forte(pos, 28.0)
+			var dir10: Vector3 = p.frente
+			if alvo10:
+				dir10 = alvo10.global_position - pos; dir10.y = 0; dir10 = dir10.normalized()
+			_disparar(pos, dir10 * 30.0, TIRO_Q, 210.0 * s)
+			p.boneco.atacar()
+		"ceramista":
+			var alvo11 = _mais_forte(pos, 28.0)
+			var dir11: Vector3 = p.frente
+			if alvo11:
+				dir11 = alvo11.global_position - pos; dir11.y = 0; dir11 = dir11.normalized()
+			_disparar(pos, dir11 * 28.0, TIRO_Q, 220.0 * s)
+			p.boneco.atacar()
+		"cantora":
+			p.iframes = 0.72; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
 	p.q_cd = hq["cd"]
 	Som.tocar("especial")
 	Salvo.contar("uso_especial_" + p.classe)
@@ -2341,6 +2365,24 @@ func _hab_update(delta: float) -> void:
 			for i in range(8):
 				var a9 := i * TAU / 8.0 + time * 2.0
 				_disparar(pos, Vector3(cos(a9), 0, sin(a9)) * 16.0, BALA_ULT, 13.0 * s)
+		"jongueira":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.4 * p.area_mult, cor)
+		"chorao":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a10 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a10), 0, sin(a10)) * 16.0, BALA_ULT, 13.0 * s)
+		"ceramista":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a11 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a11), 0, sin(a11)) * 16.0, BALA_ULT, 13.0 * s)
+		"cantora":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.4 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.4 * p.area_mult, cor)
 
 # ---------------- ataques dos chefes ----------------
 func aviso_chefe(pos: Vector3, raio: float, txt: String) -> void:

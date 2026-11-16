@@ -1,5 +1,12 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — todo mundo no mesmo estilo (3D), mais 4 heróis desbloqueáveis
+- **Todos os heróis agora usam o mesmo retrato 3D ao vivo** (grade de escolha, ficha e o retrato
+  do canto na hora de jogar) — nenhum usa mais o sprite 2D desenhado à mão. Agora é tudo igual.
+- **Mais 4 heróis desbloqueáveis** (total 7 de uma meta de ~20): Clementina de Jesus (jongueira),
+  Pixinguinha (chorão/flauta), Mestre Vitalino (ceramista de Caruaru) e Elis Regina (cantora de MPB).
+  Faltam mais uns 13 pra fechar a meta — seguem pras próximas levas.
+
 ## 2026-11-16 — ajustes finos pedidos por ele: ícones certos, dica confiável, menu arrumado
 - Corrigido o botão SAIR colado no texto de rodapé do menu principal (menu ficou mais compacto).
 - A dica de "como liberar" o herói trancado agora aparece numa faixa fixa e confiável embaixo da

@@ -319,6 +319,40 @@ func _montar(tipo: String, destaque) -> void:
 			Lib.cx(corpo, Vector3(0.3, 0.08, 0.05), Vector3(0, 1.1, 0.3), Color(0.85, 0.2, 0.15))       # lenço vermelho no pescoço
 			Lib.cil(corpo, 0.4, 0.44, 0.1, Vector3(0, CY + 0.3, 0), BRANCO, 12)                         # boné de marinheiro
 			Lib.cil(corpo, 0.34, 0.34, 0.03, Vector3(0, CY + 0.36, 0), Color(0.15, 0.35, 0.65), 12)
+		"jongueira":    # jongueira: saia rodada estampada, turbante na cabeça, tambor caxambu a tiracolo
+			var pj := Color(0.35, 0.2, 0.12)
+			_humano(pj, Color(0.85, 0.6, 0.2), Color(0.6, 0.15, 0.15), pj, Color(0.85, 0.6, 0.2))
+			cor_base = Color(0.5, 0.25, 0.12)
+			Lib.cil(corpo, 0.42, 0.5, 0.5, Vector3(0, 0.46, 0), Color(0.6, 0.15, 0.15), 10)             # saia rodada
+			Lib.cil(corpo, 0.34, 0.36, 0.1, Vector3(0, CY + 0.3, 0), Color(0.85, 0.6, 0.2), 12)          # turbante
+			Lib.esf(corpo, 0.3, Vector3(0, CY + 0.34, 0), Color(0.85, 0.6, 0.2), Vector3(1, 0.7, 1), 10, 0.0, true)
+			Lib.cil(corpo, 0.3, 0.33, 0.3, Vector3(0, 0.75, -0.42), Color(0.6, 0.4, 0.2), 10, Vector3(1.57, 0, 0))   # caxambu nas costas
+			Lib.cil(corpo, 0.33, 0.33, 0.03, Vector3(0, 0.75, -0.57), Color(0.9, 0.82, 0.6), 10, Vector3(1.57, 0, 0))
+		"chorao":       # chorão: terno claro, chapéu panamá, flautim na mão
+			var pch := Color(0.6, 0.38, 0.22)
+			_humano(pch, Color(0.92, 0.88, 0.78), Color(0.3, 0.25, 0.18), COURO_ESC, Color(0.92, 0.88, 0.78))
+			cor_base = Color(0.85, 0.65, 0.15)
+			_cinto(COURO_ESC, 0.68)
+			Lib.cil(corpo, 0.5, 0.56, 0.05, Vector3(0, CY + 0.3, 0), Color(0.92, 0.88, 0.78), 14)        # panamá
+			Lib.cil(corpo, 0.24, 0.28, 0.2, Vector3(0, CY + 0.4, 0), Color(0.92, 0.88, 0.78), 12)
+			Lib.cil(braco_d, 0.025, 0.03, 0.7, Vector3(0, -0.4, 0.16), Color(0.85, 0.72, 0.2), 6, Vector3(0, 0, 1.3))   # flautim
+		"ceramista":    # ceramista de Caruaru: roupa de couro clara, chapéu de palha, boneco de barro na mão
+			var pce := Color(0.65, 0.42, 0.24)
+			_humano(pce, Color(0.88, 0.8, 0.6), COURO_ESC, pce, Color(0.88, 0.8, 0.6))
+			cor_base = Color(0.72, 0.42, 0.22)
+			_cinto(COURO_ESC, 0.68)
+			Lib.cil(corpo, 0.5, 0.56, 0.05, Vector3(0, CY + 0.3, 0), Color(0.88, 0.78, 0.5), 14)         # chapéu de palha
+			Lib.cil(corpo, 0.24, 0.28, 0.18, Vector3(0, CY + 0.39, 0), Color(0.88, 0.78, 0.5), 12)
+			Lib.esf(braco_d, 0.1, Vector3(0, -0.48, 0.1), Color(0.72, 0.42, 0.22), Vector3(1, 1.1, 0.9), 8)   # boneco de barro na mão
+			Lib.esf(braco_d, 0.04, Vector3(0, -0.56, 0.17), PRETO, Vector3(1, 1, 0.5), 6)
+		"cantora":      # cantora de MPB: vestido longo estampado, cabelo solto, microfone na mão
+			var pca := Color(0.78, 0.56, 0.38)
+			_humano(pca, Color(0.68, 0.2, 0.55), Color(0.68, 0.2, 0.55), pca, Color(0.68, 0.2, 0.55))
+			cor_base = Color(0.68, 0.2, 0.55)
+			Lib.cil(corpo, 0.42, 0.5, 0.5, Vector3(0, 0.46, 0), Color(0.55, 0.15, 0.45), 10)             # vestido longo
+			_cabelo(Color(0.2, 0.12, 0.08), CR + 0.03, -0.2)
+			Lib.cil(braco_d, 0.07, 0.1, 0.26, Vector3(0, -0.48, 0.12), Color(0.1, 0.1, 0.1), 8)           # microfone
+			Lib.esf(braco_d, 0.1, Vector3(0, -0.62, 0.15), Color(0.2, 0.2, 0.2), Vector3.ONE, 8)
 		"zepilintra":   # Seu Zé Pilintra: terno branco, chapéu de fita vermelha, gravata vermelha e bengala
 			var pz := Color(0.28, 0.17, 0.1)
 			_humano(pz, BRANCO, BRANCO, BRANCO, BRANCO)

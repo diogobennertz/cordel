@@ -630,10 +630,9 @@ func loja() -> void:
 	vb.add_child(bs)
 
 # ---------------- gente do mapa: retrato, balão de fala e o que oferece ----------------
-# retrato com o boneco 3D de verdade
-# usa o retrato 2D se já existir; senão (heróis novíssimos) mostra o boneco 3D de verdade
+# retrato: SEMPRE o boneco 3D de verdade, pra todo mundo ficar no mesmo estilo (nenhum herói
+# usa mais o retrato 2D desenhado à mão — ele existia só pros 6 primeiros e deixava diferente dos novos)
 func _retrato_heroi(id: String, tam: Vector2) -> Control:
-	if Tela.tex("s_" + id): return Tela.imagem("s_" + id, tam)
 	return _retrato3d(id, tam)
 
 func _retrato3d(tipo: String, tam: Vector2) -> SubViewportContainer:

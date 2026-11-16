@@ -70,6 +70,26 @@ const CLASSES := {
 		"inicial": "rede_pesca", "desbloqueia": {"mare_cheia": 3, "canto_mar": 6},
 		"desc": "Rede de pesca, maré cheia e canto do mar: ataca de longe, sustenta a travessia."
 	},
+	"jongueira": {
+		"nome": "Jongueira", "apelido": "Clementina de Jesus", "pulo": "Pulo comum de jongueira — nada de especial ao cair.", "cor": Color(0.5, 0.25, 0.12), "maxhp": 125.0, "speed": 5.4, "armor": 0.12,
+		"inicial": "ponto_jongo", "desbloqueia": {"adjunto": 3, "caxambu": 6},
+		"desc": "Ponto de jongo, adjunto e caxambu: roda de tambor bem no chão, forte e firme."
+	},
+	"chorao": {
+		"nome": "Chorão", "apelido": "Pixinguinha", "pulo": "Pulo comum de chorão — nada de especial ao cair.", "cor": Color(0.85, 0.65, 0.15), "maxhp": 105.0, "speed": 5.7, "regen": 0.5,
+		"inicial": "flautim", "desbloqueia": {"chorinho": 3, "regional": 6},
+		"desc": "Flautim, chorinho e regional: ataca de longe com a flauta, sustenta a roda."
+	},
+	"ceramista": {
+		"nome": "Ceramista de Caruaru", "apelido": "Mestre Vitalino", "pulo": "Pulo comum de ceramista — nada de especial ao cair.", "cor": Color(0.72, 0.42, 0.22), "maxhp": 130.0, "speed": 5.1, "armor": 0.1,
+		"inicial": "boneco_barro", "desbloqueia": {"figurinha_barro": 3, "panela_barro": 6},
+		"desc": "Boneco de barro, figurinha e panela de barro: lento e firme, arremessa barro de longe."
+	},
+	"cantora": {
+		"nome": "Cantora de MPB", "apelido": "Elis Regina", "pulo": "Pulo comum de cantora — nada de especial ao cair.", "cor": Color(0.68, 0.2, 0.55), "maxhp": 112.0, "speed": 5.8, "crit": 0.07,
+		"inicial": "grito_elis", "desbloqueia": {"cancao_forte": 3, "nota_presa": 6},
+		"desc": "Grito, canção forte e nota presa: a voz mais marcante, acerta tudo em volta."
+	},
 }
 
 # Heróis desbloqueáveis: ficam de contorno preto na grade até cumprir o feito. "ach" já é o nome
@@ -78,6 +98,10 @@ const DESBLOQUEIOS := {
 	"forrozeiro": {"txt": "Dê 2.000.000 de dano numa única corrida", "ach": "ACH_HEROI_FORROZEIRO", "tipo": "dano_run", "meta": 2000000.0},
 	"angoleiro":  {"txt": "Vença 10 chefes", "ach": "ACH_HEROI_ANGOLEIRO", "tipo": "contador", "c": "chefes", "meta": 10},
 	"marujo":     {"txt": "Derrube 10.000 bichos", "ach": "ACH_HEROI_MARUJO", "tipo": "contador", "c": "abates", "meta": 10000},
+	"jongueira":  {"txt": "Receba 25 bençãos de oratório", "ach": "ACH_HEROI_JONGUEIRA", "tipo": "contador", "c": "oratorios", "meta": 25},
+	"chorao":     {"txt": "Acerte 3.000 críticos", "ach": "ACH_HEROI_CHORAO", "tipo": "contador", "c": "criticos", "meta": 3000},
+	"ceramista":  {"txt": "Abra 50 baús", "ach": "ACH_HEROI_CERAMISTA", "tipo": "contador", "c": "baus", "meta": 50},
+	"cantora":    {"txt": "Vença 20 chefes", "ach": "ACH_HEROI_CANTORA", "tipo": "contador", "c": "chefes", "meta": 20},
 }
 static func heroi_desbloqueado(id: String) -> bool:
 	if not DESBLOQUEIOS.has(id): return true
@@ -143,6 +167,22 @@ const GOLPES := {
 	"rede_pesca":    {"nome": "Rede de Pesca", "build": "maruja", "tipo": "ring", "dmg": 21.0, "cd": 1.15, "raio": 3.2, "knock": 1.0, "arte": "armada", "txt": "Lança a rede em volta, prende e machuca a bicharada."},
 	"mare_cheia":    {"nome": "Maré Cheia", "build": "maruja", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.6, "knock": 2.3, "arte": "reza", "txt": "Onda de maré que empurra tudo para longe."},
 	"canto_mar":     {"nome": "Canto do Mar", "build": "maruja", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.3, 0.55, 0.85), "arte": "fogofatuo", "txt": "Nota que ecoa n'água e persegue o bicho até estourar."},
+	# Jongo
+	"ponto_jongo":    {"nome": "Ponto de Jongo", "build": "jongo", "tipo": "ring", "dmg": 22.0, "cd": 1.2, "raio": 3.0, "stun": 0.6, "knock": 0.7, "arte": "guarda", "txt": "Roda de jongo bem no chão: acerta e atordoa quem chega perto."},
+	"adjunto":        {"nome": "Adjunto", "build": "jongo", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.4, "knock": 2.0, "arte": "berimbau", "txt": "Ponto cantado em resposta: onda que empurra a bicharada."},
+	"caxambu":        {"nome": "Caxambu", "build": "jongo", "tipo": "arco", "dmg": 26.0, "cd": 1.3, "raio": 3.2, "ang": 1.6, "knock": 1.2, "arte": "meialua", "txt": "Tambor grave que acerta forte na frente."},
+	# Choro
+	"flautim":        {"nome": "Flautim", "build": "choro", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.9, 0.78, 0.3), "arte": "papoamarelo", "txt": "Nota rápida na flauta: atira afiado na frente."},
+	"chorinho":       {"nome": "Chorinho", "build": "choro", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.9, 0.78, 0.3), "arte": "fogofatuo", "txt": "Melodia que persegue o bicho até estourar."},
+	"regional":       {"nome": "Regional", "build": "choro", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.6, "knock": 2.1, "arte": "reza", "txt": "O conjunto inteiro toca junto: onda que empurra tudo."},
+	# Cerâmica de Caruaru
+	"boneco_barro":   {"nome": "Boneco de Barro", "build": "ceramica", "tipo": "ring", "dmg": 23.0, "cd": 1.25, "raio": 3.1, "stun": 0.5, "knock": 0.6, "arte": "rasteira", "txt": "Bonecos de barro espalhados que estouram em volta."},
+	"figurinha_barro":{"nome": "Figurinha de Barro", "build": "ceramica", "tipo": "arco", "dmg": 26.0, "cd": 1.5, "raio": 3.2, "ang": 1.5, "knock": 1.0, "arte": "peixeira", "txt": "Arremessa uma figurinha de barro na direção do bicho."},
+	"panela_barro":   {"nome": "Panela de Barro", "build": "ceramica", "tipo": "proj_estoura", "dmg": 24.0, "cd": 2.0, "vel": 10.0, "raio": 0.45, "vida": 1.9, "alcance": 20.0, "boom": 2.6, "cor": Color(0.68, 0.38, 0.2), "arte": "garrafada", "txt": "Panela de barro que se espatifa numa área grande."},
+	# Cantora de MPB
+	"grito_elis":     {"nome": "Grito de Elis", "build": "mpb", "tipo": "ring", "dmg": 20.0, "cd": 1.0, "raio": 3.1, "knock": 1.2, "arte": "armada", "txt": "Grito que sacode tudo em volta."},
+	"cancao_forte":   {"nome": "Canção Forte", "build": "mpb", "tipo": "onda", "dmg": 17.0, "cd": 2.8, "raio": 5.5, "knock": 2.2, "arte": "berimbau", "txt": "Canção na voz cheia: onda que empurra a bicharada."},
+	"nota_presa":     {"nome": "Nota Presa", "build": "mpb", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.2, "vel": 11.0, "raio": 0.42, "vida": 3.3, "alcance": 25.0, "boom": 1.4, "cor": Color(0.68, 0.2, 0.55), "arte": "fogofatuo", "txt": "Nota longa que persegue o bicho até estourar."},
 }
 
 # Dano do golpe no nível atual (sobe 25% por nível acima do 1).
@@ -220,6 +260,14 @@ const HABILIDADES := {
 		"r": {"nome": "Roda de Angola", "dur": 4.5, "txt": "4,5 s de ginga baixa acertando em volta sem parar"}},
 	"marujo": {"q": {"nome": "Rede Certeira", "cd": 7.0, "txt": "uma nota que atravessa tudo na frente"},
 		"r": {"nome": "Canto da Maré", "dur": 5.0, "txt": "5 s soltando notas para todos os lados"}},
+	"jongueira": {"q": {"nome": "Giro de Jongo", "cd": 8.0, "txt": "giro de jongo intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Roda de Jongo", "dur": 6.0, "txt": "6 s girando sem parar, de tambor na mão"}},
+	"chorao": {"q": {"nome": "Solo Certeiro", "cd": 7.0, "txt": "uma nota que atravessa tudo na frente"},
+		"r": {"nome": "Roda de Choro", "dur": 5.0, "txt": "5 s soltando notas para todos os lados"}},
+	"ceramista": {"q": {"nome": "Arremesso Certeiro", "cd": 7.0, "txt": "uma figurinha de barro que atravessa tudo"},
+		"r": {"nome": "Fornada de Barro", "dur": 5.0, "txt": "5 s arremessando barro para todos os lados"}},
+	"cantora": {"q": {"nome": "Giro Vocal", "cd": 8.0, "txt": "giro intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Canção Infinita", "dur": 6.0, "txt": "6 s cantando sem parar, de voz em voz"}},
 }
 const ULT_ABATES := 60          # abates para carregar o ultimate
 
@@ -308,6 +356,12 @@ const PIADAS := {
 	"cabecada": "Na cabeça é que a ideia bate.", "negativa": "Na negativa é que mora a manha.",
 	"rede_pesca": "Rede bem lançada não volta vazia.", "mare_cheia": "Maré cheia não espera ninguém.",
 	"canto_mar": "Canto do mar, ninguém esquece.",
+	"ponto_jongo": "Jongo bom se responde cantando.", "adjunto": "Quem pergunta, adjunto responde.",
+	"caxambu": "Caxambu que é bom ecoa longe.", "flautim": "Flauta boa não erra a nota.",
+	"chorinho": "Chorinho que é bom, chora rindo.", "regional": "Roda boa é roda cheia.",
+	"boneco_barro": "Barro bom não quebra fácil. Esse quebra.", "figurinha_barro": "Figurinha de Caruaru não erra o alvo.",
+	"panela_barro": "Panela rachada ainda ferve.", "grito_elis": "Grito que vem do peito não cala.",
+	"cancao_forte": "Canção forte ninguém esquece.", "nota_presa": "Nota presa na garganta, solta no ar.",
 }
 
 # Bodega do Lampião: o que se compra com as moedas da partida.

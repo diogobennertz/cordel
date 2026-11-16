@@ -75,14 +75,11 @@ var _slots: Array = []
 var caixa_inv: HFlowContainer   # mini inventário: as cartas de atributo pegas
 var _inv_n := -1
 var minimapa: MiniMapa
-var mapa_grande: MiniMapa
-var mapa_fundo: Control
-var _mapa_fundo_cor: ColorRect
 var jogadores_rede := {}       # peer_id -> Jogador (só usado no co-op)
 var enemies_por_net_id := {}   # net_id -> Inimigo (bicho replicado pela rede)
 var _proximo_net_id := 0
 var painel_info: PanelContainer
-var lbl_info: Label
+var caixa_placar: HBoxContainer
 var pixel: ColorRect
 var _start_ant := false
 var tiros: Array = []          # bolas de fogo dos chefes
@@ -386,15 +383,6 @@ func _montar_hud() -> void:
 	minimapa = MiniMapa.new(); minimapa.w = self; minimapa.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	minimapa.anchor_left = 1; minimapa.anchor_right = 1; minimapa.offset_left = -208; minimapa.offset_right = -14; minimapa.offset_top = 12; minimapa.offset_bottom = 206
 	hud.add_child(minimapa)
-	# mapa grande: aparece SEGURANDO Tab, enquanto o jogo continua rodando (dá pra se mexer olhando o mapa)
-	mapa_fundo = Control.new(); mapa_fundo.set_anchors_preset(Control.PRESET_FULL_RECT); mapa_fundo.visible = false
-	mapa_fundo.mouse_filter = Control.MOUSE_FILTER_IGNORE; hud.add_child(mapa_fundo)
-	_mapa_fundo_cor = ColorRect.new(); _mapa_fundo_cor.color = Color(0.1, 0.07, 0.05, 0.4)
-	_mapa_fundo_cor.anchor_left = 0.5; _mapa_fundo_cor.anchor_right = 0.5; _mapa_fundo_cor.anchor_top = 0.5; _mapa_fundo_cor.anchor_bottom = 0.5
-	mapa_fundo.add_child(_mapa_fundo_cor)
-	mapa_grande = MiniMapa.new(); mapa_grande.w = self; mapa_grande.grande = true; mapa_grande.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	mapa_grande.anchor_left = 0.5; mapa_grande.anchor_right = 0.5; mapa_grande.anchor_top = 0.5; mapa_grande.anchor_bottom = 0.5
-	mapa_fundo.add_child(mapa_grande)
 	lbl_dir = _label(17, HORIZONTAL_ALIGNMENT_RIGHT)
 	lbl_dir.anchor_left = 1; lbl_dir.anchor_right = 1; lbl_dir.offset_left = -400; lbl_dir.offset_right = -14; lbl_dir.offset_top = 210; hud.add_child(lbl_dir)
 	# mini inventário: cartas de atributo pegas, no canto de cima à esquerda
@@ -422,8 +410,9 @@ func _montar_hud() -> void:
 	barra_xp.position = Vector2(79, 55); barra_xp.size = Vector2(0, 8); canto.add_child(barra_xp)
 	# painel da build (segurar Tab)
 	painel_info = Tela.painel(Color(1.0, 0.97, 0.86, 0.96), 3)
-	painel_info.anchor_top = 0.5; painel_info.anchor_bottom = 0.5; painel_info.offset_left = 14; painel_info.grow_vertical = Control.GROW_DIRECTION_BOTH
-	lbl_info = Tela.rotulo("", 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT); painel_info.add_child(lbl_info)
+	painel_info.anchor_left = 0.5; painel_info.anchor_right = 0.5; painel_info.anchor_top = 0.08; painel_info.anchor_bottom = 0.08
+	painel_info.grow_horizontal = Control.GROW_DIRECTION_BOTH; painel_info.grow_vertical = Control.GROW_DIRECTION_END
+	caixa_placar = HBoxContainer.new(); caixa_placar.add_theme_constant_override("separation", 10); painel_info.add_child(caixa_placar)
 	painel_info.visible = false; painel_info.mouse_filter = Control.MOUSE_FILTER_IGNORE; hud.add_child(painel_info)
 	# quadrinhos dos golpes, do especial e do ultimate, embaixo no meio
 	caixa_slots = HBoxContainer.new(); caixa_slots.anchor_left = 0.5; caixa_slots.anchor_right = 0.5; caixa_slots.anchor_top = 1; caixa_slots.anchor_bottom = 1
@@ -501,7 +490,7 @@ func _spawnar_jogador_rede(id: int, heroi: String) -> void:
 	j.set_multiplayer_authority(id)
 	var sinc := MultiplayerSynchronizer.new(); sinc.name = "Sincronia"
 	var cfg := SceneReplicationConfig.new()
-	for campo in ["position", "rotation"]:
+	for campo in ["position", "rotation", "level", "max_hp", "hp", "dano_mult", "crit", "crit_dano", "atk_speed", "area_mult", "armor", "regen", "golpes"]:
 		var np := NodePath(".:%s" % campo)
 		cfg.add_property(np); cfg.property_set_replication_mode(np, SceneReplicationConfig.REPLICATION_MODE_ALWAYS)
 	sinc.replication_config = cfg
@@ -762,17 +751,20 @@ func _notification(what: int) -> void:      # trocou de janela no meio da fase: 
 func _dirigir(delta: float) -> void:
 	if Rede.ativo() and not Rede.sou_host(): return   # só quem hospeda manda nos bichos
 	var fm: float = Dados.FASES[fase]["mult"]
-	var forca := (1.0 + time / 75.0) * fm * praga
-	var intervalo := maxf(0.2, 0.95 - time / 800.0)
-	var teto := 150
+	# cada pessoa a mais no co-op deixa os bichos mais fortes e em mais quantidade, pra não ficar fácil demais
+	var qtd_jogadores := (Rede.ids().size() if Rede.ativo() else 1)
+	var mult_coop := 1.0 + 0.35 * (qtd_jogadores - 1)
+	var forca := (1.0 + time / 75.0) * fm * praga * mult_coop
+	var intervalo := maxf(0.2, 0.95 - time / 800.0) / (1.0 + 0.25 * (qtd_jogadores - 1))
+	var teto := int(150 * (1.0 + 0.5 * (qtd_jogadores - 1)))
 	var passo := 1.0
 	if chefe_morto:
 		extra_t += delta
 		forca *= pow(1.0 + extra_t / 60.0, 1.6)
-		intervalo = maxf(0.05, 0.3 - extra_t / 600.0); teto = 230
+		intervalo = maxf(0.05, 0.3 - extra_t / 600.0) / (1.0 + 0.25 * (qtd_jogadores - 1)); teto = int(230 * (1.0 + 0.5 * (qtd_jogadores - 1)))
 		passo = minf(1.8, 1.0 + extra_t / 300.0)
 	elif furia:
-		intervalo *= 0.3; teto = 230; passo = 1.25
+		intervalo *= 0.3; teto = int(230 * (1.0 + 0.5 * (qtd_jogadores - 1))); passo = 1.25
 	spawn_t -= delta
 	if spawn_t <= 0.0 and enemies.size() < teto:
 		spawn_t = intervalo
@@ -1791,18 +1783,15 @@ func _hud() -> void:
 	lbl_topo.text = _mmss(time)
 	lbl_nv.text = "NÍVEL %d" % p.level
 	lbl_dir.text = "☠ %d   ◉ %d" % [kills, int(moedas)]
-	mapa_fundo.visible = Ctrl.ap("mapa") and not levelup_aberto
-	if mapa_fundo.visible:
-		var vp := get_viewport().get_visible_rect().size
-		var lado := minf(vp.x, vp.y) * 0.6
-		mapa_grande.offset_left = -lado * 0.5; mapa_grande.offset_right = lado * 0.5
-		mapa_grande.offset_top = -lado * 0.5; mapa_grande.offset_bottom = lado * 0.5
-		var pad := lado * 0.5 + 16.0
-		_mapa_fundo_cor.offset_left = -pad; _mapa_fundo_cor.offset_right = pad
-		_mapa_fundo_cor.offset_top = -pad; _mapa_fundo_cor.offset_bottom = pad
+	# segurando Tab, o minimapa do canto só aumenta no lugar dele mesmo — não cobre a tela
+	var mapa_ampliado: bool = Ctrl.ap("mapa") and not levelup_aberto
+	var lado_map := (380.0 if mapa_ampliado else 194.0)
+	minimapa.offset_right = -14; minimapa.offset_left = -14 - lado_map
+	minimapa.offset_top = 12; minimapa.offset_bottom = 12 + lado_map
+	lbl_dir.offset_top = 12 + lado_map + 4.0
 	_inventario()
 	painel_info.visible = Ctrl.ap("info")
-	if painel_info.visible: lbl_info.text = texto_build()
+	if painel_info.visible: _montar_placar()
 	if chefe_morto: lbl_sub.text = "Tempo extra %s · moedas ×%.1f · F sai com o que ganhou" % [_mmss(extra_t), 1.0 + extra_t / 90.0]
 	elif chefe_veio: lbl_sub.text = "%s, %s — %s" % [f["chefe_nome"], f["chefe_titulo"], "ENFURECIDO!" if furia else "enfurece em " + _mmss(furia_t)]
 	elif tut >= 0: lbl_sub.text = "Tutorial"
@@ -1862,15 +1851,31 @@ func _inventario() -> void:
 			var l := _label(13, HORIZONTAL_ALIGNMENT_RIGHT); l.text = "×%d" % conta[id]; l.position = Vector2(0, 16); l.size = Vector2(33, 18); q.add_child(l)
 		caixa_inv.add_child(q)
 
-func texto_build() -> String:
-	var j := player
-	var t := "%s · NÍVEL %d\n" % [String(Dados.CLASSES[j.classe]["apelido"]).to_upper(), j.level]
-	for g in j.golpes: t += "%s — nível %d\n" % [Dados.GOLPES[g["id"]]["nome"], g["nivel"]]
-	t += "\nVida %d / %d\nDano +%d%%\nCrítico %d%% (×%.1f)\nVel. de ataque +%d%%\nÁrea +%d%%\nDefesa %d%%\nRegenera %.1f/s\nPulos no ar: %d\n" % [
+# placar estilo "ver build" (Tab): uma coluna por pessoa na sala; sozinho, é só a sua
+func _montar_placar() -> void:
+	for c in caixa_placar.get_children(): c.queue_free()
+	var gente: Array = (Rede.ids() if Rede.ativo() else [0])
+	for id in gente:
+		var j = (jogadores_rede.get(id, null) if Rede.ativo() else player)
+		if j == null or not is_instance_valid(j): continue
+		caixa_placar.add_child(_coluna_placar(j, id))
+
+func _coluna_placar(j: Jogador, id: int) -> PanelContainer:
+	var c: Dictionary = Dados.CLASSES[j.classe]
+	var p := PanelContainer.new(); p.custom_minimum_size = Vector2(230, 0)
+	p.add_theme_stylebox_override("panel", Tela.caixa(Color(1.0, 0.97, 0.86), 3, c["cor"].darkened(0.2), 5))
+	var v := VBoxContainer.new(); v.add_theme_constant_override("separation", 3); p.add_child(v)
+	var nome: String = Rede.nome_por_id.get(id, "") if Rede.ativo() else ""
+	v.add_child(Tela.faixa((nome + " — " if nome != "" else "") + String(c["apelido"]).to_upper(), c["cor"], 13, Tela.TINTA))
+	v.add_child(Tela.rotulo("NÍVEL %d" % j.level, 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
+	for g in j.golpes: v.add_child(Tela.rotulo("%s — nv %d" % [Dados.GOLPES[g["id"]]["nome"], g["nivel"]], 12, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
+	var st := "Vida %d/%d  ·  Dano +%d%%\nCrítico %d%% (×%.1f)  ·  Atq +%d%%\nÁrea +%d%%  ·  Defesa %d%%  ·  Regen %.1f/s" % [
 		int(ceil(j.hp)), int(j.max_hp), int(round((j.dano_mult - 1.0) * 100.0)), int(round(j.crit * 100.0)), j.crit_dano,
-		int(round((j.atk_speed - 1.0) * 100.0)), int(round((j.area_mult - 1.0) * 100.0)), int(round(minf(0.7, j.armor) * 100.0)), j.regen, j.pulos_extra]
-	t += "\nMaior golpe: %s\nDano total: %s\nSequência: ×%d" % [Tela.num(maior_dano), Tela.num(dano_total), combo]
-	return t
+		int(round((j.atk_speed - 1.0) * 100.0)), int(round((j.area_mult - 1.0) * 100.0)), int(round(minf(0.7, j.armor) * 100.0)), j.regen]
+	v.add_child(Tela.texto(st, 11, 214, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
+	if id == Rede.meu_id() or not Rede.ativo():
+		v.add_child(Tela.texto("Maior golpe: %s\nDano total: %s\nSequência: ×%d" % [Tela.num(maior_dano), Tela.num(dano_total), combo], 11, 214, Tela.ANIL))
+	return p
 
 func _mmss(t: float) -> String:
 	return "%d:%02d" % [int(t) / 60, int(t) % 60]
@@ -1919,6 +1924,9 @@ func _shot_tela(nome: String) -> void:
 			player.position += Vector3(2, 0, 2)
 		elif nome == "cristo":
 			player.position = Vector3(0, 0, 4); cam_yaw = 0.0; cam_pitch = 0.2; cam_dist = 20.0
+		elif nome == "placar":
+			var ek := InputEventKey.new(); ek.physical_keycode = Ctrl.tecla("info"); ek.pressed = true
+			Input.parse_input_event(ek)
 		elif nome == "mapagrande":
 			_montar_objetos()
 			var ek := InputEventKey.new(); ek.physical_keycode = Ctrl.tecla("mapa"); ek.pressed = true

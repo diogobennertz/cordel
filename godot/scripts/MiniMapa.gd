@@ -4,7 +4,6 @@ class_name MiniMapa
 # Só ícone, sem nome escrito: com nome escrito polui e não dá pra ler de relance.
 
 var w
-var grande := false          # true = versão grande no meio da tela (segurando Tab)
 var _n := 0
 
 func _process(_d: float) -> void:
@@ -29,9 +28,10 @@ func _draw() -> void:
 		if e.is_boss: draw_circle(_p(e.position.x, e.position.z, r), 7.0, Color(1.0, 0.2, 0.6))
 		elif e.elite: draw_circle(_p(e.position.x, e.position.z, r), 4.2, Color(1.0, 0.85, 0.2))
 		else: draw_circle(_p(e.position.x, e.position.z, r), 2.2, Color(0.95, 0.3, 0.2))
+	var esc := size.x / 194.0   # ícones crescem junto quando o mapa aumenta
 	for o in w.objetos:
 		var p: Vector2 = _p(o["no"].position.x, o["no"].position.z, r)
-		var k := (6.0 if not grande else 9.0)
+		var k := 6.0 * esc
 		match o["tipo"]:
 			"bau": _icone(p, k, Color(1.0, 0.85, 0.3), 0)                              # quadrado dourado
 			"oratorio":
@@ -42,9 +42,9 @@ func _draw() -> void:
 				if Dados.NPCS.has(o["tipo"]): _icone(p, k, Color.WHITE, 1)             # losango branco (gente)
 	var pp: Vector3 = w.player.position
 	var pj := _p(pp.x, pp.z, r)
-	draw_circle(pj, 5.5, Tela.TINTA); draw_circle(pj, 3.8, Color.WHITE)
+	draw_circle(pj, 5.5 * esc, Tela.TINTA); draw_circle(pj, 3.8 * esc, Color.WHITE)
 	var seta: Vector2 = Vector2(0, -1)
-	draw_line(pj, pj + seta * (9.0 if not grande else 16.0), Color.WHITE, 2.5 if not grande else 3.5)
+	draw_line(pj, pj + seta * (9.0 * esc), Color.WHITE, 2.5 * esc)
 
 # ícone com contorno escuro, pra não sumir em cima do verde: 0 quadrado, 1 losango, 2 triângulo
 func _icone(p: Vector2, k: float, cor: Color, forma: int) -> void:

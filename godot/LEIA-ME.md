@@ -1,5 +1,16 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — mapa só aumenta no canto, placar corrigido, bichos mais fortes no co-op
+- O mapa grande (segurar Tab) agora só AUMENTA o minimapa do cantinho no lugar — não cobre mais a tela.
+- Corrigido um bug sério: o Godot sempre bota um "peer" padrão mesmo sozinho, e isso fazia o jogo achar
+  que o co-op tava sempre ligado (mesmo jogando sozinho). Agora `Rede.ativo()` só é `true` depois que
+  alguém realmente hospeda ou entra numa sala — isso que deixava o placar (Tab) vazio.
+- Placar do Tab (build sua e de todo mundo, estilo League of Legends) confirmado funcionando.
+- Co-op testado de verdade com 2 processos reais: posição, bichos, dano e XP/moedas compartilhados
+  continuam sincronizando certinho depois da correção acima.
+- Balanceado: cada pessoa a mais conectada no co-op deixa os bichos mais fortes, mais numerosos e que
+  nascem mais rápido (até +40% de bichos e +140% de força com a sala cheia de 5), pra não ficar fácil demais.
+
 ![prévia](preview.png)
 
 ![borda](preview_borda.png)

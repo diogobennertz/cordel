@@ -11,6 +11,8 @@ const MAX_JOGADORES := 5     # contando o anfitrião
 
 var heroi_por_id := {}       # peer_id (int) -> id da classe escolhida por essa pessoa
 var nome_por_id := {}        # peer_id (int) -> nome que a pessoa digitou
+var _ligado := false         # o Godot sempre bota um "OfflineMultiplayerPeer" por padrão, então
+                              # não dá pra usar "multiplayer_peer != null" pra saber se o co-op tá de verdade ligado
 
 signal entrou(id: int)
 signal saiu(id: int)
@@ -21,14 +23,15 @@ func _ready() -> void:
 	multiplayer.peer_connected.connect(func(id): entrou.emit(id))
 	multiplayer.peer_disconnected.connect(func(id):
 		heroi_por_id.erase(id); nome_por_id.erase(id); saiu.emit(id))
-	multiplayer.connection_failed.connect(func(): falhou.emit("Não consegui conectar. Confira o endereço e se os dois estão na mesma rede."))
-	multiplayer.server_disconnected.connect(func(): falhou.emit("O anfitrião saiu da sala."))
+	multiplayer.connection_failed.connect(func(): _ligado = false; falhou.emit("Não consegui conectar. Confira o endereço e se os dois estão na mesma rede."))
+	multiplayer.server_disconnected.connect(func(): _ligado = false; falhou.emit("O anfitrião saiu da sala."))
 
 func hospedar() -> String:
 	var peer := ENetMultiplayerPeer.new()
 	var erro := peer.create_server(PORTA, MAX_JOGADORES - 1)
 	if erro != OK: return "Não consegui abrir a porta %d (erro %d). Outro programa já está usando ela?" % [PORTA, erro]
 	multiplayer.multiplayer_peer = peer
+	_ligado = true
 	heroi_por_id.clear(); nome_por_id.clear()
 	return ""
 
@@ -38,16 +41,18 @@ func entrar(ip: String) -> String:
 	var erro := peer.create_client(ip.strip_edges(), PORTA)
 	if erro != OK: return "Endereço inválido."
 	multiplayer.multiplayer_peer = peer
+	_ligado = true
 	heroi_por_id.clear(); nome_por_id.clear()
 	return ""
 
 func sair() -> void:
 	if multiplayer.multiplayer_peer: multiplayer.multiplayer_peer.close()
 	multiplayer.multiplayer_peer = null
+	_ligado = false
 	heroi_por_id.clear(); nome_por_id.clear()
 
 func ativo() -> bool:
-	return multiplayer.multiplayer_peer != null
+	return _ligado
 
 func sou_host() -> bool:
 	return ativo() and multiplayer.is_server()

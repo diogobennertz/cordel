@@ -135,3 +135,11 @@ tradução (os textos ainda estão soltos no código), coop Steam/LAN, exportaç
 `python instalador/publicar.py [endereço]` gera em `dist/`: `Cordelame-Instalar.exe` (instala sem senha de administrador e cria
 atalho) e `jogo.zip` + `versao.txt`. O jogo instalado abre por `Jogar.ps1`, que, se houver endereço em `atualizacao.txt`,
 compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abrir. O endereço precisa ser acessível sem login.
+
+
+## Publicado no GitHub
+- Código-fonte (privado): https://github.com/diogobennertz/cordelame
+- Para os colegas baixarem e jogarem (público, só os arquivos prontos): https://github.com/diogobennertz/cordelame-jogo/releases/latest
+- Para publicar uma versão nova depois de mexer no jogo: `bash instalador/publicar_github.sh "mensagem"` (sobe o código, gera o
+  instalador, sobe a atualização e cria a release — tudo de uma vez). Quem já instalou recebe a atualização sozinho ao abrir o jogo.
+- Para testar o instalador sem bagunçar o atalho de quem está desenvolvendo: `powershell instalador/testar.ps1`.

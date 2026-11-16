@@ -31,6 +31,8 @@ Source: "{#Fonte}\versao.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#Fonte}\atualizacao.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#Raiz}\COMO-JOGAR.txt"; DestDir: "{app}"; Flags: ignoreversion
 
+; AVISO: o atalho da Área de Trabalho SÓ deve ser testado com /DSemAtalho=1 (nunca na máquina de quem
+; está desenvolvendo — ele sobrescreve e, no desinstalar, apaga o atalho real do JOGAR.bat).
 [Icons]
 #ifndef SemAtalho
 Name: "{autodesktop}\Cordelame"; Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File ""{app}\Jogar.ps1"""; WorkingDir: "{app}"; IconFilename: "{app}\motor\Cordelame.exe"

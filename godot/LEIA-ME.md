@@ -234,6 +234,17 @@ tradução (os textos ainda estão soltos no código), coop Steam/LAN, exportaç
 - Testes novos: `-- --bot <classe> --tut` (tutorial inteiro), `--extras` (pombas, guarda do Seu Zé), `--poder todos`,
   `--tela <nome do aliado> --npc <nome>`.
 
+## Novidades de 16/11 (noite): retratos de verdade via IA local
+- Os 28 heróis desbloqueáveis que ainda caíam no boneco 3D genérico agora têm um retrato pintado de verdade
+  (igual os 6 originais), gerado por IA rodando no próprio computador (sem gastar nada em serviço de nuvem):
+  modelo `kohbanye/pixel-art-style` (Stable Diffusion treinado em pixel art) via `diffusers`, fundo removido
+  com `rembg`. Deu pra rodar só na CPU (26 passos, 448x576) — ~2min por herói, lote de 28 em ~1h.
+- **Achado real**: `s_maracatuzeiro.png` não importava no Godot (erro silencioso, sem motivo aparente). A causa
+  era o limite de 260 caracteres do Windows no caminho — o nome do arquivo de cache fica gigante dentro da pasta
+  de projeto. Corrigido renomeando pra nomes curtos (`s_maracatu.png`, `s_cangchefe.png`) com um dicionário de
+  "apelido de arquivo" no código (`Menus.APELIDO_ARQUIVO`) pra não precisar mudar o id do herói em lugar nenhum.
+- Regressão completa nos 32 heróis (headless, sem erro de script).
+
 ## Distribuir
 `python instalador/publicar.py [endereço]` gera em `dist/`: `Cordelame-Instalar.exe` (instala sem senha de administrador e cria
 atalho) e `jogo.zip` + `versao.txt`. O jogo instalado abre por `Jogar.ps1`, que, se houver endereço em `atualizacao.txt`,

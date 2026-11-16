@@ -630,9 +630,13 @@ func loja() -> void:
 	vb.add_child(bs)
 
 # ---------------- gente do mapa: retrato, balão de fala e o que oferece ----------------
-# retrato: SEMPRE o boneco 3D de verdade, pra todo mundo ficar no mesmo estilo (nenhum herói
-# usa mais o retrato 2D desenhado à mão — ele existia só pros 6 primeiros e deixava diferente dos novos)
+# nome de arquivo mais curto pra quem tem o "id" comprido — o caminho completo do cache de import
+# do Godot pode passar dos 260 caracteres do Windows com o id inteiro (aconteceu de verdade aqui)
+const APELIDO_ARQUIVO := {"maracatuzeiro": "maracatu", "cangaceiro_chefe": "cangchefe"}
+# retrato: usa a arte 2D (desenhada à mão ou gerada) se já existir; senão cai pro boneco 3D ao vivo
 func _retrato_heroi(id: String, tam: Vector2) -> Control:
+	var arq: String = APELIDO_ARQUIVO.get(id, id)
+	if Tela.tex("s_" + arq): return Tela.imagem("s_" + arq, tam)
 	return _retrato3d(id, tam)
 
 # bicho/chefe: usa o retrato 2D se já existir; senão (chefes novos, tipo o Minhocão) mostra o boneco 3D

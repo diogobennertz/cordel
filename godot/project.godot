@@ -8,7 +8,7 @@ config_version=5
 config/name="Cordelame"
 config/description="Esqueleto 2.5D: mundo 3D + bonecos de cordel chapados. Etapa 1 do PLANO-3D-STEAM."
 run/main_scene="res://scenes/World.tscn"
-config/features=PackedStringArray("4.2")
+config/features=PackedStringArray("4.3")
 config/icon="res://art/capoeirista.png"
 
 [autoload]

@@ -80,6 +80,8 @@ var minimapa: MiniMapa
 var jogadores_rede := {}       # peer_id -> Jogador (só usado no co-op)
 var enemies_por_net_id := {}   # net_id -> Inimigo (bicho replicado pela rede)
 var _proximo_net_id := 0
+var objetos_por_net_id := {}   # net_id -> objeto do mapa (pote/baú/oratório/loja/portal/gente), replicado no co-op
+var _proximo_net_id_objeto := 0
 var painel_info: PanelContainer
 var caixa_placar: HBoxContainer
 var pixel: ColorRect
@@ -506,6 +508,7 @@ func iniciar_coop() -> void:
 	jogadores_rede.clear(); player = null
 	lbl_centro.text = "CO-OP (LAN)"; _piscar_centro()
 	Rede.apresentar_se(sel_heroi, String(Salvo.d["nome_jogador"]))
+	if Rede.sou_host(): _montar_objetos()   # só o anfitrião decide o mapa; o convidado recebe tudo por RPC
 	_mouse(true)
 
 func _coop_spawns() -> void:
@@ -1275,7 +1278,9 @@ func _montar_objetos() -> void:
 	if Dados.FASES[fase].get("cristo", false): _montar_cristo()
 
 # custo 0 = baú de graça (caiu de elite ou de chefe); custo 1 = trancado, paga com as moedas da partida
-func _novo_objeto(tipo: String, pos: Vector3, custo: int) -> void:
+# net_id = -1 quando é um objeto novo de verdade (decide replicar pro co-op se eu for o anfitrião);
+# vem preenchido quando é o anfitrião me mandando o objeto dele por RPC (aí eu só construo, não replico de novo)
+func _novo_objeto(tipo: String, pos: Vector3, custo: int, net_id: int = -1) -> void:
 	var n := Node3D.new(); n.position = Vector3(pos.x, Lib.h(pos.x, pos.z), pos.z); add_child(n)
 	var o := {"tipo": tipo, "no": n, "custo": custo, "carga": 0.0, "usado": false, "aviso": 0.0, "lbl": null, "vida_npc": -1.0}
 	if Dados.NPCS.has(tipo): o["vida_npc"] = randf_range(50.0, 85.0)   # gente do mapa não fica pra sempre: some depois de um tempo
@@ -1360,8 +1365,58 @@ func _novo_objeto(tipo: String, pos: Vector3, custo: int) -> void:
 			var lz := OmniLight3D.new(); lz.light_color = Color(1.0, 0.75, 0.35); lz.light_energy = 2.0; lz.omni_range = 7.0; lz.position = Vector3(0, 2.0, 0); n.add_child(lz)
 			o["lbl"] = _placa(n, 3.5, Color(1.0, 0.8, 0.3)); o["lbl"].text = "BODEGA DO\nLAMPIÃO"
 			n.rotation.y = atan2(-pos.x, -pos.z)
+	if net_id >= 0:
+		o["net_id"] = net_id; objetos_por_net_id[net_id] = o
+	elif Rede.ativo() and Rede.sou_host():
+		_proximo_net_id_objeto += 1
+		o["net_id"] = _proximo_net_id_objeto; objetos_por_net_id[_proximo_net_id_objeto] = o
+		_spawnar_objeto_rede.rpc(_proximo_net_id_objeto, tipo, pos, custo)
 	objetos.append(o)
 	_placas_bau()
+
+@rpc("authority", "call_remote", "reliable")
+func _spawnar_objeto_rede(net_id: int, tipo: String, pos: Vector3, custo: int) -> void:
+	if Rede.sou_host(): return
+	_novo_objeto(tipo, pos, custo, net_id)
+
+# o anfitrião é quem decide quando um objeto compartilhado some (pote pego, baú aberto, portal usado, gente que foi embora)
+func _remover_objeto_rede_todos(net_id: int) -> void:
+	if Rede.ativo() and Rede.sou_host(): _remover_objeto_rede.rpc(net_id)
+	_remover_objeto_local(net_id)
+
+func _remover_objeto_local(net_id: int) -> void:
+	var o = objetos_por_net_id.get(net_id)
+	objetos_por_net_id.erase(net_id)
+	if o == null: return
+	objetos.erase(o)
+	if is_instance_valid(o["no"]): o["no"].queue_free()
+
+# tira o objeto do mapa — se tiver net_id (co-op), avisa todo mundo; senão (sozinho) só remove na hora
+func _remover_objeto(o: Dictionary) -> void:
+	if o.has("net_id"): _remover_objeto_rede_todos(o["net_id"])
+	else:
+		objetos.erase(o)
+		if is_instance_valid(o["no"]): o["no"].queue_free()
+
+@rpc("authority", "call_remote", "reliable")
+func _remover_objeto_rede(net_id: int) -> void:
+	_remover_objeto_local(net_id)
+
+# pro oratório: ele não some (fica o altar), só fica "usado" (sem a placa/luz) pra todo mundo ver
+func _marcar_objeto_usado_rede_todos(net_id: int) -> void:
+	if Rede.ativo() and Rede.sou_host(): _marcar_objeto_usado_rede.rpc(net_id)
+	_marcar_objeto_usado_local(net_id)
+
+func _marcar_objeto_usado_local(net_id: int) -> void:
+	var o = objetos_por_net_id.get(net_id)
+	if o == null: return
+	o["usado"] = true
+	if o.get("lbl"): o["lbl"].text = ""
+	if o.get("luz"): o["luz"].light_energy = 0.0
+
+@rpc("authority", "call_remote", "reliable")
+func _marcar_objeto_usado_rede(net_id: int) -> void:
+	_marcar_objeto_usado_local(net_id)
 
 func _placa(pai: Node3D, alt: float, cor: Color) -> Label3D:
 	var l := Label3D.new(); l.billboard = BaseMaterial3D.BILLBOARD_ENABLED; l.font = Tela.fonte(true)
@@ -1393,7 +1448,7 @@ func _objetos(delta: float) -> void:
 					else:
 						var v := randi_range(3, 6); moedas += v; Som.tocar("moeda", -4.0)
 						dano_num(n.position, "◉ +%d" % v, Color(1.0, 0.85, 0.3), 46, true)
-					n.queue_free(); objetos.erase(o)
+					_remover_objeto(o)
 			"bau":
 				n.scale = Vector3.ONE * (1.0 + 0.05 * sin(time * 5.0))
 				o["aviso"] = maxf(0.0, o["aviso"] - delta)
@@ -1404,7 +1459,7 @@ func _objetos(delta: float) -> void:
 						if o["custo"] > 0: bau_custo += 15
 						Salvo.contar("baus")
 						_puff(n.position, Color(1.0, 0.8, 0.2), 1.6); _efeito_anel(n.position, 3.0, Color(1.0, 0.85, 0.3)); tremor = maxf(tremor, 0.25)
-						n.queue_free(); objetos.erase(o); _placas_bau()
+						_remover_objeto(o); _placas_bau()
 						abrir_escolha("bau")
 					elif o["aviso"] <= 0.0:
 						o["aviso"] = 1.5; dano_num(n.position, "faltam ◉ %d" % int(ceil(preco - moedas)), Color(1.0, 0.5, 0.4), 44, true)
@@ -1413,8 +1468,9 @@ func _objetos(delta: float) -> void:
 				if d < 1.4:
 					_puff(n.position, Color(0.7, 0.35, 1.0), 2.0); _efeito_anel(n.position, 5.0, Color(0.7, 0.35, 1.0)); tremor = 0.6
 					var pos_p: Vector3 = n.position
-					n.queue_free(); objetos.erase(o)
-					_cuca(pos_p)
+					_remover_objeto(o)
+					if Rede.ativo() and not Rede.sou_host(): _pedir_cuca_rede.rpc_id(1, pos_p)
+					else: _cuca(pos_p)   # sozinho, ou anfitrião: eu mesmo faço nascer a Cuca (só o anfitrião tem autoridade pra replicar bicho)
 			"loja":
 				if d > 4.5: o["usado"] = false
 				elif d < 2.4 and not o["usado"]:
@@ -1423,11 +1479,12 @@ func _objetos(delta: float) -> void:
 				if d > 4.5: o["usado"] = false
 				elif d < 2.2 and not o["usado"]:
 					o["usado"] = true; abrir_npc(o["tipo"])
-				if o["vida_npc"] > 0.0 and d > 3.0:   # não some bem na cara de quem tá conversando perto
+				# só o anfitrião decide quando a gente do mapa vai embora, pra não sumir num PC e continuar no outro
+				if (not Rede.ativo() or Rede.sou_host()) and o["vida_npc"] > 0.0 and d > 3.0:
 					o["vida_npc"] -= delta
 					if o["vida_npc"] <= 0.0:
 						_puff(n.position, Color(0.85, 0.85, 0.95), 1.4)
-						n.queue_free(); objetos.erase(o)
+						_remover_objeto(o)
 			"oratorio":
 				if o["usado"]: continue
 				if d < 3.2:
@@ -1435,6 +1492,7 @@ func _objetos(delta: float) -> void:
 					o["lbl"].text = "ORATÓRIO\n%d%%" % int(o["carga"] / 4.0 * 100.0)
 					if o["carga"] >= 4.0:
 						o["usado"] = true; o["lbl"].text = ""; o["luz"].light_energy = 0.0
+						if o.has("net_id"): _marcar_objeto_usado_rede_todos(o["net_id"])
 						Salvo.contar("oratorios")
 						_efeito_anel(n.position, 4.0, Color(0.6, 0.9, 1.0)); _efeito_anel(n.position, 2.4, Color.WHITE)
 						abrir_escolha("oratorio")
@@ -1779,6 +1837,12 @@ func _fim_tutorial() -> void:
 	get_tree().reload_current_scene()
 
 # mini-chefe do portal: a Cuca. Vencer rende muito XP, moedas e dois baús de graça.
+# convidado usou o portal: só o anfitrião tem autoridade pra fazer a Cuca nascer de verdade (pra replicar pros dois)
+@rpc("any_peer", "call_remote", "reliable")
+func _pedir_cuca_rede(pos: Vector3) -> void:
+	if not Rede.sou_host(): return
+	_cuca(pos)
+
 func _cuca(pos: Vector3) -> void:
 	var forca := (1.0 + time / 75.0) * float(Dados.FASES[fase]["mult"])
 	var c := _nascer("cuca", forca, 1.7, null, false)
@@ -1787,6 +1851,7 @@ func _cuca(pos: Vector3) -> void:
 	c.xp_val = 30.0 + time / 12.0; c.moeda_val = 60.0
 	lbl_centro.text = "A CUCA VEIO PEGAR!\nVença para levar o tesouro dela"; _piscar_centro()
 	Som.tocar("chefe")
+	_replicar_bicho(c)   # no-op sozinho; no co-op, é assim que o convidado também vê a Cuca
 
 func game_over() -> void:
 	_encerrar("VOCÊ CAIU NA MATA", Color(0.95, 0.4, 0.3))
@@ -2075,8 +2140,14 @@ func _teste_coop_relatar() -> void:
 		if not Rede.sou_host() and i == 9 and enemies.size() > 0:
 			var k := _ring(player.global_position, 6.0, 1000.0, 0.0, 0.0)
 			print("CLIENTE atacou — _ring acertou %d bicho(s)" % k)
-		print("COOP eu=%s id=%d tick=%d jogadores=%d bichos=%d nivel=%d xp=%.1f moedas=%.1f vida=%.1f/%.1f" % [
-			sel_heroi, Rede.meu_id(), i, jogadores_rede.size(), enemies.size(), player.level, player.xp, moedas, player.hp, player.max_hp])
+		if Rede.sou_host() and i == 6:
+			for o2 in objetos:
+				if o2["tipo"] == "pote":
+					player.position = o2["no"].position; player.alt = 0.0
+					print("HOST teleportou pro pote net_id=%s pra testar consumo sincronizado" % str(o2.get("net_id", "?")))
+					break
+		print("COOP eu=%s id=%d tick=%d jogadores=%d bichos=%d objetos=%d nivel=%d xp=%.1f moedas=%.1f vida=%.1f/%.1f" % [
+			sel_heroi, Rede.meu_id(), i, jogadores_rede.size(), enemies.size(), objetos.size(), player.level, player.xp, moedas, player.hp, player.max_hp])
 	get_tree().quit()
 
 func _teste_lock() -> void:

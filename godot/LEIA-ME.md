@@ -280,6 +280,22 @@ tradução (os textos ainda estão soltos no código), coop Steam/LAN, exportaç
   próprio par de ícones de Q/R, gerados na cor da própria classe (estrela dourada pro Q, espiral pro R).
   Conferido também que todo golpe/atributo/habilidade/melhoria/item de loja tem imagem de verdade (nenhum faltando).
 
+## Novidades de 16/11 (madrugada, continuação 2): mapa de verdade no co-op
+- **O MAIOR BURACO do co-op até agora**: pote, baú, oratório, loja, portal e gente do mapa simplesmente NÃO
+  EXISTIAM na partida em grupo (só no sozinho) — não era "não sincronizado", era "não aparecia". Agora o anfitrião
+  monta o mapa (`_montar_objetos()`) e manda cada objeto pros convidados por RPC; todo mundo vê exatamente os
+  mesmos potes/baús/oratórios/loja/portal/gente, nas mesmas posições.
+- Quando alguém pega um pote, abre um baú, ou um NPC vai embora, isso some pro grupo inteiro (não só na tela de
+  quem fez), pra ninguém ver uma coisa "fantasma" que já foi usada. Oratório não some (continua sendo um altar),
+  só fica "apagado" (sem luz/placa) pros dois depois de completar.
+- O portal pra Cuca (chefe bônus) agora também funciona em grupo: se for o convidado que entra no portal, ele pede
+  pro anfitrião (só ele tem autoridade pra fazer bicho nascer de verdade pela rede) — e a Cuca aparece pros dois.
+- Testado de verdade com dois processos reais conectados pela rede (não só no mesmo processo): confirmado que o
+  número de objetos bate igual nos dois lados, e que pegar um pote num lado soma no outro na mesma hora.
+- Ainda ficou de fora desta leva (vai ficar pra próxima vez): a carta de nível não aparece visualmente pro parceiro
+  quando o outro sobe de nível (ele sobe normal, só não é visto); loja/baú continuam com economia pessoal (cada um
+  paga com sua própria moeda, o que já fazia sentido assim).
+
 ## Distribuir
 `python instalador/publicar.py [endereço]` gera em `dist/`: `Cordelame-Instalar.exe` (instala sem senha de administrador e cria
 atalho) e `jogo.zip` + `versao.txt`. O jogo instalado abre por `Jogar.ps1`, que, se houver endereço em `atualizacao.txt`,
@@ -336,21 +352,29 @@ compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abr
   numa sala por IP local, até 5 pessoas; `Menus.coop()` é a tela (botão "CO-OP (LAN)" na capa); `World.iniciar_coop()` +
   `_spawnar_jogador_rede()` criam um `Jogador` por pessoa conectada, com `MultiplayerSynchronizer` replicando posição
   e rotação; `Player.gd` ignora input de quem não é "dono" do boneco (`get_multiplayer_authority()`).
-- **O que NÃO está pronto nesta 1ª versão**: bicho, chefe, carta, baú, moeda — nada disso está em rede ainda. Hoje é só
-  "andar junto e ver todo mundo"; o resto (o jogo de verdade, compartilhado) é o próximo passo.
-- **CONFIRMADO FUNCIONANDO** (movimento, nomes, bicho, combate e recompensa): dois processos reais do jogo (com
-  janela — em `--headless` a conexão trava, não descobri bem por quê, mas o jogo de verdade nunca roda headless) se
-  conectam, cada um tem o nome escolhido escrito em cima da cabeça, e agora:
+- **CONFIRMADO FUNCIONANDO** (movimento, nomes, bicho, mapa, combate e recompensa): dois processos reais do jogo
+  (com janela — em `--headless` a conexão trava, não descobri bem por quê, mas o jogo de verdade nunca roda
+  headless) se conectam, cada um tem o nome escolhido escrito em cima da cabeça, e agora:
+  - O anfitrião monta o mapa (pote/baú/oratório/loja/portal/gente) e manda tudo pros convidados por RPC
+    (`World._novo_objeto` → `_spawnar_objeto_rede`); todo mundo vê os mesmos objetos nas mesmas posições.
+    Quem usa um objeto (pega pote, abre baú, portal, gente que foi embora) avisa o grupo inteiro
+    (`_remover_objeto_rede`/`_marcar_objeto_usado_rede`), pra não sobrar "fantasma" na tela de quem não usou.
   - O anfitrião manda nascer e morrer os bichos pra todo mundo ver (`World._replicar_bicho`, `_spawnar_inimigo_rede`,
-    `_remover_inimigo_rede`). Os bichos perseguem quem estiver mais perto, seja quem for (`World._alvo_mais_perto`).
+    `_remover_inimigo_rede`), inclusive a Cuca que sai do portal (se for o convidado que usa o portal, ele pede
+    pro anfitrião com `_pedir_cuca_rede`, já que só o anfitrião tem autoridade pra fazer bicho nascer de verdade).
+    Os bichos perseguem quem estiver mais perto, seja quem for (`World._alvo_mais_perto`).
   - Golpe de QUALQUER jogador mata o bicho de verdade: se o bicho não é "seu" (é do anfitrião), o golpe vira um pedido
     pela rede (`retransmitir_dano`) e o anfitrião aplica de verdade.
   - Bicho que encosta em alguém manda a dor pela rede pra pessoa certa (`ferir_jogador`/`_sofrer_dano`), não só em quem hospeda.
   - **XP e moeda são compartilhados**: toda vez que um bicho morre, todo mundo na sala ganha o mesmo tanto (`_premiar_abate`),
     não só quem deu o golpe final — assim ninguém fica para trás.
   - Protegido contra erro se alguém desconectar no meio da luta (`_peer_aqui`).
-  - Ainda NÃO entraram: cartas de subir de nível de cada um (hoje cada um ainda sobe sozinho, sem avisar o outro —
-    funciona, só não é visto pelo parceiro), baú/oratório/loja/NPC/portal/poderes (continuam só locais, cada um vê o
-    seu), chefe com barra de vida/avisos sincronizados pro convidado. Próximos passos de verdade.
-  - Testes: `-- --coop-host` e `-- --coop-join <ip>` (cria um bicho de teste, separa os jogadores e confere dano/XP/moeda
-    nos dois lados pelos registros — sem precisar jogar na mão).
+  - Conferido no código (já funcionava desde antes, só não estava documentado): o chefe de verdade da fase
+    também já nasce e enfurece replicado pros dois (`_dirigir()` já era só-anfitrião, `_marcar_furia_rede`),
+    com barra de vida e aviso aparecendo certo pro convidado.
+  - Ainda NÃO entrou: a carta de subir de nível de cada um não aparece visualmente pro parceiro (hoje cada um
+    ainda sobe sozinho, sem avisar o outro — funciona, só não é visto). Loja/baú continuam com economia pessoal
+    de propósito (cada um paga com a própria moeda).
+  - Testes: `-- --coop-host` e `-- --coop-join <ip>` (cria um bicho de teste, teleporta o anfitrião até um pote pra
+    confirmar que o consumo soma igual nos dois lados, separa os jogadores e confere dano/XP/moeda/objetos nos
+    dois lados pelos registros — sem precisar jogar na mão).

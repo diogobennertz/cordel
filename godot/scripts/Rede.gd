@@ -2,9 +2,10 @@ extends Node
 # Rede: a base do co-op por LAN (rede local), até 5 pessoas — 1 anfitrião + 4 convidados.
 # Autoload (acessa-se por "Rede" de qualquer script). Usa o sistema de multiplayer de alto nível do Godot (ENet).
 #
-# ESTADO DE VERDADE (pra não enganar ninguém): isso aqui já conecta de verdade, já bota o boneco de cada pessoa
-# andando junto no mesmo mapa, sincronizado pela rede. O que AINDA NÃO FOI FEITO: bicho, carta, baú, chefe, moeda —
-# nada disso está em rede ainda. Hoje o co-op serve pra andar junto e ver todo mundo; o resto é o próximo passo.
+# ESTADO DE VERDADE (pra não enganar ninguém): isso aqui já conecta de verdade — bicho, chefe (de fase e a Cuca
+# do portal), mapa (pote/baú/oratório/loja/portal/gente), dano, XP e moeda já são compartilhados de verdade
+# (autoridade do anfitrião, ver World.gd). O que AINDA NÃO FOI FEITO: a carta de nível de cada um não aparece
+# visualmente pro parceiro (hoje cada um ainda sobe sozinho, sem avisar o outro — funciona, só não é visto).
 
 const PORTA := 7777
 const MAX_JOGADORES := 5     # contando o anfitrião

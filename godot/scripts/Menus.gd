@@ -96,18 +96,58 @@ func herois() -> void:
 	_limpar("herois")
 	Tela.fundo_papel(raiz)
 	var vb := _centro(8)
-	vb.add_child(Tela.titulo("t_heroi", 58))
-	var hb := _linha(vb, 12)
-	for id in Dados.CLASSES: hb.add_child(_carta_heroi(id))
+	vb.add_child(Tela.titulo("t_heroi", 46))
+	var corpo := _linha(vb, 16)
+	# esquerda: grade dos heróis (rola quando tiver muitos — hoje são poucos, mas vão chegar a ~20)
+	var scr := ScrollContainer.new(); scr.custom_minimum_size = Vector2(356, 424)
+	scr.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; corpo.add_child(scr)
+	var gr := GridContainer.new(); gr.columns = 3
+	gr.add_theme_constant_override("h_separation", 8); gr.add_theme_constant_override("v_separation", 8); scr.add_child(gr)
+	for id in Dados.CLASSES: gr.add_child(_icone_heroi(id))
+	# direita: ficha completa de quem está selecionado
+	corpo.add_child(_carta_heroi(w.sel_heroi))
 	var hf := _linha(vb, 12)
 	var fmax: int = mini(int(Salvo.d["fase_max"]), Dados.FASES.size() - 1)
 	w.sel_fase = clampi(w.sel_fase, 0, fmax)
 	for i in range(Dados.FASES.size()): hf.add_child(_carta_fase(i, fmax))
 	var hbt := _linha(vb, 16)
 	hbt.add_child(Tela.botao("VOLTAR", titulo, 18, Tela.PARDO, 200.0, 50.0))
-	var ac_jogar := func(): w.iniciar_jogo(w.sel_heroi, w.sel_fase, not bool(Salvo.d["tutorial"]))
+	var ac_jogar := func():
+		if bool(Salvo.d["tutorial"]): w.iniciar_jogo(w.sel_heroi, w.sel_fase, false)
+		else: perguntar_tutorial()
 	hbt.add_child(Tela.botao("JOGAR", ac_jogar, 26, Tela.URUCUM, 360.0, 50.0))
 	_moedas_tag()
+
+# quadradinho clicável de cada herói na grade (a ficha grande fica à direita, só do escolhido)
+func _icone_heroi(id: String) -> Button:
+	var c: Dictionary = Dados.CLASSES[id]
+	var sel: bool = id == w.sel_heroi
+	var b := Button.new(); b.custom_minimum_size = Vector2(112, 148); b.clip_contents = true
+	_estilo_carta(b, sel)
+	var v := _miolo(b, 6, 2)
+	v.add_child(Tela.imagem("s_" + id, Vector2(70, 88)))
+	v.add_child(Tela.texto(String(c["apelido"]), 12, 96, Tela.TINTA if not sel else Tela.URUCUM))
+	Tela.ignora_mouse(b)
+	b.pressed.connect(func():
+		w.sel_heroi = id; Salvo.d["heroi"] = id; herois())
+	return b
+
+# pergunta (só na primeira vez) se a pessoa quer fazer o tutorial antes da 1ª fase
+func perguntar_tutorial() -> void:
+	_limpar("pergtut")
+	Tela.escuro(raiz, 0.72)
+	var cc := CenterContainer.new(); cc.set_anchors_preset(Control.PRESET_FULL_RECT); raiz.add_child(cc)
+	var p := Tela.painel(Color(1.0, 0.97, 0.86)); cc.add_child(p)
+	var vb := VBoxContainer.new(); vb.add_theme_constant_override("separation", 16); p.add_child(vb)
+	vb.add_child(Tela.rotulo("Quer fazer um tutorial rápido antes de começar?", 22, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
+	vb.add_child(Tela.texto("Ensina os controles e como o jogo funciona. Pode jogar de novo quando quiser, pelo menu principal.", 14, 480))
+	var hb := _linha(vb, 16)
+	var ac_sim := func():
+		Salvo.d["tutorial"] = true; Salvo.salvar(); w.iniciar_jogo(w.sel_heroi, w.sel_fase, true)
+	var ac_nao := func():
+		Salvo.d["tutorial"] = true; Salvo.salvar(); w.iniciar_jogo(w.sel_heroi, w.sel_fase, false)
+	hb.add_child(Tela.botao("SIM", ac_sim, 20, Tela.URUCUM, 190.0, 50.0))
+	hb.add_child(Tela.botao("NÃO", ac_nao, 20, Tela.PARDO, 190.0, 50.0))
 
 func _estilo_carta(b: Button, marcado: bool, fundo: Color = Tela.PAPEL) -> void:
 	var claro := Color(1.0, 0.97, 0.86)
@@ -461,7 +501,7 @@ func _input(event: InputEvent) -> void:
 		_capt = ""; get_viewport().set_input_as_handled()
 		if tela == "opcoes": opcoes(_volta)
 		return
-	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B and tela in ["opcoes", "herois", "melhorias", "feitos", "loja", "lore", "npc", "pausa"]:
+	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B and tela in ["opcoes", "herois", "melhorias", "feitos", "loja", "lore", "npc", "pausa", "pergtut"]:
 		esc(); return
 	if tela == "lore" and event is InputEventKey and event.pressed and not event.echo and event.physical_keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE]:
 		get_viewport().set_input_as_handled(); w.fechar_loja(); return
@@ -589,3 +629,4 @@ func esc() -> void:
 		"loja", "lore", "npc": w.fechar_loja()
 		"opcoes": Salvo.salvar(); _volta.call()
 		"herois", "melhorias", "feitos": titulo()
+		"pergtut": herois()

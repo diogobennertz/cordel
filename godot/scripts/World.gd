@@ -75,6 +75,10 @@ var _slots: Array = []
 var caixa_inv: HFlowContainer   # mini inventário: as cartas de atributo pegas
 var _inv_n := -1
 var minimapa: MiniMapa
+var mapa_grande: MiniMapa
+var mapa_fundo: Control
+var mapa_aberto := false
+var _mapa_ant := false
 var painel_info: PanelContainer
 var lbl_info: Label
 var pixel: ColorRect
@@ -374,6 +378,16 @@ func _montar_hud() -> void:
 	minimapa = MiniMapa.new(); minimapa.w = self; minimapa.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	minimapa.anchor_left = 1; minimapa.anchor_right = 1; minimapa.offset_left = -208; minimapa.offset_right = -14; minimapa.offset_top = 12; minimapa.offset_bottom = 206
 	hud.add_child(minimapa)
+	# mapa grande (tecla M), escondido até abrir
+	mapa_fundo = Control.new(); mapa_fundo.set_anchors_preset(Control.PRESET_FULL_RECT); mapa_fundo.visible = false; hud.add_child(mapa_fundo)
+	var mf_cor := ColorRect.new(); mf_cor.color = Color(0.1, 0.07, 0.05, 0.6); mf_cor.set_anchors_preset(Control.PRESET_FULL_RECT); mapa_fundo.add_child(mf_cor)
+	mapa_grande = MiniMapa.new(); mapa_grande.w = self; mapa_grande.grande = true; mapa_grande.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mapa_grande.anchor_left = 0.5; mapa_grande.anchor_right = 0.5; mapa_grande.anchor_top = 0.5; mapa_grande.anchor_bottom = 0.5
+	mapa_grande.offset_left = -320; mapa_grande.offset_right = 320; mapa_grande.offset_top = -320; mapa_grande.offset_bottom = 320
+	mapa_fundo.add_child(mapa_grande)
+	var dica_mapa := _label(16, HORIZONTAL_ALIGNMENT_CENTER); dica_mapa.text = "%s fecha o mapa" % Ctrl.nome("mapa")
+	dica_mapa.anchor_left = 0.5; dica_mapa.anchor_right = 0.5; dica_mapa.offset_top = 332; dica_mapa.offset_left = -200; dica_mapa.offset_right = 200
+	mapa_fundo.add_child(dica_mapa)
 	lbl_dir = _label(17, HORIZONTAL_ALIGNMENT_RIGHT)
 	lbl_dir.anchor_left = 1; lbl_dir.anchor_right = 1; lbl_dir.offset_left = -400; lbl_dir.offset_right = -14; lbl_dir.offset_top = 210; hud.add_child(lbl_dir)
 	# mini inventário: cartas de atributo pegas, no canto de cima à esquerda
@@ -509,7 +523,8 @@ func _process(delta: float) -> void:
 	_seguir_camera(delta)
 	var st := Ctrl.start()                    # Start do controle = ESC
 	if st and not _start_ant:
-		if estado == "jogo" and not levelup_aberto: pausar()
+		if mapa_aberto: _alternar_mapa()
+		elif estado == "jogo" and not levelup_aberto: pausar()
 		else: menus.esc()
 	_start_ant = st
 	if Engine.get_process_frames() % 30 == 0: _pixel()
@@ -529,12 +544,20 @@ func _process(delta: float) -> void:
 	_pombas_girando(delta)
 	_poderes(delta)
 	_hud()
+	var map_ap := Ctrl.ap("mapa")
+	if map_ap and not _mapa_ant and not levelup_aberto: _alternar_mapa()
+	_mapa_ant = map_ap
 	var cj := Ctrl.cam()                      # analógico direito gira a câmera
 	if cj != Vector2.ZERO:
 		cam_yaw -= cj.x * 2.6 * delta * Tela.opc("sens")
 		cam_pitch = clampf(cam_pitch + cj.y * 1.6 * delta * Tela.opc("sens"), 0.08, 1.25)
 	if chefe_morto and Ctrl.ap("sair"): _encerrar("FASE VENCIDA!", Color(1.0, 0.85, 0.3))
 	_teste_tick()
+
+func _alternar_mapa() -> void:
+	mapa_aberto = not mapa_aberto
+	mapa_fundo.visible = mapa_aberto
+	if mapa_aberto: mapa_grande.queue_redraw()
 
 # câmera em terceira pessoa: orbita o herói conforme o mouse
 func _seguir_camera(delta: float) -> void:
@@ -568,7 +591,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN: cam_dist = minf(22.0, cam_dist + 0.8)
 		elif event.button_index == MOUSE_BUTTON_LEFT: _mouse(true)
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_ESCAPE:
-		if estado == "jogo" and not levelup_aberto: pausar()
+		if mapa_aberto: _alternar_mapa()
+		elif estado == "jogo" and not levelup_aberto: pausar()
 		else: menus.esc()
 
 # ---------------- pausa (ESC) e opções ----------------
@@ -1709,13 +1733,14 @@ func _shot_tela(nome: String) -> void:
 	sem_mouse = true
 	Salvo.d["moedas"] = 345; Salvo.d["fase_max"] = 1; Salvo.d["melhorias"] = {"capoeirista": {"dano": 3, "vida": 1}, "jiujitsu": {"dano": 7, "critico": 4}}; Salvo.d["recordes"] = {"0": 100.0}
 	Salvo.d["contadores"] = {"abates": 812, "abates_saci": 150, "chefes": 1, "uso_kimura": 40, "criticos": 300}
-	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles"]:
+	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut"]:
 		_montar_menu()
 		if nome == "herois": menus.herois()
 		elif nome == "melhorias": menus.melhorias()
 		elif nome == "feitos": menus.feitos()
 		elif nome == "opcoes": menus.opcoes(menus.titulo)
 		elif nome == "controles": menus._aba = "controles"; menus.opcoes(menus.titulo)
+		elif nome == "pergtut": _montar_menu(); menus.herois(); menus.perguntar_tutorial()
 	else:
 		iniciar_jogo("capoeirista" if nome != "nivel2" else "cangaceiro", 3 if nome == "cristo" else 0)
 		player.aplicar_carta({"tipo": "golpe_novo", "id": Dados.CLASSES[player.classe]["desbloqueia"].keys()[0]})
@@ -1739,6 +1764,8 @@ func _shot_tela(nome: String) -> void:
 			player.position += Vector3(2, 0, 2)
 		elif nome == "cristo":
 			player.position = Vector3(0, 0, 4); cam_yaw = 0.0; cam_pitch = 0.2; cam_dist = 20.0
+		elif nome == "mapagrande":
+			_montar_objetos(); _alternar_mapa()
 		elif Dados.NPCS.has(nome):
 			moedas = 70.0; _teste_fim = 0.0; Salvo.d["falas"][nome] = randi() % 5; abrir_npc(nome)
 		elif nome == "lore": abrir_escolha("lore:lobisomem")

@@ -156,3 +156,12 @@ compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abr
   bem maior (de ~122px para ~192px), com os pontos maiores e uma seta mostrando o herói.
 - **Mapa maior**: a clareira jogável cresceu de raio 42 para 60 (mais que o dobro de área); grama e flores mais densas.
 - Novo teste: `-- --teste-dash` confere isoladamente a arrancada parada.
+
+
+## Novidades de 16/11 (mapa grande, tutorial opcional, escolha de herói em grade)
+- **Tecla M (configurável)**: abre um mapa grande no meio da tela, com legenda escrita (Baú, Bodega, Oratório, Portal e o
+  nome de cada entidade). ESC, Start do controle ou M de novo fecha. O minimapa do canto também ficou maior.
+- **Tutorial opcional**: ao clicar JOGAR pela 1ª vez, o jogo pergunta "Sim/Não" em vez de forçar. A resposta não impede
+  jogar de novo o tutorial pelo botão TUTORIAL do menu principal (ou em Opções > Jogo), a qualquer momento.
+- **Escolha de herói em grade**: os heróis agora aparecem como ícones pequenos numa grade rolável à esquerda; a ficha
+  completa (vida, golpes, Q/R, pulo) do herói escolhido fica à direita. Pensado para escalar até ~20 personagens.

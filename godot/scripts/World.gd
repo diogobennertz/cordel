@@ -145,6 +145,8 @@ func _ready() -> void:
 		_bot(args[args.find("--bot") + 1] if args.find("--bot") + 1 < args.size() else "capoeirista")
 	elif "--teste-dash" in args:
 		_teste_dash()
+	elif "--teste-mundo" in args:
+		_teste_mundo()
 	elif "--coop-host" in args:
 		_teste_coop_host()
 	elif "--coop-join" in args:
@@ -195,7 +197,8 @@ func _bot(cls: String) -> void:
 
 func bot_dir() -> Vector3:
 	var pp: Vector3 = player.global_position
-	var quer: float = {"capoeirista": 2.2, "cangaceiro": 2.0 if player.golpes.size() < 2 else 5.0, "jiujitsu": 5.0, "benzedeira": 10.0, "frevista": 2.4, "cordelista": 9.0}[player.classe]
+	var quer: float = {"capoeirista": 2.2, "cangaceiro": 2.0 if player.golpes.size() < 2 else 5.0, "jiujitsu": 5.0, "benzedeira": 10.0, "frevista": 2.4, "cordelista": 9.0,
+		"sambista": 2.3, "maracatuzeiro": 5.0, "violeiro": 9.5, "carimbozeiro": 2.3}[player.classe]
 	if player.hp < player.max_hp * 0.35: quer += 5.0
 	var dir := Vector3.ZERO
 	var alvo = _nearest(pp, 80.0)
@@ -447,7 +450,8 @@ func _refazer_slots() -> void:
 	_slots = []
 	for g in player.golpes: _slots.append(_quadro(Dados.GOLPES[g["id"]]["arte"], "", 50.0))
 	var vao := Control.new(); vao.custom_minimum_size = Vector2(10, 0); caixa_slots.add_child(vao)
-	var artes: Array = {"capoeirista": ["au", "roda"], "jiujitsu": ["mataleao", "faixapreta"], "benzedeira": ["banho", "vela"], "cangaceiro": ["mira", "rei"], "frevista": ["atabaque", "estrela"], "cordelista": ["mira", "sol"]}[player.classe]
+	var artes: Array = {"capoeirista": ["au", "roda"], "jiujitsu": ["mataleao", "faixapreta"], "benzedeira": ["banho", "vela"], "cangaceiro": ["mira", "rei"], "frevista": ["atabaque", "estrela"], "cordelista": ["mira", "sol"],
+		"sambista": ["roda", "estrela"], "maracatuzeiro": ["mataleao", "vela"], "violeiro": ["mira", "sol"], "carimbozeiro": ["atabaque", "roda"]}[player.classe]
 	_slots.append(_quadro(artes[0], Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro(artes[1], Ctrl.nome("r").left(3), 60.0))
 
 func _hud_heroi() -> void:
@@ -1659,6 +1663,12 @@ func pousou(p: Jogador) -> void:
 		"cordelista":
 			_ring(p.global_position, 2.4 * p.area_mult, 6.0 * s, 0.8, 0.3)
 			_efeito_anel(p.global_position, 2.4 * p.area_mult, Dados.CLASSES[p.classe]["cor"])
+		"maracatuzeiro":   # queda pesada do alfaia: tremor e acerta em volta
+			_ring(p.global_position, 2.9 * p.area_mult, 7.0 * s, 0.8, 0.0)
+			_efeito_anel(p.global_position, 2.9 * p.area_mult, Dados.CLASSES[p.classe]["cor"]); tremor = maxf(tremor, 0.15)
+		"carimbozeiro":    # só empurra, não bate — como no frevista
+			_ring(p.global_position, 3.0 * p.area_mult, 0.0, 0.0, 2.2)
+			_efeito_anel(p.global_position, 3.0 * p.area_mult, Dados.CLASSES[p.classe]["cor"])
 
 # ---------------- tutorial ----------------
 const TUT := [
@@ -1958,7 +1968,7 @@ func _teste_coop_host() -> void:
 	sem_mouse = true    # teste automático: nunca prende o mouse do jogador de verdade
 	Salvo.d["nome_jogador"] = "Anfitriao"
 	sel_heroi = "capoeirista"; sel_fase = 0
-	var erro := Rede.hospedar()
+	var erro := Rede.hospedar("Mundo de Teste")
 	if erro != "": print("ERRO HOST: ", erro); get_tree().quit(); return
 	var espera := 0
 	while Rede.ids().size() < 2 and espera < 12:
@@ -1997,6 +2007,28 @@ func _teste_coop_relatar() -> void:
 			sel_heroi, Rede.meu_id(), i, jogadores_rede.size(), enemies.size(), player.level, player.xp, moedas, player.hp, player.max_hp])
 	get_tree().quit()
 
+func _teste_mundo() -> void:
+	Salvo.d["nome_jogador"] = "Diogo"   # campo pessoal: tem que sobreviver à troca de mundo
+	Salvo.entrar_mundo("Mundo de Teste XYZ123")
+	print("1) entrou no mundo novo — moedas=%d nome=%s (esperado: 0, Diogo)" % [int(Salvo.d["moedas"]), Salvo.d["nome_jogador"]])
+	Salvo.d["moedas"] = 777
+	Salvo.sair_mundo()
+	print("2) saiu do mundo — nome=%s (esperado: Diogo)" % Salvo.d["nome_jogador"])
+	Salvo.entrar_mundo("Mundo de Teste XYZ123")
+	print("3) voltou no MESMO mundo — moedas=%d (esperado: 777, igual salvou antes)" % int(Salvo.d["moedas"]))
+	Salvo.sair_mundo()
+	Salvo.entrar_mundo("Outro Mundo XYZ456")
+	print("4) entrou em mundo DIFERENTE — moedas=%d (esperado: 0, não pegou do outro mundo)" % int(Salvo.d["moedas"]))
+	Salvo.sair_mundo()
+	print("5) saiu de novo — nome=%s moedas(d)=%d (esperado: Diogo, e o save sozinho sem as 777 moedas)" % [Salvo.d["nome_jogador"], int(Salvo.d["moedas"])])
+	var visitante := {"moedas": 333, "nome_jogador": "Nome Que Não Deveria Aparecer"}
+	Salvo.entrar_mundo_visitante(visitante)
+	print("6) visitante entrou — moedas=%d nome=%s (esperado: 333, Diogo — nome é sempre o da pessoa)" % [int(Salvo.d["moedas"]), Salvo.d["nome_jogador"]])
+	Salvo.d["moedas"] = 999   # visitante NUNCA deveria conseguir gravar isso em lugar nenhum
+	Salvo.sair_mundo()
+	print("7) visitante saiu — nome=%s (esperado: Diogo)" % Salvo.d["nome_jogador"])
+	get_tree().quit()
+
 func _teste_dash() -> void:
 	iniciar_jogo("capoeirista")
 	player.frente = Vector3(0, 0, 1)
@@ -2006,13 +2038,13 @@ func _teste_dash() -> void:
 
 func _galeria() -> void:
 	cam_fixa = true
-	var nomes := ["frevista", "cordelista", "capoeirista", "jiujitsu", "benzedeira", "cangaceiro"]
+	var nomes := ["frevista", "cordelista", "capoeirista", "jiujitsu", "benzedeira", "cangaceiro", "sambista", "maracatuzeiro", "violeiro", "carimbozeiro"]
 	for i in range(nomes.size()):
 		var b := Boneco.criar(nomes[i]); add_child(b)
-		var x := (i - 3.5) * 1.5
+		var x := (i - (nomes.size() - 1) / 2.0) * 1.5
 		b.position = Vector3(x, Lib.h(x, 0), 0); b.rotation.y = 0.35
-	camera.fov = 40.0; sem_mouse = true
-	camera.global_position = Vector3(0, Lib.h(0, 0) + 1.9, 9.5)
+	camera.fov = 55.0; sem_mouse = true
+	camera.global_position = Vector3(0, Lib.h(0, 0) + 2.4, 14.0)
 	camera.look_at(Vector3(0, Lib.h(0, 0) + 1.0, 0), Vector3.UP)
 	_salvar("shot_galeria")
 
@@ -2107,6 +2139,31 @@ func usar_especial(p: Jogador) -> void:
 				dir3 = alvo3q.global_position - pos; dir3.y = 0; dir3 = dir3.normalized()
 			_disparar(pos, dir3 * 30.0, TIRO_Q, 220.0 * s)
 			p.boneco.atacar()
+		"sambista":
+			p.iframes = 0.75; p.dash_t = 0.23; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.1 * p.area_mult, 36.0 * s, 0.5, 2.0)
+			_efeito_anel(pos, 4.1 * p.area_mult, cor); _efeito_anel(pos, 2.5, Color.WHITE)
+		"maracatuzeiro":
+			var alvo4 = _mais_forte(pos, 9.0)
+			if alvo4 == null: return
+			var alvo4_id: int = alvo4.get_instance_id()
+			p.comecar_investida(alvo4.global_position, 18.0, func():
+				_efeito_anel(p.global_position, 2.4, cor)
+				var al4 = instance_from_id(alvo4_id)
+				if al4 != null and is_instance_valid(al4) and not al4.dead:
+					al4.stun_t = maxf(al4.stun_t, 0.6 if al4.is_boss else 2.5)
+					ferir(al4, 150.0 * s))
+		"violeiro":
+			var alvo5 = _mais_forte(pos, 28.0)
+			var dir5: Vector3 = p.frente
+			if alvo5:
+				dir5 = alvo5.global_position - pos; dir5.y = 0; dir5 = dir5.normalized()
+			_disparar(pos, dir5 * 30.0, TIRO_Q, 210.0 * s)
+			p.boneco.atacar()
+		"carimbozeiro":
+			p.iframes = 0.7; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
 	p.q_cd = hq["cd"]
 	Som.tocar("especial")
 	Salvo.contar("uso_especial_" + p.classe)
@@ -2165,6 +2222,30 @@ func _hab_update(delta: float) -> void:
 			for i in range(8):
 				var a3 := i * TAU / 8.0 + time * 2.0
 				_disparar(pos, Vector3(cos(a3), 0, sin(a3)) * 16.0, BALA_ULT, 13.0 * s)
+		"sambista":
+			p.ult_tick = 0.3; p.boneco.girar()
+			_ring(pos, 4.5 * p.area_mult, 15.0 * s, 0.0, 0.6)
+			_efeito_anel(pos, 4.5 * p.area_mult, cor)
+		"maracatuzeiro":
+			p.ult_tick = 0.22; p.iframes = 0.4
+			var alvo6 = _nearest(pos, 13.0)
+			if alvo6:
+				var d6: Vector3 = alvo6.global_position - pos; d6.y = 0
+				p.position += d6 * 0.7
+				if d6.length() > 0.1: p.frente = d6.normalized()
+				p.boneco.atacar()
+				var k6 := _ring(p.global_position, 2.4, 95.0 * s, 1.0, 0.0)
+				_efeito_anel(p.global_position, 2.4, cor)
+				if k6 > 0: p.curar(p.max_hp * 0.015 * k6)
+		"violeiro":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a6 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a6), 0, sin(a6)) * 16.0, BALA_ULT, 13.0 * s)
+		"carimbozeiro":
+			p.ult_tick = 0.28; p.boneco.girar()
+			_ring(pos, 4.2 * p.area_mult, 14.0 * s, 0.0, 0.5)
+			_efeito_anel(pos, 4.2 * p.area_mult, cor)
 
 # ---------------- ataques dos chefes ----------------
 func aviso_chefe(pos: Vector3, raio: float, txt: String) -> void:

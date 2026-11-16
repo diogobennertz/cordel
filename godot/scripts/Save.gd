@@ -4,9 +4,15 @@ class_name Salvo
 # (os contadores vão servir para liberar personagens: "mate 150 sacis", "aplique 150 kimuras"...).
 
 const CAMINHO := "user://cordelame_save.json"
+const CAMINHO_MUNDOS := "user://cordelame_mundos.json"
 const OPCOES := {"geral": 1.0, "musica": 0.7, "efeitos": 0.8, "sens": 1.0, "camera": 12.0, "cheia": 0.0, "numeros": 1.0, "pixel": 1.0}
 static var d := {}
 static var desligado := false     # nos testes automáticos não lê nem grava o save do jogador
+# Progresso do co-op é de cada MUNDO, separado do save sozinho (igual mundo salvo de Minecraft):
+# quem hospeda escolhe o nome do mundo e o progresso daquele mundo fica guardado à parte; quem entra
+# na sala de outra pessoa usa o progresso daquele mundo emprestado, sem mexer no save sozinho dele.
+static var modo_mundo := ""       # "" = save sozinho; "*visita*" = entrou no mundo de outra pessoa; outro = dono deste mundo
+static var _d_solo := {}          # guarda o save sozinho enquanto está dentro de um mundo de co-op
 
 static func padrao() -> Dictionary:
 	return {"moedas": 0, "fase_max": 0, "melhorias": {}, "recordes": {}, "contadores": {}, "heroi": "capoeirista", "fase": 0, "feitos": {}, "tutorial": false, "vistos": {}, "falas": {}, "teclas": {}, "nome_jogador": "", "opcoes": OPCOES.duplicate()}
@@ -40,9 +46,52 @@ static func carregar() -> void:
 	if cam != CAMINHO: salvar()
 
 static func salvar() -> void:
-	if desligado: return
+	if modo_mundo != "":
+		for k in CAMPOS_PESSOAIS: _d_solo[k] = d[k]     # nome/teclas/opções sempre acompanham a pessoa, não o mundo
+		if modo_mundo == "*visita*": return             # o resto do progresso de mundo visitado não é nosso pra gravar
+		var todos := _ler_mundos()
+		todos[modo_mundo] = d
+		var fm := FileAccess.open(CAMINHO_MUNDOS, FileAccess.WRITE)
+		if fm: fm.store_string(JSON.stringify(todos))
+		return
+	if desligado: return       # só o save sozinho de verdade é protegido nos testes automáticos
 	var f := FileAccess.open(CAMINHO, FileAccess.WRITE)
 	if f: f.store_string(JSON.stringify(d))
+
+static func _ler_mundos() -> Dictionary:
+	if not FileAccess.file_exists(CAMINHO_MUNDOS): return {}
+	var f := FileAccess.open(CAMINHO_MUNDOS, FileAccess.READ)
+	if f == null: return {}
+	var j = JSON.parse_string(f.get_as_text())
+	return j if j is Dictionary else {}
+
+# esses campos são da PESSOA, não do mundo: continuam os mesmos em qualquer mundo que ela entrar
+const CAMPOS_PESSOAIS := ["nome_jogador", "teclas", "opcoes", "tutorial"]
+
+# anfitrião: entra no progresso daquele mundo (cria do zero se for a 1ª vez com esse nome)
+static func entrar_mundo(nome: String) -> void:
+	_d_solo = d; modo_mundo = nome
+	var todos := _ler_mundos()
+	var m: Dictionary = todos.get(nome, {})
+	d = padrao()
+	if m is Dictionary:
+		for k in m:
+			if d.has(k) and not CAMPOS_PESSOAIS.has(k): d[k] = m[k]
+	for k in CAMPOS_PESSOAIS: d[k] = _d_solo[k]
+
+# convidado: usa emprestado o progresso que o anfitrião mandou, sem gravar nada no save dele
+static func entrar_mundo_visitante(dados: Dictionary) -> void:
+	_d_solo = d; modo_mundo = "*visita*"
+	d = padrao()
+	for k in dados:
+		if d.has(k) and not CAMPOS_PESSOAIS.has(k): d[k] = dados[k]
+	for k in CAMPOS_PESSOAIS: d[k] = _d_solo[k]
+
+# volta pro save de sempre (sozinho); se era dono de um mundo, grava o progresso dele antes
+static func sair_mundo() -> void:
+	if modo_mundo == "": return
+	if modo_mundo != "*visita*": salvar()
+	modo_mundo = ""; d = _d_solo
 
 # As melhorias são de cada personagem: quem você não treinou continua do zero.
 static func nivel(id: String) -> int:

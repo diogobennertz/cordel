@@ -82,11 +82,11 @@ func titulo() -> void:
 	var ac_tut := func(): _so_tutorial = true; herois()
 	var ac_jogar_menu := func(): _so_tutorial = false; herois()
 	var itens := [
-		["JOGAR", ac_jogar_menu, Tela.URUCUM, 28, 340.0, 62.0],
+		["UM JOGADOR", ac_jogar_menu, Tela.URUCUM, 26, 340.0, 58.0],
+		["MULTIJOGADOR (LAN)", coop, Tela.ANIL, 26, 340.0, 58.0],
 		["MELHORIAS", melhorias, Tela.ANIL, 20, 340.0, 46.0],
 		["FEITOS" + (" (%d)" % Dados.feitos_prontos() if Dados.feitos_prontos() > 0 else ""), feitos, Tela.BARRO, 20, 340.0, 46.0],
 		["TUTORIAL", ac_tut, Tela.MATA, 18, 340.0, 42.0],
-		["CO-OP (LAN)", coop, Tela.ANIL, 18, 340.0, 42.0],
 		["OPÇÕES", ac_opc, Tela.MATA, 18, 340.0, 42.0],
 		["SAIR", ac_sair, Tela.PARDO, 18, 340.0, 42.0],
 	]
@@ -114,7 +114,10 @@ func herois() -> void:
 	for id in Dados.CLASSES: gr.add_child(_icone_heroi(id))
 	# direita: ficha completa de quem está selecionado
 	corpo.add_child(_carta_heroi(w.sel_heroi))
-	var hf := _linha(vb, 12)
+	# fileira de fases: rola na horizontal, porque já são 15 e não cabem todas na tela de uma vez
+	var scrf := ScrollContainer.new(); scrf.custom_minimum_size = Vector2(980, 100)
+	scrf.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; vb.add_child(scrf)
+	var hf := HBoxContainer.new(); hf.add_theme_constant_override("separation", 12); scrf.add_child(hf)
 	var fmax: int = mini(int(Salvo.d["fase_max"]), Dados.FASES.size() - 1)
 	w.sel_fase = clampi(w.sel_fase, 0, fmax)
 	for i in range(Dados.FASES.size()): hf.add_child(_carta_fase(i, fmax))
@@ -185,6 +188,7 @@ func _carta_heroi(id: String) -> Button:
 	var v := _miolo(b, 11, 5)
 	v.add_child(Tela.faixa(String(c["apelido"]).to_upper(), c["cor"], 16, Tela.TINTA))
 	v.add_child(Tela.rotulo(c["nome"], 13, Tela.URUCUM, HORIZONTAL_ALIGNMENT_CENTER, true))
+	v.add_child(Tela.texto(c["desc"], 13, 262, Tela.ANIL))      # breve descrição logo em cima, antes das estatísticas
 	var topo := HBoxContainer.new(); topo.add_theme_constant_override("separation", 8); v.add_child(topo)
 	topo.add_child(_retrato_heroi(id, Vector2(86, 108)))
 	var st := "Vida %d\nVelocidade %.1f\nCrítico %s" % [int(c["maxhp"]), c["speed"], _pct(Dados.CRIT_BASE + c.get("crit", 0.0))]
@@ -193,7 +197,6 @@ func _carta_heroi(id: String) -> Button:
 	if c.has("regen"): st += "\nRegenera %.0f/s" % c["regen"]
 	var lst := Tela.rotulo(st, 15, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT); lst.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	topo.add_child(lst)
-	v.add_child(Tela.texto(c["desc"], 14, 262))
 	var g: Dictionary = Dados.GOLPES[c["inicial"]]
 	var hg := HBoxContainer.new(); hg.add_theme_constant_override("separation", 8); v.add_child(hg)
 	hg.add_child(Tela.imagem("a_" + String(g["arte"]), Vector2(84, 55)))
@@ -248,8 +251,13 @@ func coop() -> void:
 	le_nome.text_changed.connect(func(t): Salvo.d["nome_jogador"] = t; Salvo.salvar())
 	vb.add_child(le_nome)
 	if not Rede.ativo():
+		var le_mundo := LineEdit.new(); le_mundo.placeholder_text = "nome do seu mundo (ex.: Mundo do Diogo)"
+		le_mundo.custom_minimum_size = Vector2(380, 42); le_mundo.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		le_mundo.add_theme_font_size_override("font_size", 16); le_mundo.max_length = 24
+		vb.add_child(le_mundo)
+		vb.add_child(Tela.texto("O progresso do co-op é só desse mundo — não mexe no seu jogo sozinho. Usar o mesmo nome continua de onde parou; nome novo começa um mundo do zero.", 12, 380, Tela.PARDO))
 		var ac_host := func():
-			var erro := Rede.hospedar()
+			var erro := Rede.hospedar(le_mundo.text)
 			if erro != "": _rede_erro = erro
 			coop()
 		vb.add_child(Tela.botao("HOSPEDAR (ser o anfitrião)", ac_host, 18, Tela.URUCUM, 380.0, 48.0))

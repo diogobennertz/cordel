@@ -34,6 +34,26 @@ const CLASSES := {
 		"inicial": "repente", "desbloqueia": {"glosa": 3, "desafio": 6},
 		"desc": "Ataca com verso na ponta da língua: rápido de perto, teleguiado e em desafio."
 	},
+	"sambista": {
+		"nome": "Sambista", "apelido": "Cartola", "pulo": "Pulo de samba, leve e malemolente — nada de especial ao cair.", "cor": Color(0.95, 0.2, 0.25), "maxhp": 118.0, "speed": 6.6, "crit": 0.07,
+		"inicial": "batucada", "desbloqueia": {"sapateado": 3, "pandeirada": 6},
+		"desc": "Batucada, sapateado e pandeirada: gira e acerta tudo em volta, rápido e ligeiro."
+	},
+	"maracatuzeiro": {
+		"nome": "Maracatuzeiro", "apelido": "Dona Santa", "pulo": "Pulo pesado de quem carrega o alfaia: a queda tremenda acerta em volta.", "cor": Color(0.55, 0.15, 0.55), "maxhp": 145.0, "speed": 5.2, "armor": 0.18,
+		"inicial": "alfaia", "desbloqueia": {"calunga": 3, "cortejo": 6},
+		"desc": "Alfaia, calunga e cortejo: tanque de corte real, bate forte e aguenta pancada."
+	},
+	"violeiro": {
+		"nome": "Violeiro", "apelido": "Tião Carreiro", "pulo": "Pulo comum de violeiro — nada de especial ao cair.", "cor": Color(0.55, 0.38, 0.15), "maxhp": 112.0, "speed": 5.6, "regen": 0.6,
+		"inicial": "dedilhado", "desbloqueia": {"caterete": 3, "toada": 6},
+		"desc": "Dedilhado, cateretê e toada: ataca de longe com a viola, sustenta a lida."
+	},
+	"carimbozeiro": {
+		"nome": "Carimbozeiro", "apelido": "Mestre Verequete", "pulo": "Pulo de carimbó: gira no ar e, ao cair, empurra tudo em volta sem bater.", "cor": Color(0.15, 0.65, 0.6), "maxhp": 110.0, "speed": 6.8, "dodge": 0.20,
+		"inicial": "carimbo", "desbloqueia": {"banda_couro": 3, "pisada_forte": 6},
+		"desc": "Carimbó, banda de couro e pisada forte: o mais ligeiro na dança, difícil de pegar."
+	},
 }
 
 const GOLPES := {
@@ -62,6 +82,22 @@ const GOLPES := {
 	"desafio":  {"nome": "Desafio", "build": "cordel", "tipo": "onda", "dmg": 18.0, "cd": 2.8, "raio": 5.2, "knock": 1.8, "arte": "arretado", "txt": "Grito de desafio em verso: estoura em volta e empurra."},
 	"bacamarte":{"nome": "Bacamarte", "build": "cangaco", "tipo": "proj_reto", "dmg": 9.0, "cd": 1.40, "vel": 13.0, "raio": 0.4, "vida": 0.7, "n": 5, "spread": 0.5, "pierce": 1, "cor": Color(0.2, 0.15, 0.1), "arte": "bacamarte", "txt": "Tiro de chumbo espalhado: 5 balas em leque."},
 	"rifle":    {"nome": "Rifle Papo-Amarelo", "build": "cangaco", "tipo": "proj_reto", "dmg": 30.0, "cd": 1.60, "vel": 24.0, "raio": 0.32, "vida": 0.8, "n": 1, "spread": 0.0, "pierce": 99, "crit": 0.10, "cor": Color(0.94, 0.71, 0.1), "arte": "papoamarelo", "txt": "Bala que atravessa a fila inteira. +10% de crítico."},
+	# Samba
+	"batucada":    {"nome": "Batucada", "build": "samba", "tipo": "ring", "dmg": 20.0, "cd": 1.1, "raio": 3.1, "knock": 1.1, "arte": "arretado", "txt": "Roda de batucada: acerta todo mundo em volta."},
+	"sapateado":   {"nome": "Sapateado", "build": "samba", "tipo": "arco", "dmg": 26.0, "cd": 1.2, "raio": 3.3, "ang": 1.6, "knock": 1.2, "arte": "arretado", "txt": "Passo de samba na frente, rápido e forte."},
+	"pandeirada":  {"nome": "Pandeirada", "build": "samba", "tipo": "onda", "dmg": 17.0, "cd": 2.9, "raio": 5.4, "knock": 2.0, "arte": "arretado", "txt": "Pandeiro no alto: onda de som que empurra tudo em volta."},
+	# Maracatu
+	"alfaia":      {"nome": "Alfaia", "build": "maracatu", "tipo": "ring", "dmg": 24.0, "cd": 1.3, "raio": 3.4, "stun": 0.8, "knock": 0.8, "arte": "arretado", "txt": "Tambor fundo que estremece e atordoa a bicharada em volta."},
+	"calunga":     {"nome": "Calunga", "build": "maracatu", "tipo": "arco", "dmg": 26.0, "cd": 1.6, "raio": 3.2, "ang": 1.6, "stun": 0.6, "knock": 1.0, "arte": "arretado", "txt": "A boneca sagrada abençoa o golpe na frente: atordoa quem recebe."},
+	"cortejo":     {"nome": "Cortejo", "build": "maracatu", "tipo": "onda", "dmg": 19.0, "cd": 2.7, "raio": 5.8, "knock": 2.6, "arte": "arretado", "txt": "O cortejo real avança e abre caminho, empurrando tudo para longe."},
+	# Viola
+	"dedilhado":   {"nome": "Dedilhado", "build": "viola", "tipo": "proj_reto", "dmg": 18.0, "cd": 0.8, "vel": 15.0, "raio": 0.33, "vida": 0.85, "n": 1, "pierce": 1, "cor": Color(0.75, 0.55, 0.2), "arte": "arretado", "txt": "Corda dedilhada rápido: atira uma nota afiada na frente."},
+	"caterete":    {"nome": "Cateretê", "build": "viola", "tipo": "proj_teleguiado", "dmg": 17.0, "cd": 1.1, "vel": 12.0, "raio": 0.42, "vida": 3.2, "alcance": 25.0, "boom": 1.4, "cor": Color(0.75, 0.55, 0.2), "arte": "arretado", "txt": "Nota de desafio que persegue o bicho até estourar."},
+	"toada":       {"nome": "Toada", "build": "viola", "tipo": "proj_estoura", "dmg": 23.0, "cd": 2.1, "vel": 10.0, "raio": 0.42, "vida": 2.0, "alcance": 20.0, "boom": 2.6, "cor": Color(0.75, 0.55, 0.2), "arte": "arretado", "txt": "Acorde pesado que estoura numa área grande."},
+	# Carimbó
+	"carimbo":     {"nome": "Carimbó", "build": "carimbo", "tipo": "ring", "dmg": 19.0, "cd": 1.0, "raio": 3.0, "knock": 1.3, "arte": "arretado", "txt": "Giro de carimbó: empurra todo mundo em volta."},
+	"banda_couro": {"nome": "Banda de Couro", "build": "carimbo", "tipo": "arco", "dmg": 25.0, "cd": 1.3, "raio": 3.4, "ang": 1.5, "knock": 1.1, "arte": "arretado", "txt": "Tapa no couro do tambor, na direção do bicho mais perto."},
+	"pisada_forte":{"nome": "Pisada Forte", "build": "carimbo", "tipo": "onda", "dmg": 16.0, "cd": 2.6, "raio": 5.2, "knock": 2.0, "arte": "arretado", "txt": "Pisada forte que sacode o chão e afasta a bicharada."},
 }
 
 # Dano do golpe no nível atual (sobe 25% por nível acima do 1).
@@ -125,6 +161,14 @@ const HABILIDADES := {
 		"r": {"nome": "Bloco de Carnaval", "dur": 5.0, "txt": "5 s dançando sem parar, batendo em quem chega perto"}},
 	"cordelista": {"q": {"nome": "Mote Cortante", "cd": 7.0, "txt": "um verso certeiro que atravessa tudo"},
 		"r": {"nome": "Cantoria Infinita", "dur": 5.0, "txt": "5 s soltando versos para todo lado"}},
+	"sambista": {"q": {"nome": "Malandragem", "cd": 8.0, "txt": "giro de samba intocável que acerta todo mundo em volta"},
+		"r": {"nome": "Roda de Samba", "dur": 6.0, "txt": "6 s girando sem parar, de pandeiro na mão"}},
+	"maracatuzeiro": {"q": {"nome": "Chamada do Rei", "cd": 9.0, "txt": "agarra o bicho mais forte por perto e acerta com tudo"},
+		"r": {"nome": "Batuque Real", "dur": 4.5, "txt": "4,5 s de tambor pesado acertando em volta sem parar"}},
+	"violeiro": {"q": {"nome": "Ponteado Certeiro", "cd": 7.0, "txt": "uma nota afiada que atravessa tudo"},
+		"r": {"nome": "Desafio de Viola", "dur": 5.0, "txt": "5 s soltando notas para todos os lados"}},
+	"carimbozeiro": {"q": {"nome": "Giro de Carimbó", "cd": 8.0, "txt": "gira no ar, intocável, e acerta todo mundo em volta"},
+		"r": {"nome": "Roda de Carimbó", "dur": 6.0, "txt": "6 s dançando sem parar, batendo em quem chega perto"}},
 }
 const ULT_ABATES := 60          # abates para carregar o ultimate
 
@@ -202,6 +246,12 @@ const PIADAS := {
 	"raspagem": "Por baixo também se ganha.", "fogofatuo": "Nem toda luz no fim do túnel é boa notícia.",
 	"garrafada": "Se não curar, pelo menos estoura.", "reza": "Fé em Deus e pé na tábua.",
 	"peixeira": "Conversa fiada não corta nada.", "bacamarte": "Mirar pra quê?", "rifle": "Papo reto, bala reta.",
+	"batucada": "Quem não tem ginga, enche o pandeiro.", "sapateado": "Pé no chão e coração no alto.",
+	"pandeirada": "Bateu, levou — e ainda dançou.", "alfaia": "Tambor que não erra o tom.",
+	"calunga": "Boneca que carrega rei e rainha.", "cortejo": "Corte real não pede licença.",
+	"dedilhado": "Corda de aço, dedo calejado.", "caterete": "Desafio na viola, ninguém leva desaforo.",
+	"toada": "Toada boa dói de bonito.", "carimbo": "Quem carimba não erra o passo.",
+	"banda_couro": "Couro bom aguenta o tranco.", "pisada_forte": "Pisa forte quem tem raiz.",
 }
 
 # Bodega do Lampião: o que se compra com as moedas da partida.

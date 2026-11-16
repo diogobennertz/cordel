@@ -20,18 +20,26 @@ signal partida_comecou()
 signal falhou(motivo: String)
 
 func _ready() -> void:
-	multiplayer.peer_connected.connect(func(id): entrou.emit(id))
+	multiplayer.peer_connected.connect(func(id):
+		entrou.emit(id)
+		if sou_host(): _mandar_mundo.rpc_id(id, Salvo.d))     # novo convidado: recebe o progresso deste mundo emprestado
 	multiplayer.peer_disconnected.connect(func(id):
 		heroi_por_id.erase(id); nome_por_id.erase(id); saiu.emit(id))
-	multiplayer.connection_failed.connect(func(): _ligado = false; falhou.emit("Não consegui conectar. Confira o endereço e se os dois estão na mesma rede."))
-	multiplayer.server_disconnected.connect(func(): _ligado = false; falhou.emit("O anfitrião saiu da sala."))
+	multiplayer.connection_failed.connect(func(): _ligado = false; Salvo.sair_mundo(); falhou.emit("Não consegui conectar. Confira o endereço e se os dois estão na mesma rede."))
+	multiplayer.server_disconnected.connect(func(): _ligado = false; Salvo.sair_mundo(); falhou.emit("O anfitrião saiu da sala."))
 
-func hospedar() -> String:
+@rpc("authority", "call_remote", "reliable")
+func _mandar_mundo(dados: Dictionary) -> void:
+	Salvo.entrar_mundo_visitante(dados)
+
+func hospedar(nome_mundo: String) -> String:
+	if nome_mundo.strip_edges() == "": return "Dê um nome para o seu mundo."
 	var peer := ENetMultiplayerPeer.new()
 	var erro := peer.create_server(PORTA, MAX_JOGADORES - 1)
 	if erro != OK: return "Não consegui abrir a porta %d (erro %d). Outro programa já está usando ela?" % [PORTA, erro]
 	multiplayer.multiplayer_peer = peer
 	_ligado = true
+	Salvo.entrar_mundo(nome_mundo.strip_edges())
 	heroi_por_id.clear(); nome_por_id.clear()
 	return ""
 
@@ -49,6 +57,7 @@ func sair() -> void:
 	if multiplayer.multiplayer_peer: multiplayer.multiplayer_peer.close()
 	multiplayer.multiplayer_peer = null
 	_ligado = false
+	Salvo.sair_mundo()
 	heroi_por_id.clear(); nome_por_id.clear()
 
 func ativo() -> bool:

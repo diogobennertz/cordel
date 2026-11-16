@@ -250,6 +250,47 @@ func _montar(tipo: String, destaque) -> void:
 			Lib.esf(corpo, 0.08, Vector3(-0.12, 0.84, -0.47), PRETO, Vector3(1, 1, 0.3), 6)
 			Lib.cil(corpo, 0.03, 0.03, 0.78, Vector3(0.04, 1.08, -0.3), COURO_ESC, 5)                      # pena/caneta na mão
 			Lib.cx(corpo, Vector3(0.1, 0.03, 0.1), Vector3(0.13, 1.4, -0.37), BRANCO)
+		"sambista":     # sambista: camisa branca, calça e fita verde-rosa (cores da Mangueira), pandeiro na mão
+			var ps := Color(0.42, 0.27, 0.17)
+			_humano(ps, BRANCO, Color(0.1, 0.5, 0.25), ps, BRANCO)
+			cor_base = Color(0.95, 0.2, 0.25)
+			_cinto(Color(0.92, 0.3, 0.55), 0.68)
+			Lib.cil(corpo, 0.56, 0.6, 0.05, Vector3(0, CY + 0.3, 0), BRANCO, 14)                           # panamá
+			Lib.cil(corpo, 0.365, 0.365, 0.07, Vector3(0, CY + 0.34, 0), Color(0.1, 0.5, 0.25), 12)
+			Lib.cil(braco_d, 0.3, 0.3, 0.05, Vector3(0, -0.3, 0.14), Color(0.92, 0.85, 0.65), 12).rotation.x = 1.57   # pandeiro
+			Lib.cil(braco_d, 0.3, 0.3, 0.015, Vector3(0, -0.3, 0.1), COURO, 12).rotation.x = 1.57
+		"maracatuzeiro": # corte de maracatu: manto roxo e dourado, coroa, alfaia (tambor grande) a tiracolo
+			var pm2 := Color(0.3, 0.19, 0.12)
+			_humano(pm2, Color(0.5, 0.15, 0.6), Color(0.85, 0.72, 0.15), pm2, Color(0.5, 0.15, 0.6))
+			cor_base = Color(0.55, 0.15, 0.55)
+			Lib.cx(corpo, Vector3(0.78, 0.5, 0.2), Vector3(0, 0.8, -0.05), Color(0.5, 0.15, 0.6))           # manto
+			Lib.cil(corpo, 0.42, 0.46, 0.22, Vector3(0, CY + 0.38, 0), Color(0.85, 0.72, 0.15), 12)         # coroa
+			for k in range(6):
+				var ak := k * TAU / 6.0
+				Lib.cil(corpo, 0.0, 0.05, 0.22, Vector3(cos(ak) * 0.4, CY + 0.52, sin(ak) * 0.4), Color(0.85, 0.72, 0.15), 4)
+			Lib.cil(corpo, 0.4, 0.44, 0.34, Vector3(0, 0.8, -0.5), Color(0.7, 0.45, 0.2), 10, Vector3(1.57, 0, 0))   # alfaia (tambor) nas costas
+			Lib.cil(corpo, 0.44, 0.44, 0.03, Vector3(0, 0.8, -0.67), Color(0.92, 0.85, 0.65), 10, Vector3(1.57, 0, 0))
+		"violeiro":     # violeiro caipira: camisa xadrez, chapéu de palha, viola caipira nas costas
+			var pv := Color(0.78, 0.56, 0.36)
+			_humano(pv, Color(0.9, 0.85, 0.7), Color(0.25, 0.18, 0.1), COURO_ESC, Color(0.9, 0.85, 0.7))
+			cor_base = Color(0.55, 0.38, 0.15)
+			for i in range(4):
+				Lib.cx(corpo, Vector3(0.7, 0.07, 0.42), Vector3(0, 0.74 + i * 0.16, 0.08), Color(0.6, 0.15, 0.15))   # xadrez
+			_cinto(COURO_ESC, 0.68)
+			Lib.cil(corpo, 0.5, 0.56, 0.05, Vector3(0, CY + 0.3, 0), Color(0.88, 0.78, 0.5), 14)            # chapéu de palha
+			Lib.cil(corpo, 0.24, 0.28, 0.2, Vector3(0, CY + 0.4, 0), Color(0.88, 0.78, 0.5), 12)
+			Lib.esf(corpo, 0.26, Vector3(-0.1, 0.84, -0.38), Color(0.78, 0.52, 0.28), Vector3(1, 1.3, 0.3), 8)   # viola caipira nas costas
+			Lib.esf(corpo, 0.07, Vector3(-0.1, 0.86, -0.49), PRETO, Vector3(1, 1, 0.3), 6)
+		"carimbozeiro": # carimbozeiro: colete colorido, chapéu de palha, curimbó (tambor) nas costas
+			var pcb := Color(0.5, 0.32, 0.18)
+			_humano(pcb, Color(1.0, 0.75, 0.1), pcb, pcb, pcb)
+			cor_base = Color(0.15, 0.65, 0.6)
+			Lib.cx(corpo, Vector3(0.78, 0.5, 0.21), Vector3(0, 0.84, 0.0), Color(0.15, 0.65, 0.6))          # colete por cima
+			_cinto(Color(0.9, 0.2, 0.2), 0.66)
+			Lib.cil(corpo, 0.5, 0.56, 0.05, Vector3(0, CY + 0.28, 0), Color(0.88, 0.78, 0.5), 14)           # chapéu de palha
+			Lib.cil(corpo, 0.24, 0.28, 0.18, Vector3(0, CY + 0.37, 0), Color(0.88, 0.78, 0.5), 12)
+			Lib.cil(corpo, 0.3, 0.33, 0.5, Vector3(0, 0.6, -0.42), Color(0.68, 0.42, 0.2), 10, Vector3(1.57, 0, 0))  # curimbó (tambor comprido)
+			Lib.cil(corpo, 0.33, 0.33, 0.03, Vector3(0, 0.6, -0.67), Color(0.92, 0.85, 0.65), 10, Vector3(1.57, 0, 0))
 		"zepilintra":   # Seu Zé Pilintra: terno branco, chapéu de fita vermelha, gravata vermelha e bengala
 			var pz := Color(0.28, 0.17, 0.1)
 			_humano(pz, BRANCO, BRANCO, BRANCO, BRANCO)

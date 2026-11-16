@@ -1,5 +1,19 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — 4 heróis novos, progresso do co-op separado por mundo, menu reorganizado
+- **4 heróis novos jogáveis desde o início** (além dos 6 que já existiam): **Cartola** (sambista),
+  **Dona Santa** (maracatuzeira), **Tião Carreiro** (violeiro) e **Mestre Verequete** (carimbozeiro) —
+  nomes de gente de peso de verdade na cultura brasileira, igual os outros.
+- **Progresso do co-op agora é de cada MUNDO**, separado do save sozinho (igual mundo salvo de
+  Minecraft): quem hospeda dá um nome pro mundo; usar o mesmo nome continua de onde parou, nome novo
+  começa do zero. Quem entra na sala de outra pessoa joga com o progresso daquele mundo emprestado —
+  mesmo que já tenha personagem bem treinado no jogo sozinho, entra zerado ali (como pedido). O nome
+  digitado, as teclas e as opções continuam sempre os mesmos da pessoa, em qualquer mundo.
+- Menu principal agora tem dois botões claros no topo: **UM JOGADOR** e **MULTIJOGADOR (LAN)**.
+- A ficha do herói mostra a descrição logo em cima, antes das estatísticas.
+- Corrigido: a fileira de fases na tela de escolher herói não cabia mais na tela com 15 fases —
+  agora rola na horizontal.
+
 ## 2026-11-16 — 15 fases e chefão final: o Minhocão
 - O jogo agora tem **15 fases** (antes eram 4), cada uma mais forte que a anterior, com nomes de lugares do
   Brasil (Pantanal, Caatinga, Chapada Diamantina, Lençóis Maranhenses, Pampa Gaúcho...).

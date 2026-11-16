@@ -1,5 +1,16 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — 15 fases e chefão final: o Minhocão
+- O jogo agora tem **15 fases** (antes eram 4), cada uma mais forte que a anterior, com nomes de lugares do
+  Brasil (Pantanal, Caatinga, Chapada Diamantina, Lençóis Maranhenses, Pampa Gaúcho...).
+- Chefão final (fase 15, "Coração da Amazônia"): o **MINHOCÃO**, lenda de verdade avistada em jornais do
+  interior de SP/PR no século 19 — verme gigante de couro grosso. Alterna pisão que estremece tudo e
+  arrancada por baixo da terra; enfurecido, também cospe fogo. Reaproveita os mesmos sistemas de combate
+  dos outros chefes (sem risco de quebrar nada), só que combinados num chefão de verdade "fodão".
+- As fases do meio reaproveitam os 4 chefes já existentes (Mapinguari, Mula sem Cabeça, Boitatá, Cuca) com
+  nomes e força crescente, em vez de inventar um chefe novo pra cada uma — mais rápido e seguro de testar,
+  e combina com histórias de lenda que voltam mais fortes a cada vez.
+
 ## 2026-11-16 — mapa só aumenta no canto, placar corrigido, bichos mais fortes no co-op
 - O mapa grande (segurar Tab) agora só AUMENTA o minimapa do cantinho no lugar — não cobre mais a tela.
 - Corrigido um bug sério: o Godot sempre bota um "peer" padrão mesmo sozinho, e isso fazia o jogo achar

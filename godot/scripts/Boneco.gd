@@ -390,6 +390,23 @@ func _montar(tipo: String, destaque) -> void:
 			Lib.cil(corpo, 0.0, 0.26, 1.0, Vector3(0, 2.25, 1.0), fogo2, 5, Vector3.ZERO, 3.0)
 			Lib.cil(corpo, 0.0, 0.16, 0.9, Vector3(0, 1.1, -1.05), fogo1, 5, Vector3(-2.0, 0, 0), 2.5)      # rabo de fogo
 			Lib.cx(corpo, Vector3(0.78, 0.08, 0.5), Vector3(0, 1.42, 0), Color(0.7, 0.1, 0.1))              # manta
+		"minhocao":     # o bicho fodão do fim: verme gigante de couro grosso
+			var t1 := Color(0.42, 0.3, 0.18); var t2 := Color(0.3, 0.21, 0.12)
+			cor_base = t1
+			corpo = Lib.pivo(self, Vector3.ZERO)
+			for i in range(14):                                                                             # corpo de verme bem comprido e grosso
+				var rs2 := 0.95 - i * 0.045
+				Lib.esf(corpo, rs2, Vector3(sin(i * 0.55) * 0.55, rs2 * 0.85, -0.3 - i * 0.78), t1 if i % 2 == 0 else t2, Vector3(1, 0.9, 1.15), 10, 1.0)
+				if i % 2 == 1:                                                                              # placas de couro no dorso
+					Lib.cx(corpo, Vector3(rs2 * 0.9, 0.12, rs2 * 1.1), Vector3(sin(i * 0.55) * 0.55, rs2 * 1.6, -0.3 - i * 0.78), Color(0.22, 0.15, 0.09))
+			Lib.esf(corpo, 1.15, Vector3(0, 1.1, 0.55), t1, Vector3(1.1, 1.0, 1.25), 12, 1.0)                # cabeção erguido
+			Lib.cx(corpo, Vector3(0.85, 0.5, 0.2), Vector3(0, 0.78, 1.25), Color(0.5, 0.08, 0.1))            # boca enorme escancarada
+			for k in range(6):                                                                              # dentões
+				var sxk := -1.0 if k % 2 == 0 else 1.0
+				Lib.cil(corpo, 0.0, 0.08, 0.26, Vector3(sxk * (0.1 + k / 2 * 0.22), 0.95 - (k / 2) * 0.1, 1.42), BRANCO, 4, Vector3(PI, 0, 0))
+			for sx in [-1.0, 1.0]:
+				Lib.esf(corpo, 0.14, Vector3(0.45 * sx, 1.5, 1.0), Color(1.0, 0.85, 0.15), Vector3(1, 1, 0.5), 8, 1.8)   # olhos pequenos, acesos
+				Lib.esf(corpo, 0.06, Vector3(0.45 * sx, 1.5, 1.08), PRETO, Vector3(0.5, 1.4, 0.4), 6)
 		"boitata":
 			var f1 := Color(1.0, 0.4, 0.05); var f2 := Color(1.0, 0.8, 0.15)
 			cor_base = f1

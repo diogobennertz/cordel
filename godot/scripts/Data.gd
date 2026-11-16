@@ -136,6 +136,17 @@ const FASES := [
 	{"nome": "Noite de Lua Cheia", "chefe": "mula", "chefe_nome": "MULA SEM CABEÇA", "chefe_titulo": "a Desembestada", "mult": 1.7, "luz": 1},
 	{"nome": "Queimada", "chefe": "boitata", "chefe_nome": "BOITATÁ", "chefe_titulo": "o Fogo que Corre", "mult": 2.6, "luz": 2},
 	{"nome": "Corcovado", "chefe": "lobisomem", "ataque": "mula", "chefe_nome": "LOBISOMEM", "chefe_titulo": "o Sétimo Filho", "mult": 3.6, "luz": 3, "cristo": true},
+	{"nome": "Pantanal", "chefe": "mapinguari", "chefe_nome": "MAPINGUARI DAS CHEIAS", "chefe_titulo": "o Fôlego do Pantanal", "mult": 4.8, "luz": 1},
+	{"nome": "Caatinga em Chamas", "chefe": "boitata", "chefe_nome": "BOITATÁ DA SECA", "chefe_titulo": "o Fogo que Não Apaga", "mult": 6.2, "luz": 2},
+	{"nome": "Serra da Cuca", "chefe": "cuca", "chefe_nome": "CUCA VELHA", "chefe_titulo": "a Que Não Dorme", "mult": 7.8, "luz": 3},
+	{"nome": "Encruzilhada da Meia-Noite", "chefe": "mula", "chefe_nome": "MULA SEM CABEÇA", "chefe_titulo": "a Foragida", "mult": 9.6, "luz": 0},
+	{"nome": "Chapada Diamantina", "chefe": "mapinguari", "chefe_nome": "MAPINGUARI DE PEDRA", "chefe_titulo": "o Gigante da Chapada", "mult": 11.6, "luz": 1},
+	{"nome": "Rio São Francisco", "chefe": "boitata", "chefe_nome": "BOITATÁ DO VELHO CHICO", "chefe_titulo": "a Cobra do Rio", "mult": 13.8, "luz": 2},
+	{"nome": "Ilha de Marajó", "chefe": "cuca", "chefe_nome": "CUCA DO MANGUEZAL", "chefe_titulo": "a Jacaré-Bruxa", "mult": 16.2, "luz": 3},
+	{"nome": "Lençóis Maranhenses", "chefe": "mula", "chefe_nome": "MULA DAS DUNAS", "chefe_titulo": "a Desembestada do Deserto", "mult": 18.8, "luz": 0},
+	{"nome": "Pampa Gaúcho", "chefe": "mapinguari", "chefe_nome": "MAPINGUARI DO SUL", "chefe_titulo": "o Último Gigante", "mult": 21.6, "luz": 1},
+	{"nome": "Serra do Mar", "chefe": "boitata", "chefe_nome": "BOITATÁ ANCESTRAL", "chefe_titulo": "a Chama Mais Velha", "mult": 24.6, "luz": 2},
+	{"nome": "Coração da Amazônia", "chefe": "minhocao", "chefe_nome": "MINHOCÃO", "chefe_titulo": "o Verme que Move Montanhas", "mult": 28.6, "luz": 1, "final": true},
 ]
 
 # Melhorias permanentes, compradas com moedas no arraial (fora da fase).
@@ -260,6 +271,9 @@ const LORE := {
 	"boitata": {"nome": "Boitatá", "de": "A cobra de fogo — primeiro mito escrito no Brasil, em 1560",
 		"txt": "Cobra enorme feita de fogo que protege os campos de quem põe queimada. Sobreviveu a um grande dilúvio comendo os olhos dos bichos mortos, e de tanta luz que engoliu o corpo dela acendeu.",
 		"jeito": "Chefe: cospe bolas de fogo em leque."},
+	"minhocao": {"nome": "Minhocão", "de": "Avistado de verdade em jornais do interior de SP e PR, no século 19",
+		"txt": "Verme gigante de couro grosso que mora bem fundo na terra. Abre buracos enormes nas margens de rio, derruba árvores e engole o chão por onde passa. Diz a lenda que, quando ele se move de verdade, a terra inteira estremece.",
+		"jeito": "Chefão final: alterna pisão que estremece tudo e arrancada por baixo da terra; enfurecido, também cospe fogo de dentro do buraco."},
 }
 
 # Gente que aparece pelo mapa para AJUDAR (não são bichos: ninguém bate neles). Cada partida sorteia três.

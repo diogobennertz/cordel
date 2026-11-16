@@ -27,6 +27,8 @@ var hab_t := 3.0
 var prep_t := 0.0
 var carga_t := 0.0
 var carga_dir := Vector3.ZERO
+var _vez_pisao := true   # minhocao: alterna entre pisão e arrancada
+var _fogo_t := 2.0       # minhocao: intervalo do cuspe de fogo quando enfurecido
 
 func setup(t: String, escala: float, destaque = null) -> void:
 	tipo = t
@@ -141,6 +143,37 @@ func _chefe(delta: float, p, to: Vector3, d: float) -> bool:
 				for i in range(-1, 2):
 					world.tiro_inimigo(global_position, dir.rotated(Vector3.UP, i * 0.32) * 9.0, dmg * 0.8)
 				boneco.atacar()
+		"minhocao":        # o bicho fodão do fim: alterna pisão e arrancada por baixo da terra; enfurecido, também cospe fogo
+			if carga_t > 0.0:
+				carga_t -= delta
+				position += carga_dir * 14.0 * delta
+				var r3 := Vector2(position.x, position.z)
+				if r3.length() > world.ARENA - 1.5:
+					r3 = r3.normalized() * (world.ARENA - 1.5); position.x = r3.x; position.z = r3.y; carga_t = 0.0
+				return true
+			if prep_t > 0.0:
+				prep_t -= delta
+				if prep_t <= 0.0:
+					if _vez_pisao:
+						world.efeito_chefe(global_position, 7.5); world.tremor = 0.9
+						if d < 7.5 and p.alt < 0.6: world.ferir_jogador(p, dmg * 2.0)
+					else:
+						carga_t = 1.3; carga_dir = to / d; boneco.rotation.y = atan2(carga_dir.x, carga_dir.z)
+				return true
+			if hab_t <= 0.0 and d < 11.0:
+				hab_t = 2.2 if furia else 4.0
+				_vez_pisao = not _vez_pisao
+				prep_t = 0.9; boneco.girar()
+				world.aviso_chefe(global_position, 7.5 if _vez_pisao else 2.5, "TREMOR!" if _vez_pisao else "ARRANCADA!")
+				return true
+			if furia:
+				_fogo_t -= delta
+				if _fogo_t <= 0.0 and d < 14.0:
+					_fogo_t = 1.8
+					var dirf := to / d
+					for i in range(-2, 3):
+						world.tiro_inimigo(global_position, dirf.rotated(Vector3.UP, i * 0.28) * 9.0, dmg * 0.6)
+					boneco.atacar()
 	return false
 
 const COR_CRIT := [Color(1, 1, 1), Color(1.0, 0.85, 0.2), Color(1.0, 0.55, 0.1), Color(1.0, 0.25, 0.3)]

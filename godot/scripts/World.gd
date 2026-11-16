@@ -779,7 +779,7 @@ func _dirigir(delta: float) -> void:
 	if not chefe_veio and time >= chefe_t:
 		chefe_veio = true; furia_t = Dados.FURIA_T
 		var f: Dictionary = Dados.FASES[fase]
-		chefe = _nascer(f["chefe"], forca, {"mapinguari": 2.6, "mula": 2.1, "boitata": 2.0}.get(f["chefe"], 2.1), null, true)
+		chefe = _nascer(f["chefe"], forca, {"mapinguari": 2.6, "mula": 2.1, "boitata": 2.0, "cuca": 1.8, "minhocao": 3.4}.get(f["chefe"], 2.1), null, true)
 		chefe.chefe_tipo = f.get("ataque", f["chefe"])
 		chefe.hp = 700.0 * forca; chefe.max_hp_cache = chefe.hp
 		chefe.dmg = 14.0 * sqrt(forca); chefe.speed = 2.7; chefe.xp_val = 60.0; chefe.moeda_val = 150.0
@@ -2196,13 +2196,13 @@ func _tiros(delta: float) -> void:
 # print dos três chefes lado a lado
 func _shot_chefe() -> void:
 	cam_fixa = true
-	var nomes := ["mapinguari", "mula", "boitata"]
-	for i in range(3):
+	var nomes := ["mapinguari", "mula", "boitata", "cuca", "minhocao"]
+	for i in range(nomes.size()):
 		var b := Boneco.criar(nomes[i]); add_child(b)
-		var x := (i - 1) * 4.2
+		var x := (i - 2) * 4.2
 		b.position = Vector3(x, Lib.h(x, 0), 0); b.rotation.y = 0.55; b.scale = Vector3(1.6, 1.6, 1.6)
-	var h0 := Boneco.criar("capoeirista"); add_child(h0); h0.position = Vector3(-6.6, Lib.h(-6.6, 0), 0.5); h0.rotation.y = 0.5
-	camera.fov = 42.0
-	camera.global_position = Vector3(-0.5, Lib.h(0, 0) + 3.0, 13.5)
+	var h0 := Boneco.criar("capoeirista"); add_child(h0); h0.position = Vector3(-10.8, Lib.h(-10.8, 0), 0.5); h0.rotation.y = 0.5
+	camera.fov = 65.0
+	camera.global_position = Vector3(-0.5, Lib.h(0, 0) + 4.5, 20.0)
 	camera.look_at(Vector3(-0.5, Lib.h(0, 0) + 1.7, 0), Vector3.UP)
 	_salvar("shot_chefes")

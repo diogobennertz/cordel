@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Encantados — Lendas do Brasil</title>
+  <link rel="stylesheet" href="style.css?v=1794537512">
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="overlay" class="overlay" hidden></div>
+
+  <!-- filtro que deixa bordas e botões tremidos, como papel cortado à mão -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="cru" x="-6%" y="-12%" width="112%" height="124%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter></svg>
+  <div id="sndbar"><button id="btn-mute" type="button" aria-label="Som"></button><button id="btn-music" type="button" aria-label="Música"></button></div>
+  <script src="src/util.js?v=1794537512"></script>
+  <script src="src/data/cards.js?v=1794537512"></script>
+  <script src="src/data/enemies.js?v=1794537512"></script>
+  <script src="src/engine/weapons.js?v=1794537512"></script>
+  <script src="src/engine/stats.js?v=1794537512"></script>
+  <script src="src/engine/enemyai.js?v=1794537512"></script>
+  <script src="src/engine/world.js?v=1794537512"></script>
+  <script src="src/audio.js?v=1794537512"></script>
+  <script src="src/render/gravura.js?v=1794537512"></script>
+  <script src="src/render/sprites.js?v=1794537512"></script>
+  <script src="src/render/cardart.js?v=1794537512"></script>
+  <script src="src/render/logo.js?v=1794537512"></script>
+  <script src="src/render/render.js?v=1794537512"></script>
+  <script src="src/ui/screens.js?v=1794537512"></script>
+  <script src="src/ui/tooltip.js?v=1794537512"></script>
+  <script src="src/tutorial.js?v=1794537512"></script>
+  <script src="src/main.js?v=1794537512"></script>
+</body>
+</html>

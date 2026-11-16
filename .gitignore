@@ -1,0 +1,8 @@
+# motor do Godot (126 MB: passa do limite do GitHub; baixe em godotengine.org ou use o instalador)
+motor/
+dist/
+*.zip
+godot/.godot/
+godot/shot_*.png
+.claude/
+publicar/

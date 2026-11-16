@@ -1,0 +1,24 @@
+; Cordelame — jogo de folclore 3D em Godot 4
+; Projeto de referência: abra esta pasta no Godot 4.2+ e aperte F5.
+
+config_version=5
+
+[application]
+
+config/name="Cordelame"
+config/description="Esqueleto 2.5D: mundo 3D + bonecos de cordel chapados. Etapa 1 do PLANO-3D-STEAM."
+run/main_scene="res://scenes/World.tscn"
+config/features=PackedStringArray("4.2")
+config/icon="res://art/capoeirista.png"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+anti_aliasing/quality/msaa_3d=2
+environment/defaults/default_clear_color=Color(0.6, 0.8, 0.85, 1)

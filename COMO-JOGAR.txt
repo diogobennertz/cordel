@@ -1,0 +1,20 @@
+CORDELAME — versão de teste
+
+COMO ABRIR
+1. Extraia o .zip inteiro numa pasta de nome curto (ex.: C:\Jogos\Cordelame). Não rode de dentro do zip.
+2. Dois cliques em JOGAR.bat. Não precisa instalar nada.
+   (Se o Windows avisar que o arquivo veio da internet, clique em "Mais informações" > "Executar assim mesmo".)
+
+CONTROLES (dá para trocar em Opções > Controles)
+W A S D ou setas  andar            Mouse     girar a câmera (rodinha = zoom)
+Espaço            pular            Shift     arrancada
+Q                 especial         R         ultimate
+Tab (segurar)     ver a build      Esc       pausa
+Controle de Xbox/PlayStation também funciona.
+
+O QUE REPARAR E ME CONTAR
+- Travou, fechou sozinho ou ficou lento? Em que momento?
+- Qual herói achou forte demais ou fraco demais?
+- Alguma tela, texto ou botão confuso?
+- O que deu mais vontade de jogar de novo? O que cansou?
+- Sons e vozes são provisórios (a voz é de computador mesmo).

@@ -14,6 +14,8 @@ var _abriu := 0
 var _capt := ""               # ação esperando uma tecla nova (opções > controles)               # quando a tela de nível abriu (evita clique sem querer)
 var _so_tutorial := false     # true: foi pro "escolha de herói" só pra fazer o tutorial (não pra jogar a fase)
 var _scr_herois: ScrollContainer   # só pra debug/teste
+var _painel_dica: PanelContainer   # dica de como liberar o herói trancado (some ao passar o mouse)
+var _lbl_dica: Label
 
 func _init() -> void:
 	layer = 10
@@ -75,21 +77,21 @@ func _moedas_tag() -> void:
 func titulo() -> void:
 	_limpar("titulo")
 	Tela.fundo_papel(raiz)
-	var vb := _centro(9)
-	var logo := Tela.imagem("logo", Vector2(590, 316)); logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	var vb := _centro(6)
+	var logo := Tela.imagem("logo", Vector2(480, 257)); logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(logo)
 	var ac_opc := func(): opcoes(titulo)
 	var ac_sair := func(): get_tree().quit()
 	var ac_tut := func(): _so_tutorial = true; herois()
 	var ac_jogar_menu := func(): _so_tutorial = false; herois()
 	var itens := [
-		["UM JOGADOR", ac_jogar_menu, Tela.URUCUM, 26, 340.0, 58.0],
-		["MULTIJOGADOR (LAN)", coop, Tela.ANIL, 26, 340.0, 58.0],
-		["MELHORIAS", melhorias, Tela.ANIL, 20, 340.0, 46.0],
-		["FEITOS" + (" (%d)" % Dados.feitos_prontos() if Dados.feitos_prontos() > 0 else ""), feitos, Tela.BARRO, 20, 340.0, 46.0],
-		["TUTORIAL", ac_tut, Tela.MATA, 18, 340.0, 42.0],
-		["OPÇÕES", ac_opc, Tela.MATA, 18, 340.0, 42.0],
-		["SAIR", ac_sair, Tela.PARDO, 18, 340.0, 42.0],
+		["UM JOGADOR", ac_jogar_menu, Tela.URUCUM, 24, 340.0, 50.0],
+		["MULTIJOGADOR (LAN)", coop, Tela.ANIL, 24, 340.0, 50.0],
+		["MELHORIAS", melhorias, Tela.ANIL, 18, 340.0, 40.0],
+		["FEITOS" + (" (%d)" % Dados.feitos_prontos() if Dados.feitos_prontos() > 0 else ""), feitos, Tela.BARRO, 18, 340.0, 40.0],
+		["TUTORIAL", ac_tut, Tela.MATA, 16, 340.0, 36.0],
+		["OPÇÕES", ac_opc, Tela.MATA, 16, 340.0, 36.0],
+		["SAIR", ac_sair, Tela.PARDO, 16, 340.0, 36.0],
 	]
 	for it in itens:
 		var b := Tela.botao(it[0], it[1], it[3], it[2], it[4], it[5]); b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -117,6 +119,12 @@ func herois() -> void:
 	for id in Dados.CLASSES: gr.add_child(_icone_heroi(id))
 	# direita: ficha completa de quem está selecionado
 	corpo.add_child(_carta_heroi(w.sel_heroi))
+	# dica de como liberar herói trancado: espaço reservado sempre, só preenche ao passar o mouse
+	_lbl_dica = Tela.rotulo("", 14, Tela.PAPEL, HORIZONTAL_ALIGNMENT_CENTER, true)
+	_painel_dica = PanelContainer.new(); _painel_dica.custom_minimum_size = Vector2(0, 34)
+	_painel_dica.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+	_painel_dica.add_child(_lbl_dica); _painel_dica.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vb.add_child(_painel_dica)
 	# fileira de fases: rola na horizontal, porque já são 15 e não cabem todas na tela de uma vez
 	var scrf := ScrollContainer.new(); scrf.custom_minimum_size = Vector2(980, 100)
 	scrf.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED; vb.add_child(scrf)
@@ -148,7 +156,14 @@ func _icone_heroi(id: String) -> Button:
 	v.add_child(Tela.texto(String(c["apelido"]), 12, 96, Tela.TINTA if not sel else Tela.URUCUM))
 	Tela.ignora_mouse(b)
 	if trancado:
-		b.tooltip_text = "🔒 Para liberar: " + Dados.requisito_heroi(id)
+		var req := "🔒 Para liberar " + String(c["apelido"]) + ": " + Dados.requisito_heroi(id)
+		b.tooltip_text = req
+		b.mouse_entered.connect(func():
+			_lbl_dica.text = req
+			_painel_dica.add_theme_stylebox_override("panel", Tela.caixa(Tela.TINTA, 3, Tela.URUCUM, 4)))
+		b.mouse_exited.connect(func():
+			_lbl_dica.text = ""
+			_painel_dica.add_theme_stylebox_override("panel", StyleBoxEmpty.new()))
 	else:
 		b.pressed.connect(func():
 			w.sel_heroi = id; Salvo.d["heroi"] = id; herois())

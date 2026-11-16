@@ -1921,13 +1921,31 @@ func _shot_tela(nome: String) -> void:
 	sem_mouse = true
 	Salvo.d["moedas"] = 345; Salvo.d["fase_max"] = 1; Salvo.d["melhorias"] = {"capoeirista": {"dano": 3, "vida": 1}, "jiujitsu": {"dano": 7, "critico": 4}}; Salvo.d["recordes"] = {"0": 100.0}
 	Salvo.d["contadores"] = {"abates": 812, "abates_saci": 150, "chefes": 1, "uso_kimura": 40, "criticos": 300}
-	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop", "herois_trancados"]:
+	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut", "coop", "herois_trancados", "herois_dica"]:
 		_montar_menu()
 		if nome == "herois": menus.herois()
 		elif nome == "herois_trancados":
 			menus.herois()
 			await get_tree().process_frame; await get_tree().process_frame
 			menus._scr_herois.scroll_vertical = 9999
+		elif nome == "herois_dica":
+			menus.herois()
+			await get_tree().process_frame; await get_tree().process_frame
+			menus._scr_herois.scroll_vertical = 9999
+			await get_tree().process_frame; await get_tree().process_frame
+			var gr: GridContainer = menus._scr_herois.get_child(0)
+			var alvo: Control = null
+			for ch in gr.get_children():
+				if ch is Button and String(ch.tooltip_text) != "": alvo = ch; break
+			if alvo:
+				var ctr: Vector2 = alvo.get_global_rect().get_center()
+				print("DEBUG dica: alvo=%s ctr=%s tooltip=%s" % [alvo.name, ctr, alvo.tooltip_text])
+				var mm := InputEventMouseMotion.new(); mm.position = ctr; mm.global_position = ctr
+				Input.parse_input_event(mm)
+				await get_tree().create_timer(0.7).timeout
+				Input.parse_input_event(mm)
+			else:
+				print("DEBUG dica: nenhum botao trancado encontrado")
 		elif nome == "herois_tut": menus._so_tutorial = true; menus.herois()
 		elif nome == "melhorias": menus.melhorias()
 		elif nome == "feitos": menus.feitos()

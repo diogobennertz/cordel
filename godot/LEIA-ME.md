@@ -1,5 +1,18 @@
 # Cordelame — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 — ajustes finos pedidos por ele: ícones certos, dica confiável, menu arrumado
+- Corrigido o botão SAIR colado no texto de rodapé do menu principal (menu ficou mais compacto).
+- A dica de "como liberar" o herói trancado agora aparece numa faixa fixa e confiável embaixo da
+  grade — não dependia só do balãozinho nativo do mouse (que às vezes não aparecia a tempo).
+- Corrigido: 27 golpes novos estavam usando por engano o ícone de carta "×1,2" (de um bônus de
+  atributo) como se fosse o ícone do próprio golpe — por isso pareciam "sem nada"/sem sentido.
+  Agora cada golpe usa um ícone de golpe de verdade, escolhido pelo tipo de ataque (giro, chute,
+  onda, investida, projétil...).
+- Tentei deixar o retrato 3D dos heróis novos com o mesmo filtro pixelado do resto do jogo pra
+  combinar com a arte 2D dos heróis antigos, mas quebrou a visualização (retrato ficava em branco)
+  — revertido. Pra ficar IGUAL de verdade precisaria de arte 2D desenhada à mão pra cada herói novo,
+  do jeito que foi feito pros 6 originais; isso é trabalho de arte, não só de código.
+
 ## 2026-11-16 — primeiros heróis desbloqueáveis, contador de dano por segundo
 - **Primeiros 3 heróis desbloqueáveis por feito** (de uma meta de ~20): **Jackson do Pandeiro**
   (forrozeiro), **Mestre Pastinha** (capoeira angola) e **Dorival Caymmi** (marujo da Bahia).

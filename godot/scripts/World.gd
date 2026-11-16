@@ -77,8 +77,7 @@ var _inv_n := -1
 var minimapa: MiniMapa
 var mapa_grande: MiniMapa
 var mapa_fundo: Control
-var mapa_aberto := false
-var _mapa_ant := false
+var _mapa_fundo_cor: ColorRect
 var painel_info: PanelContainer
 var lbl_info: Label
 var pixel: ColorRect
@@ -190,7 +189,7 @@ func _bot(cls: String) -> void:
 
 func bot_dir() -> Vector3:
 	var pp: Vector3 = player.global_position
-	var quer: float = {"capoeirista": 2.2, "cangaceiro": 2.0 if player.golpes.size() < 2 else 5.0, "jiujitsu": 5.0, "benzedeira": 10.0}[player.classe]
+	var quer: float = {"capoeirista": 2.2, "cangaceiro": 2.0 if player.golpes.size() < 2 else 5.0, "jiujitsu": 5.0, "benzedeira": 10.0, "frevista": 2.4, "cordelista": 9.0}[player.classe]
 	if player.hp < player.max_hp * 0.35: quer += 5.0
 	var dir := Vector3.ZERO
 	var alvo = _nearest(pp, 80.0)
@@ -378,16 +377,15 @@ func _montar_hud() -> void:
 	minimapa = MiniMapa.new(); minimapa.w = self; minimapa.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	minimapa.anchor_left = 1; minimapa.anchor_right = 1; minimapa.offset_left = -208; minimapa.offset_right = -14; minimapa.offset_top = 12; minimapa.offset_bottom = 206
 	hud.add_child(minimapa)
-	# mapa grande (tecla M), escondido até abrir
-	mapa_fundo = Control.new(); mapa_fundo.set_anchors_preset(Control.PRESET_FULL_RECT); mapa_fundo.visible = false; hud.add_child(mapa_fundo)
-	var mf_cor := ColorRect.new(); mf_cor.color = Color(0.1, 0.07, 0.05, 0.6); mf_cor.set_anchors_preset(Control.PRESET_FULL_RECT); mapa_fundo.add_child(mf_cor)
+	# mapa grande: aparece SEGURANDO Tab, enquanto o jogo continua rodando (dá pra se mexer olhando o mapa)
+	mapa_fundo = Control.new(); mapa_fundo.set_anchors_preset(Control.PRESET_FULL_RECT); mapa_fundo.visible = false
+	mapa_fundo.mouse_filter = Control.MOUSE_FILTER_IGNORE; hud.add_child(mapa_fundo)
+	_mapa_fundo_cor = ColorRect.new(); _mapa_fundo_cor.color = Color(0.1, 0.07, 0.05, 0.4)
+	_mapa_fundo_cor.anchor_left = 0.5; _mapa_fundo_cor.anchor_right = 0.5; _mapa_fundo_cor.anchor_top = 0.5; _mapa_fundo_cor.anchor_bottom = 0.5
+	mapa_fundo.add_child(_mapa_fundo_cor)
 	mapa_grande = MiniMapa.new(); mapa_grande.w = self; mapa_grande.grande = true; mapa_grande.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	mapa_grande.anchor_left = 0.5; mapa_grande.anchor_right = 0.5; mapa_grande.anchor_top = 0.5; mapa_grande.anchor_bottom = 0.5
-	mapa_grande.offset_left = -320; mapa_grande.offset_right = 320; mapa_grande.offset_top = -320; mapa_grande.offset_bottom = 320
 	mapa_fundo.add_child(mapa_grande)
-	var dica_mapa := _label(16, HORIZONTAL_ALIGNMENT_CENTER); dica_mapa.text = "%s fecha o mapa" % Ctrl.nome("mapa")
-	dica_mapa.anchor_left = 0.5; dica_mapa.anchor_right = 0.5; dica_mapa.offset_top = 332; dica_mapa.offset_left = -200; dica_mapa.offset_right = 200
-	mapa_fundo.add_child(dica_mapa)
 	lbl_dir = _label(17, HORIZONTAL_ALIGNMENT_RIGHT)
 	lbl_dir.anchor_left = 1; lbl_dir.anchor_right = 1; lbl_dir.offset_left = -400; lbl_dir.offset_right = -14; lbl_dir.offset_top = 210; hud.add_child(lbl_dir)
 	# mini inventário: cartas de atributo pegas, no canto de cima à esquerda
@@ -451,7 +449,7 @@ func _refazer_slots() -> void:
 	_slots = []
 	for g in player.golpes: _slots.append(_quadro(Dados.GOLPES[g["id"]]["arte"], "", 50.0))
 	var vao := Control.new(); vao.custom_minimum_size = Vector2(10, 0); caixa_slots.add_child(vao)
-	var artes: Array = {"capoeirista": ["au", "roda"], "jiujitsu": ["mataleao", "faixapreta"], "benzedeira": ["banho", "vela"], "cangaceiro": ["mira", "rei"]}[player.classe]
+	var artes: Array = {"capoeirista": ["au", "roda"], "jiujitsu": ["mataleao", "faixapreta"], "benzedeira": ["banho", "vela"], "cangaceiro": ["mira", "rei"], "frevista": ["atabaque", "estrela"], "cordelista": ["mira", "sol"]}[player.classe]
 	_slots.append(_quadro(artes[0], Ctrl.nome("q").left(3), 60.0)); _slots.append(_quadro(artes[1], Ctrl.nome("r").left(3), 60.0))
 
 func _hud_heroi() -> void:
@@ -523,8 +521,7 @@ func _process(delta: float) -> void:
 	_seguir_camera(delta)
 	var st := Ctrl.start()                    # Start do controle = ESC
 	if st and not _start_ant:
-		if mapa_aberto: _alternar_mapa()
-		elif estado == "jogo" and not levelup_aberto: pausar()
+		if estado == "jogo" and not levelup_aberto: pausar()
 		else: menus.esc()
 	_start_ant = st
 	if Engine.get_process_frames() % 30 == 0: _pixel()
@@ -544,20 +541,12 @@ func _process(delta: float) -> void:
 	_pombas_girando(delta)
 	_poderes(delta)
 	_hud()
-	var map_ap := Ctrl.ap("mapa")
-	if map_ap and not _mapa_ant and not levelup_aberto: _alternar_mapa()
-	_mapa_ant = map_ap
 	var cj := Ctrl.cam()                      # analógico direito gira a câmera
 	if cj != Vector2.ZERO:
 		cam_yaw -= cj.x * 2.6 * delta * Tela.opc("sens")
 		cam_pitch = clampf(cam_pitch + cj.y * 1.6 * delta * Tela.opc("sens"), 0.08, 1.25)
 	if chefe_morto and Ctrl.ap("sair"): _encerrar("FASE VENCIDA!", Color(1.0, 0.85, 0.3))
 	_teste_tick()
-
-func _alternar_mapa() -> void:
-	mapa_aberto = not mapa_aberto
-	mapa_fundo.visible = mapa_aberto
-	if mapa_aberto: mapa_grande.queue_redraw()
 
 # câmera em terceira pessoa: orbita o herói conforme o mouse
 func _seguir_camera(delta: float) -> void:
@@ -591,8 +580,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN: cam_dist = minf(22.0, cam_dist + 0.8)
 		elif event.button_index == MOUSE_BUTTON_LEFT: _mouse(true)
 	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_ESCAPE:
-		if mapa_aberto: _alternar_mapa()
-		elif estado == "jogo" and not levelup_aberto: pausar()
+		if estado == "jogo" and not levelup_aberto: pausar()
 		else: menus.esc()
 
 # ---------------- pausa (ESC) e opções ----------------
@@ -1523,6 +1511,12 @@ func pousou(p: Jogador) -> void:
 		"jiujitsu":
 			_ring(p.global_position, 2.8 * p.area_mult, 5.0 * s, 0.9, 0.0)
 			_efeito_anel(p.global_position, 2.8 * p.area_mult, Dados.CLASSES[p.classe]["cor"]); tremor = maxf(tremor, 0.15)
+		"frevista":        # só empurra, não bate — como o texto do pulo avisa
+			_ring(p.global_position, 3.0 * p.area_mult, 0.0, 0.0, 2.2)
+			_efeito_anel(p.global_position, 3.0 * p.area_mult, Dados.CLASSES[p.classe]["cor"])
+		"cordelista":
+			_ring(p.global_position, 2.4 * p.area_mult, 6.0 * s, 0.8, 0.3)
+			_efeito_anel(p.global_position, 2.4 * p.area_mult, Dados.CLASSES[p.classe]["cor"])
 
 # ---------------- tutorial ----------------
 const TUT := [
@@ -1647,6 +1641,15 @@ func _hud() -> void:
 	lbl_topo.text = _mmss(time)
 	lbl_nv.text = "NÍVEL %d" % p.level
 	lbl_dir.text = "☠ %d   ◉ %d" % [kills, int(moedas)]
+	mapa_fundo.visible = Ctrl.ap("mapa") and not levelup_aberto
+	if mapa_fundo.visible:
+		var vp := get_viewport().get_visible_rect().size
+		var lado := minf(vp.x, vp.y) * 0.6
+		mapa_grande.offset_left = -lado * 0.5; mapa_grande.offset_right = lado * 0.5
+		mapa_grande.offset_top = -lado * 0.5; mapa_grande.offset_bottom = lado * 0.5
+		var pad := lado * 0.5 + 16.0
+		_mapa_fundo_cor.offset_left = -pad; _mapa_fundo_cor.offset_right = pad
+		_mapa_fundo_cor.offset_top = -pad; _mapa_fundo_cor.offset_bottom = pad
 	_inventario()
 	painel_info.visible = Ctrl.ap("info")
 	if painel_info.visible: lbl_info.text = texto_build()
@@ -1733,9 +1736,10 @@ func _shot_tela(nome: String) -> void:
 	sem_mouse = true
 	Salvo.d["moedas"] = 345; Salvo.d["fase_max"] = 1; Salvo.d["melhorias"] = {"capoeirista": {"dano": 3, "vida": 1}, "jiujitsu": {"dano": 7, "critico": 4}}; Salvo.d["recordes"] = {"0": 100.0}
 	Salvo.d["contadores"] = {"abates": 812, "abates_saci": 150, "chefes": 1, "uso_kimura": 40, "criticos": 300}
-	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut"]:
+	if nome in ["herois", "melhorias", "opcoes", "titulo", "feitos", "controles", "pergtut", "herois_tut"]:
 		_montar_menu()
 		if nome == "herois": menus.herois()
+		elif nome == "herois_tut": menus._so_tutorial = true; menus.herois()
 		elif nome == "melhorias": menus.melhorias()
 		elif nome == "feitos": menus.feitos()
 		elif nome == "opcoes": menus.opcoes(menus.titulo)
@@ -1765,7 +1769,9 @@ func _shot_tela(nome: String) -> void:
 		elif nome == "cristo":
 			player.position = Vector3(0, 0, 4); cam_yaw = 0.0; cam_pitch = 0.2; cam_dist = 20.0
 		elif nome == "mapagrande":
-			_montar_objetos(); _alternar_mapa()
+			_montar_objetos()
+			var ek := InputEventKey.new(); ek.physical_keycode = Ctrl.tecla("mapa"); ek.pressed = true
+			Input.parse_input_event(ek)
 		elif Dados.NPCS.has(nome):
 			moedas = 70.0; _teste_fim = 0.0; Salvo.d["falas"][nome] = randi() % 5; abrir_npc(nome)
 		elif nome == "lore": abrir_escolha("lore:lobisomem")
@@ -1798,7 +1804,7 @@ func _teste_dash() -> void:
 
 func _galeria() -> void:
 	cam_fixa = true
-	var nomes := ["pretovelho", "vaqueiro", "curupira", "corposeco", "iara", "lobisomem", "boto", "cuca"]
+	var nomes := ["frevista", "cordelista", "capoeirista", "jiujitsu", "benzedeira", "cangaceiro"]
 	for i in range(nomes.size()):
 		var b := Boneco.criar(nomes[i]); add_child(b)
 		var x := (i - 3.5) * 1.5
@@ -1888,6 +1894,17 @@ func usar_especial(p: Jogador) -> void:
 				dir = alvo2.global_position - pos; dir.y = 0; dir = dir.normalized()
 			_disparar(pos, dir * 32.0, TIRO_Q, 210.0 * s)
 			p.boneco.atacar()
+		"frevista":
+			p.iframes = 0.7; p.dash_t = 0.22; p.dash_dir = p.frente; p.boneco.girar()
+			_ring(pos, 4.0 * p.area_mult, 34.0 * s, 0.5, 1.8)
+			_efeito_anel(pos, 4.0 * p.area_mult, cor); _efeito_anel(pos, 2.4, Color.WHITE)
+		"cordelista":
+			var alvo3q = _mais_forte(pos, 28.0)
+			var dir3: Vector3 = p.frente
+			if alvo3q:
+				dir3 = alvo3q.global_position - pos; dir3.y = 0; dir3 = dir3.normalized()
+			_disparar(pos, dir3 * 30.0, TIRO_Q, 220.0 * s)
+			p.boneco.atacar()
 	p.q_cd = hq["cd"]
 	Som.tocar("especial")
 	Salvo.contar("uso_especial_" + p.classe)
@@ -1897,7 +1914,10 @@ func usar_ultimate(p: Jogador) -> void:
 	if p.ult < 1.0 or p.ult_t > 0.0: return
 	var hr: Dictionary = Dados.HABILIDADES[p.classe]["r"]
 	p.ult = 0.0; p.ult_tick = 0.0; p.ult_t = hr["dur"]
-	Som.tocar("ult"); Som.voz({"capoeirista": "v_cap", "jiujitsu": "v_jiu", "benzedeira": "v_ben", "cangaceiro": "v_can"}[p.classe]); tremor = 0.4
+	Som.tocar("ult")
+	var voz_ult: String = {"capoeirista": "v_cap", "jiujitsu": "v_jiu", "benzedeira": "v_ben", "cangaceiro": "v_can"}.get(p.classe, "")
+	if voz_ult != "": Som.voz(voz_ult)
+	tremor = 0.4
 	if p.classe == "capoeirista": p.guarda_t = hr["dur"]
 	Salvo.contar("uso_ultimate_" + p.classe)
 	lbl_centro.text = String(hr["nome"]).to_upper(); _piscar_centro()
@@ -1934,6 +1954,15 @@ func _hab_update(delta: float) -> void:
 			for i in range(8):
 				var a2 := i * TAU / 8.0 + time * 2.0
 				_disparar(pos, Vector3(cos(a2), 0, sin(a2)) * 16.0, BALA_ULT, 14.0 * s)
+		"frevista":
+			p.ult_tick = 0.28; p.boneco.girar()
+			_ring(pos, 4.2 * p.area_mult, 15.0 * s, 0.0, 0.5)
+			_efeito_anel(pos, 4.2 * p.area_mult, cor)
+		"cordelista":
+			p.ult_tick = 0.25; p.boneco.atacar()
+			for i in range(8):
+				var a3 := i * TAU / 8.0 + time * 2.0
+				_disparar(pos, Vector3(cos(a3), 0, sin(a3)) * 16.0, BALA_ULT, 13.0 * s)
 
 # ---------------- ataques dos chefes ----------------
 func aviso_chefe(pos: Vector3, raio: float, txt: String) -> void:

@@ -12,6 +12,7 @@ var _cartas: Array = []       # [carta, botão] da tela de nível, para as tecla
 var _heroi_nv                 # herói que está subindo de nível
 var _abriu := 0
 var _capt := ""               # ação esperando uma tecla nova (opções > controles)               # quando a tela de nível abriu (evita clique sem querer)
+var _so_tutorial := false     # true: foi pro "escolha de herói" só pra fazer o tutorial (não pra jogar a fase)
 
 func _init() -> void:
 	layer = 10
@@ -74,9 +75,10 @@ func titulo() -> void:
 	vb.add_child(logo)
 	var ac_opc := func(): opcoes(titulo)
 	var ac_sair := func(): get_tree().quit()
-	var ac_tut := func(): w.iniciar_jogo(w.sel_heroi, 0, true)
+	var ac_tut := func(): _so_tutorial = true; herois()
+	var ac_jogar_menu := func(): _so_tutorial = false; herois()
 	var itens := [
-		["JOGAR", herois, Tela.URUCUM, 28, 340.0, 62.0],
+		["JOGAR", ac_jogar_menu, Tela.URUCUM, 28, 340.0, 62.0],
 		["MELHORIAS", melhorias, Tela.ANIL, 20, 340.0, 46.0],
 		["FEITOS" + (" (%d)" % Dados.feitos_prontos() if Dados.feitos_prontos() > 0 else ""), feitos, Tela.BARRO, 20, 340.0, 46.0],
 		["TUTORIAL", ac_tut, Tela.MATA, 18, 340.0, 42.0],
@@ -97,6 +99,7 @@ func herois() -> void:
 	Tela.fundo_papel(raiz)
 	var vb := _centro(8)
 	vb.add_child(Tela.titulo("t_heroi", 46))
+	if _so_tutorial: vb.add_child(Tela.rotulo("escolha quem vai fazer o tutorial", 16, Tela.URUCUM, HORIZONTAL_ALIGNMENT_CENTER, true))
 	var corpo := _linha(vb, 16)
 	# esquerda: grade dos heróis (rola quando tiver muitos — hoje são poucos, mas vão chegar a ~20)
 	var scr := ScrollContainer.new(); scr.custom_minimum_size = Vector2(356, 424)
@@ -113,9 +116,11 @@ func herois() -> void:
 	var hbt := _linha(vb, 16)
 	hbt.add_child(Tela.botao("VOLTAR", titulo, 18, Tela.PARDO, 200.0, 50.0))
 	var ac_jogar := func():
-		if bool(Salvo.d["tutorial"]): w.iniciar_jogo(w.sel_heroi, w.sel_fase, false)
+		if _so_tutorial:
+			Salvo.d["tutorial"] = true; Salvo.salvar(); w.iniciar_jogo(w.sel_heroi, 0, true)
+		elif bool(Salvo.d["tutorial"]): w.iniciar_jogo(w.sel_heroi, w.sel_fase, false)
 		else: perguntar_tutorial()
-	hbt.add_child(Tela.botao("JOGAR", ac_jogar, 26, Tela.URUCUM, 360.0, 50.0))
+	hbt.add_child(Tela.botao("FAZER O TUTORIAL" if _so_tutorial else "JOGAR", ac_jogar, 26, Tela.URUCUM, 360.0, 50.0))
 	_moedas_tag()
 
 # quadradinho clicável de cada herói na grade (a ficha grande fica à direita, só do escolhido)
@@ -125,7 +130,7 @@ func _icone_heroi(id: String) -> Button:
 	var b := Button.new(); b.custom_minimum_size = Vector2(112, 148); b.clip_contents = true
 	_estilo_carta(b, sel)
 	var v := _miolo(b, 6, 2)
-	v.add_child(Tela.imagem("s_" + id, Vector2(70, 88)))
+	v.add_child(_retrato_heroi(id, Vector2(70, 88)))
 	v.add_child(Tela.texto(String(c["apelido"]), 12, 96, Tela.TINTA if not sel else Tela.URUCUM))
 	Tela.ignora_mouse(b)
 	b.pressed.connect(func():
@@ -176,7 +181,7 @@ func _carta_heroi(id: String) -> Button:
 	v.add_child(Tela.faixa(String(c["apelido"]).to_upper(), c["cor"], 16, Tela.TINTA))
 	v.add_child(Tela.rotulo(c["nome"], 13, Tela.URUCUM, HORIZONTAL_ALIGNMENT_CENTER, true))
 	var topo := HBoxContainer.new(); topo.add_theme_constant_override("separation", 8); v.add_child(topo)
-	topo.add_child(Tela.imagem("s_" + id, Vector2(86, 108)))
+	topo.add_child(_retrato_heroi(id, Vector2(86, 108)))
 	var st := "Vida %d\nVelocidade %.1f\nCrítico %s" % [int(c["maxhp"]), c["speed"], _pct(Dados.CRIT_BASE + c.get("crit", 0.0))]
 	if c.has("dodge"): st += "\nEsquiva " + _pct(c["dodge"])
 	if c.has("armor"): st += "\nDefesa " + _pct(c["armor"])
@@ -330,7 +335,7 @@ func opcoes(volta: Callable) -> void:
 			_chave(corpo, "Números de dano", "numeros")
 			_chave(corpo, "Visual pixelado", "pixel")
 			if w.estado == "menu":
-				var ac_tut := func(): w.iniciar_jogo(w.sel_heroi, 0, true)
+				var ac_tut := func(): _so_tutorial = true; herois()
 				var bt_tut := Tela.botao("JOGAR O TUTORIAL DE NOVO", ac_tut, 15, Tela.ANIL, 300.0, 38.0); bt_tut.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 				corpo.add_child(bt_tut)
 		"controles":
@@ -537,6 +542,11 @@ func loja() -> void:
 
 # ---------------- gente do mapa: retrato, balão de fala e o que oferece ----------------
 # retrato com o boneco 3D de verdade
+# usa o retrato 2D se já existir; senão (heróis novíssimos) mostra o boneco 3D de verdade
+func _retrato_heroi(id: String, tam: Vector2) -> Control:
+	if Tela.tex("s_" + id): return Tela.imagem("s_" + id, tam)
+	return _retrato3d(id, tam)
+
 func _retrato3d(tipo: String, tam: Vector2) -> SubViewportContainer:
 	var c := SubViewportContainer.new(); c.custom_minimum_size = tam; c.stretch = true; c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var sv := SubViewport.new(); sv.own_world_3d = true; sv.transparent_bg = true; sv.size = Vector2i(tam)

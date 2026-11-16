@@ -10,7 +10,7 @@ const ACOES := [
 	["pulo", "Pular", KEY_SPACE], ["dash", "Arrancada", KEY_SHIFT],
 	["q", "Especial", KEY_Q], ["r", "Ultimate", KEY_R],
 	["info", "Ver a build (segurar)", KEY_TAB], ["sair", "Sair da fase (depois do chefe)", KEY_F],
-	["mapa", "Abrir o mapa grande", KEY_M],
+	["mapa", "Mapa grande (segurar)", KEY_TAB],
 ]
 const JOY := {"pulo": [JOY_BUTTON_A], "dash": [JOY_BUTTON_B, JOY_BUTTON_RIGHT_SHOULDER], "q": [JOY_BUTTON_X], "r": [JOY_BUTTON_Y],
 	"info": [JOY_BUTTON_LEFT_SHOULDER], "sair": [JOY_BUTTON_BACK]}

@@ -10,7 +10,7 @@ const CLASSES := {
 		"desc": "Ginga e giros largos que varrem tudo em volta. Rápido e esquivo."
 	},
 	"jiujitsu": {
-		"nome": "Lutadora de Jiu-Jitsu", "apelido": "Bia Grace", "pulo": "Pulo curto e pesado: a queda deixa tonto quem estiver por perto.", "cor": Color(0.61, 0.48, 0.9), "maxhp": 150.0, "speed": 5.3, "armor": 0.20,
+		"nome": "Lutadora de Jiu-Jitsu", "apelido": "Bia Gracie", "pulo": "Pulo curto e pesado: a queda deixa tonto quem estiver por perto.", "cor": Color(0.61, 0.48, 0.9), "maxhp": 150.0, "speed": 5.3, "armor": 0.20,
 		"inicial": "kimura", "desbloqueia": {"queda": 3, "raspagem": 6},
 		"desc": "Luta colada: investe, fecha a guarda e se cura ao finalizar."
 	},
@@ -23,6 +23,16 @@ const CLASSES := {
 		"nome": "Cangaceiro", "apelido": "Capitão Gonzaga", "pulo": "A arrancada é um rolamento: o golpe seguinte sai crítico na certa.", "cor": Color(0.89, 0.34, 0.18), "maxhp": 125.0, "speed": 5.6, "crit": 0.10,
 		"inicial": "peixeira", "desbloqueia": {"bacamarte": 3, "rifle": 6},
 		"desc": "Dano bruto e muito crítico: faca, bacamarte e rifle."
+	},
+	"frevista": {
+		"nome": "Passista de Frevo", "apelido": "Capiba", "pulo": "Pulo alto de bailarino: ao cair, empurra tudo em volta — sem bater.", "cor": Color(0.95, 0.35, 0.55), "maxhp": 108.0, "speed": 7.0, "dodge": 0.22,
+		"inicial": "tesoura", "desbloqueia": {"parafuso": 3, "ferrugem": 6},
+		"desc": "O mais rápido de todos: passos de frevo que varrem a roda com a sombrinha."
+	},
+	"cordelista": {
+		"nome": "Repentista de Cordel", "apelido": "Patativa do Assaré", "pulo": "Pulo comum, mas ao cair solta um verso que atordoa quem está perto.", "cor": Color(0.8, 0.58, 0.2), "maxhp": 130.0, "speed": 5.8, "crit": 0.08, "regen": 0.4,
+		"inicial": "repente", "desbloqueia": {"glosa": 3, "desafio": 6},
+		"desc": "Ataca com verso na ponta da língua: rápido de perto, teleguiado e em desafio."
 	},
 }
 
@@ -42,6 +52,14 @@ const GOLPES := {
 	"reza":     {"nome": "Reza Forte", "build": "mandinga", "tipo": "onda", "dmg": 16.0, "cd": 3.00, "raio": 5.6, "knock": 2.2, "arte": "reza", "txt": "Reza forte: fere e afasta tudo que chegou perto."},
 	# Cangaço
 	"peixeira": {"nome": "Peixeira", "build": "cangaco", "tipo": "arco", "dmg": 16.0, "cd": 0.65, "raio": 2.7, "ang": 1.2, "crit": 0.12, "arte": "peixeira", "txt": "Facada rápida na frente, com +12% de chance de crítico."},
+	# Frevo
+	"tesoura":  {"nome": "Tesoura", "build": "frevo", "tipo": "arco", "dmg": 22.0, "cd": 1.0, "raio": 3.0, "ang": 1.5, "knock": 1.0, "arte": "arretado", "txt": "Passo de frevo em tesoura: varre a sombrinha na frente."},
+	"parafuso": {"nome": "Parafuso", "build": "frevo", "tipo": "ring", "dmg": 16.0, "cd": 1.6, "raio": 3.4, "stun": 1.0, "knock": 0.6, "arte": "arretado", "txt": "Gira feito pião e atordoa quem está em volta."},
+	"ferrugem": {"nome": "Ferrugem", "build": "frevo", "tipo": "onda", "dmg": 15.0, "cd": 2.6, "raio": 5.0, "knock": 1.8, "arte": "arretado", "txt": "Passo forte que empurra toda a roda para longe."},
+	# Cordel
+	"repente":  {"nome": "Repente", "build": "cordel", "tipo": "proj_reto", "dmg": 20.0, "cd": 0.9, "vel": 16.0, "raio": 0.35, "vida": 0.9, "n": 1, "pierce": 1, "cor": Color(0.9, 0.85, 0.6), "arte": "arretado", "txt": "Atira um verso afiado que atravessa um bicho."},
+	"glosa":    {"nome": "Glosa", "build": "cordel", "tipo": "proj_teleguiado", "dmg": 16.0, "cd": 1.3, "vel": 11.0, "raio": 0.4, "vida": 3.0, "alcance": 24.0, "boom": 1.3, "cor": Color(0.9, 0.85, 0.6), "arte": "arretado", "txt": "Verso teleguiado que responde a quem provocou."},
+	"desafio":  {"nome": "Desafio", "build": "cordel", "tipo": "onda", "dmg": 18.0, "cd": 2.8, "raio": 5.2, "knock": 1.8, "arte": "arretado", "txt": "Grito de desafio em verso: estoura em volta e empurra."},
 	"bacamarte":{"nome": "Bacamarte", "build": "cangaco", "tipo": "proj_reto", "dmg": 9.0, "cd": 1.40, "vel": 13.0, "raio": 0.4, "vida": 0.7, "n": 5, "spread": 0.5, "pierce": 1, "cor": Color(0.2, 0.15, 0.1), "arte": "bacamarte", "txt": "Tiro de chumbo espalhado: 5 balas em leque."},
 	"rifle":    {"nome": "Rifle Papo-Amarelo", "build": "cangaco", "tipo": "proj_reto", "dmg": 30.0, "cd": 1.60, "vel": 24.0, "raio": 0.32, "vida": 0.8, "n": 1, "spread": 0.0, "pierce": 99, "crit": 0.10, "cor": Color(0.94, 0.71, 0.1), "arte": "papoamarelo", "txt": "Bala que atravessa a fila inteira. +10% de crítico."},
 }
@@ -103,6 +121,10 @@ const HABILIDADES := {
 		"r": {"nome": "Chuva de Fogo-Fátuo", "dur": 4.0, "txt": "4 s soltando fogos teleguiados sem parar"}},
 	"cangaceiro": {"q": {"nome": "Tiro Certeiro", "cd": 7.0, "txt": "um tiro crítico que atravessa tudo"},
 		"r": {"nome": "Bando de Lampião", "dur": 5.0, "txt": "5 s atirando para todos os lados"}},
+	"frevista": {"q": {"nome": "Parafuso Aéreo", "cd": 8.0, "txt": "gira no ar feito pião, intocável, e acerta todo mundo em volta"},
+		"r": {"nome": "Bloco de Carnaval", "dur": 5.0, "txt": "5 s dançando sem parar, batendo em quem chega perto"}},
+	"cordelista": {"q": {"nome": "Mote Cortante", "cd": 7.0, "txt": "um verso certeiro que atravessa tudo"},
+		"r": {"nome": "Cantoria Infinita", "dur": 5.0, "txt": "5 s soltando versos para todo lado"}},
 }
 const ULT_ABATES := 60          # abates para carregar o ultimate
 

@@ -165,3 +165,18 @@ compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abr
   jogar de novo o tutorial pelo botão TUTORIAL do menu principal (ou em Opções > Jogo), a qualquer momento.
 - **Escolha de herói em grade**: os heróis agora aparecem como ícones pequenos numa grade rolável à esquerda; a ficha
   completa (vida, golpes, Q/R, pulo) do herói escolhido fica à direita. Pensado para escalar até ~20 personagens.
+
+
+## Novidades de 16/11 (mapa no Tab, herói do tutorial, mais 2 heróis)
+- **Mapa grande agora é no Tab (segurar)**, não mais M: o jogo continua rodando e dá pra se mexer olhando o mapa, que
+  ocupa uns 60% da tela (escala com a resolução). Tab também mostra a build (os dois painéis juntos).
+- **Escolher herói antes do tutorial**: os botões "TUTORIAL" (capa e opções) agora levam pra tela de escolha de herói
+  primeiro, em vez de pegar direto o último usado.
+- **Bia Gracie** (estava "Bia Grace" por engano).
+- **2 heróis novos**, com apelido de gente de peso de verdade, como você pediu:
+  - **Capiba** (passista de frevo) — o nome é do Capiba de verdade, um dos maiores compositores de frevo que já existiu.
+    Rápido e esquivo, sombrinha na mão; golpes Tesoura/Parafuso/Ferrugem (passos reais de frevo).
+  - **Patativa do Assaré** (repentista de cordel) — nome do poeta/repentista mais famoso do Nordeste; combina até com o
+    nome do jogo. Ataca de longe com versos (Repente/Glosa/Desafio).
+  - Os dois já têm boneco 3D de verdade, golpes, Q, R, pulo e passam no robô de teste. O retrato deles no menu ainda é
+    um render 3D provisório (os outros 4 têm ilustração 2D desenhada à mão) — troca sozinho assim que eu desenhar a arte certa.

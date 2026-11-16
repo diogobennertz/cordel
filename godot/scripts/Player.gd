@@ -119,7 +119,7 @@ func _process(delta: float) -> void:
 
 	var esp := Ctrl.ap("pulo")
 	if esp and not _esp_ant:
-		var forca: float = {"capoeirista": 10.0, "jiujitsu": 7.4, "benzedeira": 8.5, "cangaceiro": 8.5}[classe]
+		var forca: float = {"capoeirista": 10.0, "jiujitsu": 7.4, "benzedeira": 8.5, "cangaceiro": 8.5, "frevista": 11.0, "cordelista": 8.0}[classe]
 		if alt <= 0.0:
 			vy = forca; alt = 0.01; pulos_feitos = 0; Som.tocar("pulo")
 			if classe == "capoeirista": boneco.girar()

@@ -308,14 +308,14 @@ func info_carta(card: Dictionary) -> Dictionary:
 	match card["tipo"]:
 		"golpe_novo":
 			var g: Dictionary = Dados.GOLPES[card["id"]]
-			return {"nome": g["nome"], "selo": "GOLPE NOVO", "txt": g["txt"], "arte": g["arte"]}
+			return {"nome": tr(String(g["nome"])), "selo": tr("GOLPE NOVO"), "txt": tr(String(g["txt"])), "arte": g["arte"]}
 		"golpe_up":
 			var g2: Dictionary = Dados.GOLPES[card["id"]]
 			var de := nivel_do_golpe(card["id"]); var para := mini(Dados.NIVEL_MAX, de + niveis_da_carta(card))
-			return {"nome": g2["nome"], "selo": "Nível %d → %d" % [de, para], "arte": g2["arte"],
-				"txt": "+%d%% de dano e ataca mais rápido.\n%s" % [25 * (para - de), g2["txt"]]}
+			return {"nome": tr(String(g2["nome"])), "selo": tr("Nível %d → %d") % [de, para], "arte": g2["arte"],
+				"txt": tr("+%d%% de dano e ataca mais rápido.\n%s") % [25 * (para - de), tr(String(g2["txt"]))]}
 		"stat":
 			var st: Dictionary = Dados.STATS[card["id"]]
 			var v: float = st["v"] * (1.0 if st.get("fixo", false) else r["mult"])
-			return {"nome": st["nome"], "selo": "ATRIBUTO", "txt": st["txt"] % (v * 100.0 if st["pct"] else v), "arte": st["arte"]}
+			return {"nome": tr(String(st["nome"])), "selo": tr("ATRIBUTO"), "txt": tr(String(st["txt"])) % (v * 100.0 if st["pct"] else v), "arte": st["arte"]}
 	return {"nome": "?", "selo": "", "txt": "", "arte": "arretado"}

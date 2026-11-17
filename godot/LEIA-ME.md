@@ -1,5 +1,17 @@
 # Cordel — jogo de folclore 3D (Godot 4)
 
+## 2026-11-17: tradução pro inglês
+- O jogo ganhou um sistema de tradução nativo do Godot (CSV → `.translation`, registrado em `project.godot`).
+  Opções → Idioma agora tem um seletor real (Português do Brasil / English) em vez do "EM BREVE".
+- Escopo: **tudo** — não só os menus, mas também as piadas no rodapé das cartas e as lendas (histórias) de cada
+  bicho, por pedido explícito do usuário ("tudo, incluindo piada e lenda"). Ao todo ~995 textos traduzidos:
+  nomes/descrições/golpes/habilidades dos 32 heróis, atributos, melhorias, feitos, as 12 lendas de bichos, as
+  94 piadas das cartas, os 6 NPCs do mapa (diálogo e loja) e a maior parte da interface.
+- Limitação conhecida (aceita, não é bug): títulos de tela que são imagem (ex. "MELHORIAS", "PAUSA") não
+  traduzem, porque são textura already-desenhada, não texto — ficaria pra uma leva futura se algum dia valer a pena.
+- Nomes próprios (apelido dos heróis, nome dos golpes) foram traduzidos como eles mesmos (tradução "idêntica"),
+  de propósito — são tratados como nome próprio/termo estilizado, não como texto comum.
+
 ## 2026-11-17: carta de nível aparece pro parceiro no co-op
 - Último item que faltava do co-op ("Ainda falta"): quando alguém sobe de nível e escolhe uma carta, agora
   aparece um aviso flutuando em cima da cabeça dela pros outros jogadores verem ("Nível X: nome da carta") —

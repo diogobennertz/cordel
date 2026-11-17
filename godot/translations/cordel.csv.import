@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cdlkvaci5bf6m"
+
+[deps]
+
+files=["res://translations/cordel.en.translation"]
+
+source_file="res://translations/cordel.csv"
+dest_files=["res://translations/cordel.en.translation"]
+
+[params]
+
+compress=true
+delimiter=0

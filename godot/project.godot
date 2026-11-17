@@ -15,6 +15,11 @@ config/icon="res://art/capoeirista.png"
 
 Rede="*res://scripts/Rede.gd"
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://translations/cordel.en.translation")
+locale/fallback="pt_BR"
+
 [display]
 
 window/size/viewport_width=1280

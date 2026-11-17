@@ -174,6 +174,7 @@ static func aplicar_opcoes() -> void:
 		var i := _bus(par[0]); var v := opc(par[1])
 		AudioServer.set_bus_mute(i, v <= 0.001)
 		AudioServer.set_bus_volume_db(i, linear_to_db(maxf(v, 0.001)))
+	TranslationServer.set_locale(String(Salvo.d.get("idioma", "pt_BR")))
 	if DisplayServer.get_name() != "headless" and not Salvo.desligado:
 		var quer := DisplayServer.WINDOW_MODE_FULLSCREEN if opc("cheia") > 0.5 else DisplayServer.WINDOW_MODE_WINDOWED
 		if DisplayServer.window_get_mode() != quer and not (quer == DisplayServer.WINDOW_MODE_WINDOWED and DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MAXIMIZED):

@@ -164,6 +164,7 @@ func _ready() -> void:
 	elif "--menu" in args:
 		sem_mouse = true; _montar_menu(); _salvar("shot_menu")
 	elif "--tela" in args:
+		if "--idioma" in args: TranslationServer.set_locale(args[args.find("--idioma") + 1])
 		_shot_tela(args[args.find("--tela") + 1])
 	elif "--chefe" in args:
 		_shot_chefe()
@@ -651,7 +652,7 @@ func iniciar_jogo(id: String, f: int = 0, tutorial: bool = false) -> void:
 		tut = 0; tut_t = 0.0; _tut_pos = player.position; _tut_a = cam_yaw
 	else:
 		_montar_objetos()
-		lbl_centro.text = "FASE %d — %s" % [fase + 1, String(Dados.FASES[fase]["nome"]).to_upper()]
+		lbl_centro.text = tr("FASE %d — %s") % [fase + 1, tr(String(Dados.FASES[fase]["nome"])).to_upper()]
 		_piscar_centro()
 	_mouse(true)
 
@@ -829,7 +830,7 @@ func _dirigir(delta: float) -> void:
 		chefe.hp = 700.0 * forca; chefe.max_hp_cache = chefe.hp
 		chefe.dmg = 14.0 * sqrt(forca); chefe.speed = 2.7; chefe.xp_val = 60.0; chefe.moeda_val = 150.0
 		_replicar_bicho(chefe)
-		lbl_centro.text = "%s\n%s\nVença em 3 minutos" % [f["chefe_nome"], f["chefe_titulo"]]; _piscar_centro()
+		lbl_centro.text = tr("%s\n%s\nVença em 3 minutos") % [tr(String(f["chefe_nome"])), tr(String(f["chefe_titulo"]))]; _piscar_centro()
 		Som.tocar("chefe"); Som.voz("v_chefe"); tremor = 0.6
 	if chefe_veio and not chefe_morto and not furia:
 		furia_t -= delta
@@ -1025,7 +1026,7 @@ func on_enemy_killed(e) -> void:
 	combo += 1; combo_t = 3.0
 	if combo > int(Salvo.d["contadores"].get("combo_max", 0)): Salvo.d["contadores"]["combo_max"] = combo
 	if Dados.COMBO_GRITOS.has(combo):
-		lbl_centro.text = "%s\n×%d — ◉ +%d" % [Dados.COMBO_GRITOS[combo], combo, combo / 5]; _piscar_centro()
+		lbl_centro.text = tr("%s\n×%d — ◉ +%d") % [tr(String(Dados.COMBO_GRITOS[combo])), combo, combo / 5]; _piscar_centro()
 		moeda_ganha += combo / 5.0
 	if e.chefe_tipo == "cuca": dar_poder("mula")
 	elif e.elite and Dados.PODERES.has(e.tipo) and randf() < 0.4: dar_poder(e.tipo)
@@ -1039,7 +1040,7 @@ func on_enemy_killed(e) -> void:
 		Salvo.contar("chefes")
 		Salvo.d["fase_max"] = maxi(int(Salvo.d["fase_max"]), mini(fase + 1, Dados.FASES.size() - 1))
 		Salvo.salvar()
-		lbl_centro.text = "DERROTOU O CHEFE!\nAgora aguente o quanto der — %s para sair" % Ctrl.nome("sair"); _piscar_centro()
+		lbl_centro.text = tr("DERROTOU O CHEFE!\nAgora aguente o quanto der — %s para sair") % Ctrl.nome("sair"); _piscar_centro()
 	# XP e moeda são compartilhados: todo mundo ganha, não só quem acertou o golpe final
 	moedas += moeda_ganha
 	if player.roubo > 0.0 and player.hp > 0.0: player.hp = minf(player.max_hp, player.hp + player.roubo)
@@ -1117,7 +1118,7 @@ func _escolher_carta(p: Jogador, card: Dictionary) -> void:
 func _avisar_carta_rede(id: int, nome_carta: String, nivel: int) -> void:
 	var j = jogadores_rede.get(id)
 	if j == null or not is_instance_valid(j): return
-	dano_num(j.global_position, "Nível %d: %s" % [nivel, nome_carta], Color(1.0, 0.9, 0.4), 32, true)
+	dano_num(j.global_position, tr("Nível %d: %s") % [nivel, nome_carta], Color(1.0, 0.9, 0.4), 32, true)
 
 # ---------------- efeitos ----------------
 func _efeito_anel(centro: Vector3, raio: float, cor: Color) -> void:
@@ -1167,7 +1168,7 @@ func _fim_num(l: Node) -> void:
 	l.queue_free()
 
 func popup(pos: Vector3, txt: String) -> void:
-	dano_num(pos, txt.to_upper() + "!", Color(1.0, 0.85, 0.2), 52)
+	dano_num(pos, tr(txt).to_upper() + "!", Color(1.0, 0.85, 0.2), 52)
 
 # Estouro de cubinhos quando o bicho cai.
 func _puff(pos: Vector3, cor: Color, esc: float) -> void:
@@ -1331,7 +1332,7 @@ func _novo_objeto(tipo: String, pos: Vector3, custo: int, net_id: int = -1) -> v
 			Lib.esf(n, 0.12, Vector3(0, 0.95, 0.5), Color(1.0, 0.8, 0.3), Vector3(1, 1.5, 1), 5, 3.0)
 			var luz := OmniLight3D.new(); luz.light_color = Color(0.6, 0.85, 1.0); luz.light_energy = 1.6; luz.omni_range = 6.0; luz.position = Vector3(0, 1.6, 0); n.add_child(luz)
 			o["luz"] = luz
-			o["lbl"] = _placa(n, 3.2, Color(0.7, 0.92, 1.0)); o["lbl"].text = "ORATÓRIO\nfique perto"
+			o["lbl"] = _placa(n, 3.2, Color(0.7, 0.92, 1.0)); o["lbl"].text = tr("ORATÓRIO\nfique perto")
 			troncos.append(Vector3(pos.x, pos.z, 0.6))
 		"zepilintra":   # mesa de bar com Seu Zé ao lado
 			Lib.cil(n, 0.7, 0.7, 0.08, Vector3(0.9, 0.85, 0), Color(0.5, 0.32, 0.18), 10)
@@ -1339,7 +1340,7 @@ func _novo_objeto(tipo: String, pos: Vector3, custo: int, net_id: int = -1) -> v
 			Lib.cil(n, 0.07, 0.08, 0.3, Vector3(0.75, 1.04, 0.1), Color(0.25, 0.5, 0.25), 6)
 			Lib.cx(n, Vector3(0.12, 0.12, 0.12), Vector3(1.1, 0.95, -0.1), Color.WHITE); Lib.cx(n, Vector3(0.12, 0.12, 0.12), Vector3(0.95, 0.95, 0.25), Color.WHITE, Vector3(0, 0.6, 0))
 			var bz := Boneco.criar("zepilintra"); n.add_child(bz); bz.position = Vector3(-0.3, 0, 0)
-			o["lbl"] = _placa(n, 2.9, Color.WHITE); o["lbl"].text = Dados.NPCS[tipo]["lugar"]
+			o["lbl"] = _placa(n, 2.9, Color.WHITE); o["lbl"].text = tr(String(Dados.NPCS[tipo]["lugar"]))
 			n.rotation.y = atan2(-pos.x, -pos.z)
 		"pombagira":    # encruzilhada com velas
 			Lib.cx(n, Vector3(5.0, 0.04, 1.0), Vector3(0, 0.05, 0), Color(0.45, 0.33, 0.22)); Lib.cx(n, Vector3(1.0, 0.04, 5.0), Vector3(0, 0.06, 0), Color(0.45, 0.33, 0.22))
@@ -1349,7 +1350,7 @@ func _novo_objeto(tipo: String, pos: Vector3, custo: int, net_id: int = -1) -> v
 				Lib.esf(n, 0.06, Vector3(cos(av) * 1.1, 0.42, sin(av) * 1.1), Color(1.0, 0.8, 0.3), Vector3(1, 1.5, 1), 5, 3.0)
 			var bp := Boneco.criar("pombagira"); n.add_child(bp)
 			var lg := OmniLight3D.new(); lg.light_color = Color(1.0, 0.3, 0.3); lg.light_energy = 1.6; lg.omni_range = 6.0; lg.position = Vector3(0, 1.6, 0); n.add_child(lg)
-			o["lbl"] = _placa(n, 2.9, Color(1.0, 0.45, 0.45)); o["lbl"].text = Dados.NPCS[tipo]["lugar"]
+			o["lbl"] = _placa(n, 2.9, Color(1.0, 0.45, 0.45)); o["lbl"].text = tr(String(Dados.NPCS[tipo]["lugar"]))
 			n.rotation.y = atan2(-pos.x, -pos.z)
 		"pretovelho", "baiana", "repentista", "vaqueiro":
 			var bn := Boneco.criar(tipo); n.add_child(bn)
@@ -1368,7 +1369,7 @@ func _novo_objeto(tipo: String, pos: Vector3, custo: int, net_id: int = -1) -> v
 				"vaqueiro":
 					for k in range(3): Lib.cil(n, 0.06, 0.07, 1.2, Vector3(1.0 + k * 0.9, 0.6, 0), COR_PAU, 5)
 					Lib.cx(n, Vector3(2.0, 0.07, 0.07), Vector3(1.9, 0.9, 0), COR_PAU); Lib.cx(n, Vector3(2.0, 0.07, 0.07), Vector3(1.9, 0.5, 0), COR_PAU)
-			o["lbl"] = _placa(n, 2.9, Color.WHITE); o["lbl"].text = Dados.NPCS[tipo]["lugar"]
+			o["lbl"] = _placa(n, 2.9, Color.WHITE); o["lbl"].text = tr(String(Dados.NPCS[tipo]["lugar"]))
 			n.rotation.y = atan2(-pos.x, -pos.z)
 		"portal":
 			for i in range(8):
@@ -1377,7 +1378,7 @@ func _novo_objeto(tipo: String, pos: Vector3, custo: int, net_id: int = -1) -> v
 			Lib.cil(n, 1.3, 1.3, 0.06, Vector3(0, 0.12, 0), Color(0.55, 0.2, 0.9), 16, Vector3.ZERO, 2.5)
 			Lib.cil(n, 0.8, 0.8, 0.08, Vector3(0, 0.16, 0), Color(0.85, 0.5, 1.0), 12, Vector3.ZERO, 3.5)
 			var lp := OmniLight3D.new(); lp.light_color = Color(0.7, 0.35, 1.0); lp.light_energy = 2.4; lp.omni_range = 7.0; lp.position = Vector3(0, 1.4, 0); n.add_child(lp)
-			o["lbl"] = _placa(n, 2.6, Color(0.85, 0.6, 1.0)); o["lbl"].text = "PORTAL DA CUCA\nentre se tiver coragem"
+			o["lbl"] = _placa(n, 2.6, Color(0.85, 0.6, 1.0)); o["lbl"].text = tr("PORTAL DA CUCA\nentre se tiver coragem")
 		"loja":
 			for sx in [-1.0, 1.0]:
 				for sz in [-1.0, 1.0]: Lib.cil(n, 0.08, 0.1, 2.6, Vector3(sx * 1.5, 1.3, sz * 1.1), Color(0.45, 0.3, 0.16), 6)
@@ -1387,7 +1388,7 @@ func _novo_objeto(tipo: String, pos: Vector3, custo: int, net_id: int = -1) -> v
 			Lib.cil(n, 0.1, 0.12, 0.35, Vector3(0.7, 1.07, -0.9), Color(0.3, 0.55, 0.3), 6)
 			Lib.esf(n, 0.14, Vector3(1.3, 2.2, 0.9), Color(1.0, 0.8, 0.3), Vector3(1, 1.4, 1), 6, 3.0)
 			var lz := OmniLight3D.new(); lz.light_color = Color(1.0, 0.75, 0.35); lz.light_energy = 2.0; lz.omni_range = 7.0; lz.position = Vector3(0, 2.0, 0); n.add_child(lz)
-			o["lbl"] = _placa(n, 3.5, Color(1.0, 0.8, 0.3)); o["lbl"].text = "BODEGA DO\nLAMPIÃO"
+			o["lbl"] = _placa(n, 3.5, Color(1.0, 0.8, 0.3)); o["lbl"].text = tr("BODEGA DO\nLAMPIÃO")
 			n.rotation.y = atan2(-pos.x, -pos.z)
 	if net_id >= 0:
 		o["net_id"] = net_id; objetos_por_net_id[net_id] = o
@@ -1451,7 +1452,7 @@ func _placa(pai: Node3D, alt: float, cor: Color) -> Label3D:
 
 func _placas_bau() -> void:
 	for o in objetos:
-		if o["tipo"] == "bau": o["lbl"].text = "BAÚ\n◉ %d" % bau_custo if o["custo"] > 0 else "BAÚ\nde graça"
+		if o["tipo"] == "bau": o["lbl"].text = tr("BAÚ\n◉ %d") % bau_custo if o["custo"] > 0 else tr("BAÚ\nde graça")
 
 func _objetos(delta: float) -> void:
 	var pp: Vector3 = player.global_position
@@ -1471,7 +1472,7 @@ func _objetos(delta: float) -> void:
 						dano_num(n.position, "LAMPARINA!", Color(0.6, 0.9, 1.0), 50, true)
 					else:
 						var v := randi_range(3, 6); moedas += v; Som.tocar("moeda", -4.0)
-						dano_num(n.position, "◉ +%d" % v, Color(1.0, 0.85, 0.3), 46, true)
+						dano_num(n.position, tr("◉ +%d") % v, Color(1.0, 0.85, 0.3), 46, true)
 					_remover_objeto(o)
 			"bau":
 				n.scale = Vector3.ONE * (1.0 + 0.05 * sin(time * 5.0))
@@ -1486,7 +1487,7 @@ func _objetos(delta: float) -> void:
 						_remover_objeto(o); _placas_bau()
 						abrir_escolha("bau")
 					elif o["aviso"] <= 0.0:
-						o["aviso"] = 1.5; dano_num(n.position, "faltam ◉ %d" % int(ceil(preco - moedas)), Color(1.0, 0.5, 0.4), 44, true)
+						o["aviso"] = 1.5; dano_num(n.position, tr("faltam ◉ %d") % int(ceil(preco - moedas)), Color(1.0, 0.5, 0.4), 44, true)
 			"portal":
 				n.rotation.y += delta * 1.5
 				if d < 1.4:
@@ -1513,7 +1514,7 @@ func _objetos(delta: float) -> void:
 				if o["usado"]: continue
 				if d < 3.2:
 					o["carga"] += delta
-					o["lbl"].text = "ORATÓRIO\n%d%%" % int(o["carga"] / 4.0 * 100.0)
+					o["lbl"].text = tr("ORATÓRIO\n%d%%") % int(o["carga"] / 4.0 * 100.0)
 					if o["carga"] >= 4.0:
 						o["usado"] = true; o["lbl"].text = ""; o["luz"].light_energy = 0.0
 						if o.has("net_id"): _marcar_objeto_usado_rede_todos(o["net_id"])
@@ -1522,7 +1523,7 @@ func _objetos(delta: float) -> void:
 						abrir_escolha("oratorio")
 				elif o["carga"] > 0.0:
 					o["carga"] = maxf(0.0, o["carga"] - delta * 2.0)
-					o["lbl"].text = "ORATÓRIO\nfique perto"
+					o["lbl"].text = tr("ORATÓRIO\nfique perto")
 	if potes < 14:
 		_pote_t -= delta
 		if _pote_t <= 0.0:
@@ -1570,10 +1571,10 @@ func comprar_loja(id: String) -> void:
 			_fila.push_front("contrabando"); fechar_loja(); return
 		"troca":
 			var n := player.troca_troca()
-			lbl_centro.text = "TROCA-TROCA!\n%d cartas sorteadas de novo" % n; _piscar_centro()
+			lbl_centro.text = tr("TROCA-TROCA!\n%d cartas sorteadas de novo") % n; _piscar_centro()
 		"amolar":
 			var g = _golpe_fraco(); g["nivel"] += 1
-			lbl_centro.text = "%s subiu para o nível %d" % [Dados.GOLPES[g["id"]]["nome"], g["nivel"]]; _piscar_centro()
+			lbl_centro.text = tr("%s subiu para o nível %d") % [tr(String(Dados.GOLPES[g["id"]]["nome"])), g["nivel"]]; _piscar_centro()
 		"cura": player.curar(player.max_hp)
 		"ima":
 			for fr in fireflies: fr["mag"] = true
@@ -1631,7 +1632,7 @@ func npc_comprar(tipo: String, it: Dictionary, preco: int, fala: int) -> void:
 			_fila.push_front("bau"); fechar_loja(); return
 		"verso": p.atk_speed += 0.15
 		"mote":
-			lbl_centro.text = "MOTE NOVO!\n%d cartas sorteadas de novo" % p.troca_troca(); _piscar_centro()
+			lbl_centro.text = tr("MOTE NOVO!\n%d cartas sorteadas de novo") % p.troca_troca(); _piscar_centro()
 		"gibao": p.armor += 0.12
 		"aboio":
 			for fr in fireflies: fr["mag"] = true
@@ -1702,7 +1703,7 @@ func dar_poder(tipo: String) -> void:
 		"lobisomem": p.atk_speed *= 2.0
 		"curupira": p.speed *= 1.6
 		"boto": p.xp_mult *= 2.0
-	lbl_centro.text = "%s\n%s" % [d["nome"], d["txt"]]; _piscar_centro()
+	lbl_centro.text = tr("%s\n%s") % [tr(String(d["nome"])), tr(String(d["txt"]))]; _piscar_centro()
 	Som.tocar("ult"); tremor = maxf(tremor, 0.5)
 	_efeito_anel(p.global_position, 5.0, d["cor"])
 
@@ -1818,12 +1819,12 @@ func _tutorial(delta: float) -> void:
 		painel_tut.grow_horizontal = Control.GROW_DIRECTION_BOTH
 		lbl_tut = Tela.texto("", 19, 640); painel_tut.add_child(lbl_tut); hud.add_child(painel_tut)
 	var hb: Dictionary = Dados.HABILIDADES[p.classe]
-	var txt: String = TUT[tut]
+	var txt: String = tr(TUT[tut])
 	for it in Ctrl.ACOES: txt = txt.replace("{%s}" % it[0], Ctrl.nome(it[0]).to_upper())
-	if tut == 2: txt = txt % Dados.CLASSES[p.classe]["pulo"]
-	elif tut == 6: txt = txt % hb["q"]["nome"]
-	elif tut == 7: txt = txt % hb["r"]["nome"]
-	lbl_tut.text = "TUTORIAL %d/%d\n%s" % [tut + 1, TUT.size(), txt]
+	if tut == 2: txt = txt % tr(String(Dados.CLASSES[p.classe]["pulo"]))
+	elif tut == 6: txt = txt % tr(String(hb["q"]["nome"]))
+	elif tut == 7: txt = txt % tr(String(hb["r"]["nome"]))
+	lbl_tut.text = tr("TUTORIAL %d/%d\n%s") % [tut + 1, TUT.size(), txt]
 	tut_t += delta
 	var feito := false
 	match tut:
@@ -1892,7 +1893,7 @@ func _encerrar(titulo: String, cor: Color) -> void:
 	Salvo.d["maior_dano_run"] = maxf(float(Salvo.d.get("maior_dano_run", 0.0)), dano_total)   # pra liberar herói por feito, tipo "2 milhões numa corrida"
 	var linha := "Não venceu o chefe: leva metade das moedas"
 	if chefe_morto:
-		linha = "Aguentou %s depois do chefe" % _mmss(extra_t)
+		linha = tr("Aguentou %s depois do chefe") % _mmss(extra_t)
 		var k := str(fase)
 		if extra_t > float(Salvo.d["recordes"].get(k, -1.0)):
 			Salvo.d["recordes"][k] = extra_t; linha += " — NOVO RECORDE!"
@@ -1900,8 +1901,8 @@ func _encerrar(titulo: String, cor: Color) -> void:
 	if _teste_fim == 2.0: _bot_fim(titulo)
 	lbl_centro.text = ""
 	var img: String = {"FASE VENCIDA!": "t_venceu", "VOCÊ CAIU NA MATA": "t_caiu"}.get(titulo, "")
-	var linhas := "Fase %d — %s\nTempo %s  ·  %d abates  ·  nível %d\nMaior golpe: %s  ·  Dano total: %s\n%s" % [
-		fase + 1, Dados.FASES[fase]["nome"], _mmss(time), kills, player.level, Tela.num(maior_dano), Tela.num(dano_total), linha]
+	var linhas := tr("Fase %d — %s\nTempo %s  ·  %d abates  ·  nível %d\nMaior golpe: %s  ·  Dano total: %s\n%s") % [
+		fase + 1, tr(String(Dados.FASES[fase]["nome"])), _mmss(time), kills, player.level, Tela.num(maior_dano), Tela.num(dano_total), linha]
 	menus.fim(titulo, img, linhas, ganho)
 
 func tomou_dano() -> void:
@@ -1917,12 +1918,12 @@ func _hud() -> void:
 	var dt := get_process_delta_time()
 	var larg := get_viewport().get_visible_rect().size.x
 	lbl_topo.text = _mmss(time)
-	lbl_nv.text = "NÍVEL %d" % p.level
+	lbl_nv.text = tr("NÍVEL %d") % p.level
 	lbl_dir.text = "☠ %d   ◉ %d" % [kills, int(moedas)]
 	while _dps_janela.size() > 0 and time - _dps_janela[0][0] > 1.0: _dps_janela.pop_front()
 	var dps := 0.0
 	for it in _dps_janela: dps += it[1]
-	lbl_dps.text = "%s de dano/s" % Tela.num(dps)
+	lbl_dps.text = tr("%s de dano/s") % Tela.num(dps)
 	# segurando Tab, o minimapa do canto só aumenta no lugar dele mesmo — não cobre a tela
 	var mapa_ampliado: bool = Ctrl.ap("mapa") and not levelup_aberto
 	var lado_map := (380.0 if mapa_ampliado else 194.0)
@@ -1932,11 +1933,11 @@ func _hud() -> void:
 	_inventario()
 	painel_info.visible = Ctrl.ap("info")
 	if painel_info.visible: _montar_placar()
-	if chefe_morto: lbl_sub.text = "Tempo extra %s · moedas ×%.1f · F sai com o que ganhou" % [_mmss(extra_t), 1.0 + extra_t / 90.0]
-	elif chefe_veio: lbl_sub.text = "%s, %s — %s" % [f["chefe_nome"], f["chefe_titulo"], "ENFURECIDO!" if furia else "enfurece em " + _mmss(furia_t)]
-	elif tut >= 0: lbl_sub.text = "Tutorial"
-	if poder != "": lbl_sub.text = "%s — %d s" % [Dados.PODERES[poder]["nome"], int(ceil(poder_t))]
-	else: lbl_sub.text = "Chefe em " + _mmss(maxf(0.0, chefe_t - time))
+	if chefe_morto: lbl_sub.text = tr("Tempo extra %s · moedas ×%.1f · F sai com o que ganhou") % [_mmss(extra_t), 1.0 + extra_t / 90.0]
+	elif chefe_veio: lbl_sub.text = tr("%s, %s — %s") % [tr(String(f["chefe_nome"])), tr(String(f["chefe_titulo"])), tr("ENFURECIDO!") if furia else tr("enfurece em ") + _mmss(furia_t)]
+	elif tut >= 0: lbl_sub.text = tr("Tutorial")
+	if poder != "": lbl_sub.text = tr("%s — %d s") % [tr(String(Dados.PODERES[poder]["nome"])), int(ceil(poder_t))]
+	else: lbl_sub.text = tr("Chefe em ") + _mmss(maxf(0.0, chefe_t - time))
 	barra_chefe_bg.visible = chefe_veio and not chefe_morto and is_instance_valid(chefe)
 	if barra_chefe_bg.visible: barra_chefe.size.x = 494.0 * clampf(chefe.hp / chefe.max_hp_cache, 0, 1)
 	# vida: a parte clara mostra o que acabou de perder e vai sumindo
@@ -1968,7 +1969,7 @@ func _hud() -> void:
 	# sequência de abates
 	combo_t -= dt
 	if combo_t <= 0.0: combo = 0
-	lbl_combo.text = "" if combo < 5 else "×%d\nSEQUÊNCIA" % combo
+	lbl_combo.text = "" if combo < 5 else tr("×%d\nSEQUÊNCIA") % combo
 	lbl_combo.modulate.a = clampf(combo_t / 1.2, 0.25, 1.0)
 
 # mini inventário: um quadradinho por tipo de carta de atributo, com a quantidade
@@ -2007,14 +2008,14 @@ func _coluna_placar(j: Jogador, id: int) -> PanelContainer:
 	var v := VBoxContainer.new(); v.add_theme_constant_override("separation", 3); p.add_child(v)
 	var nome: String = Rede.nome_por_id.get(id, "") if Rede.ativo() else ""
 	v.add_child(Tela.faixa((nome + " — " if nome != "" else "") + String(c["apelido"]).to_upper(), c["cor"], 13, Tela.TINTA))
-	v.add_child(Tela.rotulo("NÍVEL %d" % j.level, 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
-	for g in j.golpes: v.add_child(Tela.rotulo("%s — nv %d" % [Dados.GOLPES[g["id"]]["nome"], g["nivel"]], 12, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
-	var st := "Vida %d/%d  ·  Dano +%d%%\nCrítico %d%% (×%.1f)  ·  Atq +%d%%\nÁrea +%d%%  ·  Defesa %d%%  ·  Regen %.1f/s" % [
+	v.add_child(Tela.rotulo(tr("NÍVEL %d") % j.level, 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
+	for g in j.golpes: v.add_child(Tela.rotulo(tr("%s — nv %d") % [tr(String(Dados.GOLPES[g["id"]]["nome"])), g["nivel"]], 12, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
+	var st := tr("Vida %d/%d  ·  Dano +%d%%\nCrítico %d%% (×%.1f)  ·  Atq +%d%%\nÁrea +%d%%  ·  Defesa %d%%  ·  Regen %.1f/s") % [
 		int(ceil(j.hp)), int(j.max_hp), int(round((j.dano_mult - 1.0) * 100.0)), int(round(j.crit * 100.0)), j.crit_dano,
 		int(round((j.atk_speed - 1.0) * 100.0)), int(round((j.area_mult - 1.0) * 100.0)), int(round(minf(0.7, j.armor) * 100.0)), j.regen]
 	v.add_child(Tela.texto(st, 11, 214, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 	if id == Rede.meu_id() or not Rede.ativo():
-		v.add_child(Tela.texto("Maior golpe: %s\nDano total: %s\nSequência: ×%d" % [Tela.num(maior_dano), Tela.num(dano_total), combo], 11, 214, Tela.ANIL))
+		v.add_child(Tela.texto(tr("Maior golpe: %s\nDano total: %s\nSequência: ×%d") % [Tela.num(maior_dano), Tela.num(dano_total), combo], 11, 214, Tela.ANIL))
 	return p
 
 func _mmss(t: float) -> String:

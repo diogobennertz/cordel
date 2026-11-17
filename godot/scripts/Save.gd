@@ -15,7 +15,7 @@ static var modo_mundo := ""       # "" = save sozinho; "*visita*" = entrou no mu
 static var _d_solo := {}          # guarda o save sozinho enquanto está dentro de um mundo de co-op
 
 static func padrao() -> Dictionary:
-	return {"moedas": 0, "fase_max": 0, "melhorias": {}, "recordes": {}, "contadores": {}, "heroi": "capoeirista", "fase": 0, "feitos": {}, "tutorial": false, "vistos": {}, "falas": {}, "teclas": {}, "nome_jogador": "", "opcoes": OPCOES.duplicate(), "maior_dano_run": 0.0}
+	return {"moedas": 0, "fase_max": 0, "melhorias": {}, "recordes": {}, "contadores": {}, "heroi": "capoeirista", "fase": 0, "feitos": {}, "tutorial": false, "vistos": {}, "falas": {}, "teclas": {}, "nome_jogador": "", "opcoes": OPCOES.duplicate(), "maior_dano_run": 0.0, "idioma": "pt_BR"}
 
 # O jogo já se chamou "Cordel" e "Peleja": se existir um save daquela época, ele é aproveitado (nada se perde na troca de nome).
 static func _antigo() -> String:

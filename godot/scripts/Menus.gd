@@ -68,7 +68,7 @@ func _moedas_tag() -> void:
 	var p := PanelContainer.new()
 	var s := Tela.caixa(Tela.IPE, 3, Tela.TINTA, 4); s.set_content_margin_all(8); s.content_margin_left = 16; s.content_margin_right = 16
 	p.add_theme_stylebox_override("panel", s)
-	p.add_child(Tela.rotulo("◉ %d moedas" % int(Salvo.d["moedas"]), 20, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
+	p.add_child(Tela.rotulo(tr("◉ %d moedas") % int(Salvo.d["moedas"]), 20, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
 	p.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	p.offset_left = -250; p.offset_right = -38; p.offset_top = 36; p.offset_bottom = 80
 	p.grow_horizontal = Control.GROW_DIRECTION_BEGIN
@@ -89,7 +89,7 @@ func titulo() -> void:
 		["UM JOGADOR", ac_jogar_menu, Tela.URUCUM, 24, 340.0, 50.0],
 		["MULTIJOGADOR (LAN)", coop, Tela.ANIL, 24, 340.0, 50.0],
 		["MELHORIAS", melhorias, Tela.ANIL, 18, 340.0, 40.0],
-		["FEITOS" + (" (%d)" % Dados.feitos_prontos() if Dados.feitos_prontos() > 0 else ""), feitos, Tela.BARRO, 18, 340.0, 40.0],
+		[tr("FEITOS") + (tr(" (%d)") % Dados.feitos_prontos() if Dados.feitos_prontos() > 0 else ""), feitos, Tela.BARRO, 18, 340.0, 40.0],
 		["TUTORIAL", ac_tut, Tela.MATA, 16, 340.0, 36.0],
 		["OPÇÕES", ac_opc, Tela.MATA, 16, 340.0, 36.0],
 		["SAIR", ac_sair, Tela.PARDO, 16, 340.0, 36.0],
@@ -203,7 +203,7 @@ func _miolo(b: Button, margem: int = 10, sep: int = 5) -> VBoxContainer:
 	return v
 
 func _pct(v: float) -> String:
-	return "%d%%" % int(round(v * 100.0))
+	return tr("%d%%") % int(round(v * 100.0))
 
 func _carta_heroi(id: String) -> Button:
 	var c: Dictionary = Dados.CLASSES[id]
@@ -216,21 +216,21 @@ func _carta_heroi(id: String) -> Button:
 	v.add_child(Tela.texto(c["desc"], 13, 262, Tela.ANIL))      # breve descrição logo em cima, antes das estatísticas
 	var topo := HBoxContainer.new(); topo.add_theme_constant_override("separation", 8); v.add_child(topo)
 	topo.add_child(_retrato_heroi(id, Vector2(86, 108)))
-	var st := "Vida %d\nVelocidade %.1f\nCrítico %s" % [int(c["maxhp"]), c["speed"], _pct(Dados.CRIT_BASE + c.get("crit", 0.0))]
-	if c.has("dodge"): st += "\nEsquiva " + _pct(c["dodge"])
-	if c.has("armor"): st += "\nDefesa " + _pct(c["armor"])
-	if c.has("regen"): st += "\nRegenera %.0f/s" % c["regen"]
+	var st := tr("Vida %d\nVelocidade %.1f\nCrítico %s") % [int(c["maxhp"]), c["speed"], _pct(Dados.CRIT_BASE + c.get("crit", 0.0))]
+	if c.has("dodge"): st += tr("\nEsquiva ") + _pct(c["dodge"])
+	if c.has("armor"): st += tr("\nDefesa ") + _pct(c["armor"])
+	if c.has("regen"): st += tr("\nRegenera %.0f/s") % c["regen"]
 	var lst := Tela.rotulo(st, 15, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT); lst.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	topo.add_child(lst)
 	var g: Dictionary = Dados.GOLPES[c["inicial"]]
 	var hg := HBoxContainer.new(); hg.add_theme_constant_override("separation", 8); v.add_child(hg)
 	hg.add_child(Tela.imagem("a_" + String(g["arte"]), Vector2(84, 55)))
-	var lg := Tela.rotulo("Começa com\n" + String(g["nome"]), 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT); lg.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var lg := Tela.rotulo(tr("Começa com\n") + tr(String(g["nome"])), 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT); lg.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	hg.add_child(lg)
 	var hab: Dictionary = Dados.HABILIDADES[id]
-	v.add_child(Tela.texto("[Q] %s — %s" % [hab["q"]["nome"], hab["q"]["txt"]], 12, 262, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
-	v.add_child(Tela.texto("[R] %s — %s" % [hab["r"]["nome"], hab["r"]["txt"]], 12, 262, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
-	v.add_child(Tela.texto("★ " + String(c["pulo"]), 12, 262, Tela.ANIL, HORIZONTAL_ALIGNMENT_LEFT))
+	v.add_child(Tela.texto(tr("[Q] %s — %s") % [tr(String(hab["q"]["nome"])), tr(String(hab["q"]["txt"]))], 12, 262, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
+	v.add_child(Tela.texto(tr("[R] %s — %s") % [tr(String(hab["r"]["nome"])), tr(String(hab["r"]["txt"]))], 12, 262, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
+	v.add_child(Tela.texto(tr("★ ") + tr(String(c["pulo"])), 12, 262, Tela.ANIL, HORIZONTAL_ALIGNMENT_LEFT))
 	Tela.ignora_mouse(b)
 	b.pressed.connect(func():
 		w.sel_heroi = id; Salvo.d["heroi"] = id; herois())
@@ -249,10 +249,10 @@ func _carta_fase(i: int, fmax: int) -> Button:
 	if fechada: im.modulate = Color(0.1, 0.08, 0.06, 0.75)
 	hb.add_child(im)
 	var v := VBoxContainer.new(); v.alignment = BoxContainer.ALIGNMENT_CENTER; v.add_theme_constant_override("separation", 2); hb.add_child(v)
-	v.add_child(Tela.rotulo("%d · %s" % [i + 1, f["nome"]], 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
-	var l2 := "Chefe: %s" % String(f["chefe_nome"]).capitalize()
+	v.add_child(Tela.rotulo(tr("%d · %s") % [i + 1, tr(String(f["nome"]))], 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
+	var l2 := tr("Chefe: %s") % tr(String(f["chefe_nome"])).capitalize()
 	var rec := float(Salvo.d["recordes"].get(str(i), -1.0))
-	if rec >= 0.0: l2 += "\nRecorde extra: %s" % w._mmss(rec)
+	if rec >= 0.0: l2 += tr("\nRecorde extra: %s") % w._mmss(rec)
 	if fechada: l2 = "Fechada — vença o\nchefe da fase anterior"
 	v.add_child(Tela.rotulo(l2, 12, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 	Tela.ignora_mouse(b)
@@ -296,7 +296,7 @@ func coop() -> void:
 					var erro3 := Rede.entrar(ip)
 					if erro3 != "": _rede_erro = erro3
 					coop()
-				vb.add_child(Tela.botao("ENTRAR EM: %s" % nome_m, ac_entrar_achado, 17, Tela.ANIL, 380.0, 44.0))
+				vb.add_child(Tela.botao(tr("ENTRAR EM: %s") % nome_m, ac_entrar_achado, 17, Tela.ANIL, 380.0, 44.0))
 			vb.add_child(Tela.rotulo("— ou digite o endereço na mão —", 12, Tela.PARDO))
 		var le := LineEdit.new(); le.placeholder_text = "endereço de quem hospedou (ex.: 192.168.0.12)"
 		le.custom_minimum_size = Vector2(380, 42); le.alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -314,8 +314,8 @@ func coop() -> void:
 			if ips.size() > 0:
 				txt_ips = String(ips[0])
 				for i in range(1, ips.size()): txt_ips += ", " + String(ips[i])
-			vb.add_child(Tela.faixa("Passe pros amigos: %s  ·  porta %d" % [txt_ips, Rede.PORTA], Tela.IPE, 15, Tela.TINTA))
-		vb.add_child(Tela.rotulo("%d na sala" % Rede.ids().size(), 20, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
+			vb.add_child(Tela.faixa(tr("Passe pros amigos: %s  ·  porta %d") % [txt_ips, Rede.PORTA], Tela.IPE, 15, Tela.TINTA))
+		vb.add_child(Tela.rotulo(tr("%d na sala") % Rede.ids().size(), 20, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
 		if Rede.sou_host():
 			vb.add_child(Tela.botao("COMEÇAR", Rede.comecar, 22, Tela.URUCUM, 300.0, 52.0))
 		else:
@@ -357,13 +357,13 @@ func melhorias() -> void:
 		hb.add_child(im)
 		var v := VBoxContainer.new(); v.add_theme_constant_override("separation", 4); v.alignment = BoxContainer.ALIGNMENT_CENTER; hb.add_child(v)
 		v.add_child(Tela.rotulo(m["nome"], 17, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
-		v.add_child(Tela.texto(String(m["txt"]) + " por nível", 13, 200, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
+		v.add_child(Tela.texto(tr(String(m["txt"])) + tr(" por nível"), 13, 200, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 		v.add_child(Tela.rotulo("●".repeat(nv) + "○".repeat(int(m["max"]) - nv), 15, Tela.URUCUM, HORIZONTAL_ALIGNMENT_LEFT))
 		var ac_compra := func():
 			Salvo.d["moedas"] = int(Salvo.d["moedas"]) - custo
 			Salvo.subir(id)
 			Salvo.salvar(); melhorias()
-		var bt := Tela.botao("NO MÁXIMO" if cheio else "COMPRAR  ◉ %d" % custo, ac_compra, 15, Tela.ANIL, 196.0, 38.0)
+		var bt := Tela.botao(tr("NO MÁXIMO") if cheio else tr("COMPRAR  ◉ %d") % custo, ac_compra, 15, Tela.ANIL, 196.0, 38.0)
 		bt.disabled = cheio or int(Salvo.d["moedas"]) < custo
 		v.add_child(bt)
 	var volta := Tela.botao("VOLTAR", titulo, 18, Tela.PARDO, 220.0, 48.0); volta.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -389,7 +389,7 @@ func feitos() -> void:
 		var hb := HBoxContainer.new(); hb.add_theme_constant_override("separation", 10); p.add_child(hb)
 		var v := VBoxContainer.new(); v.size_flags_horizontal = Control.SIZE_EXPAND_FILL; v.add_theme_constant_override("separation", 1); hb.add_child(v)
 		v.add_child(Tela.rotulo(f["nome"], 18, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
-		v.add_child(Tela.rotulo("%s  ·  %d / %d" % [f["txt"], mini(tem, meta), meta], 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
+		v.add_child(Tela.rotulo(tr("%s  ·  %d / %d") % [tr(String(f["txt"])), mini(tem, meta), meta], 14, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 		var barra := ProgressBar.new(); barra.max_value = meta; barra.value = mini(tem, meta); barra.show_percentage = false; barra.custom_minimum_size = Vector2(0, 8)
 		var bf := StyleBoxFlat.new(); bf.bg_color = Tela.PARDO; var bc := StyleBoxFlat.new(); bc.bg_color = Tela.MATA if pego else Tela.URUCUM
 		barra.add_theme_stylebox_override("background", bf); barra.add_theme_stylebox_override("fill", bc); v.add_child(barra)
@@ -398,7 +398,7 @@ func feitos() -> void:
 			Salvo.d["feitos"][id] = true
 			Salvo.d["moedas"] = int(Salvo.d["moedas"]) + premio
 			Salvo.salvar(); feitos()
-		var bt := Tela.botao("FEITO ✔" if pego else "PEGAR ◉ %d" % premio if pronto else "◉ %d" % premio, ac, 15, Tela.URUCUM if pronto else Tela.PARDO, 150.0, 40.0)
+		var bt := Tela.botao(tr("FEITO ✔") if pego else tr("PEGAR ◉ %d") % premio if pronto else tr("◉ %d") % premio, ac, 15, Tela.URUCUM if pronto else Tela.PARDO, 150.0, 40.0)
 		bt.disabled = not pronto; bt.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		hb.add_child(bt)
 	var volta := Tela.botao("VOLTAR", titulo, 18, Tela.PARDO, 220.0, 46.0); volta.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -416,11 +416,11 @@ func opcoes(volta: Callable) -> void:
 	var vb := VBoxContainer.new(); vb.add_theme_constant_override("separation", 14); p.add_child(vb)
 	vb.add_child(Tela.titulo("t_opcoes", 56))
 	var abas := _linha(vb, 8)
-	for par in [["som", "SOM"], ["jogo", "JOGO"], ["controles", "CONTROLES"], ["idioma", "IDIOMA (em breve)"]]:
+	for par in [["som", "SOM"], ["jogo", "JOGO"], ["controles", "CONTROLES"], ["idioma", "IDIOMA"]]:
 		var k: String = par[0]
 		var ac_aba := func():
 			_aba = k; opcoes(_volta)
-		abas.add_child(Tela.botao(par[1], ac_aba, 15, Tela.IPE if k == _aba else Tela.PARDO, 168.0 if k != "idioma" else 190.0, 40.0))
+		abas.add_child(Tela.botao(par[1], ac_aba, 15, Tela.IPE if k == _aba else Tela.PARDO, 168.0, 40.0))
 	var corpo := VBoxContainer.new(); corpo.custom_minimum_size = Vector2(720, 240); corpo.add_theme_constant_override("separation", 11)
 	vb.add_child(corpo)
 	match _aba:
@@ -454,10 +454,14 @@ func opcoes(volta: Callable) -> void:
 			corpo.add_child(bp)
 			corpo.add_child(Tela.texto("As setas também andam. Controle de Xbox ou PlayStation: analógico esquerdo anda, direito gira a câmera, A/✕ pula, B/○ arranca, X/□ especial, Y/△ ultimate, LB/L1 mostra a build, Start pausa.", 12, 700))
 		"idioma":
-			corpo.add_child(Tela.rotulo("✔ Português (Brasil)", 20, Tela.MATA, HORIZONTAL_ALIGNMENT_CENTER, true))
-			corpo.add_child(Tela.faixa("EM BREVE", Tela.URUCUM, 16))
-			corpo.add_child(Tela.texto("English · Español · Français · Deutsch · Русский · e mais", 17, 620, Color(0.1, 0.07, 0.05, 0.55)))
-			corpo.add_child(Tela.texto("A tradução entra antes do lançamento na Steam.", 14, 620))
+			var idioma_atual: String = String(Salvo.d.get("idioma", "pt_BR"))
+			for par2 in [["pt_BR", "PORTUGUÊS (BRASIL)"], ["en", "ENGLISH"]]:
+				var cod: String = par2[0]
+				var ac_idioma := func():
+					Salvo.d["idioma"] = cod; Salvo.salvar(); Tela.aplicar_opcoes(); opcoes(_volta)
+				var bt_idioma := Tela.botao(("✔ " if cod == idioma_atual else "") + par2[1], ac_idioma, 18, Tela.MATA if cod == idioma_atual else Tela.PAPEL2, 320.0, 46.0)
+				bt_idioma.size_flags_horizontal = Control.SIZE_SHRINK_CENTER; corpo.add_child(bt_idioma)
+			corpo.add_child(Tela.texto("Mais idiomas entram antes do lançamento na Steam.", 14, 620))
 	var ac_volta := func():
 		_capt = ""; Salvo.salvar(); _volta.call()
 	var bv := Tela.botao("VOLTAR", ac_volta, 18, Tela.URUCUM, 240.0, 48.0)
@@ -504,19 +508,19 @@ func pausa() -> void:
 	var esq := VBoxContainer.new(); esq.custom_minimum_size = Vector2(400, 0); esq.add_theme_constant_override("separation", 6); hb.add_child(esq)
 	var j = w.player
 	var f: Dictionary = Dados.FASES[w.fase]
-	esq.add_child(Tela.faixa("%s · NÍVEL %d" % [String(Dados.CLASSES[j.classe]["apelido"]).to_upper(), j.level], Dados.CLASSES[j.classe]["cor"], 15, Tela.TINTA))
+	esq.add_child(Tela.faixa(tr("%s · NÍVEL %d") % [String(Dados.CLASSES[j.classe]["apelido"]).to_upper(), j.level], Dados.CLASSES[j.classe]["cor"], 15, Tela.TINTA))
 	for g in j.golpes:
 		var lg := HBoxContainer.new(); lg.add_theme_constant_override("separation", 8); esq.add_child(lg)
 		lg.add_child(Tela.imagem("a_" + String(Dados.GOLPES[g["id"]]["arte"]), Vector2(56, 36)))
 		var nm := Tela.rotulo(Dados.GOLPES[g["id"]]["nome"], 16, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT); nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		lg.add_child(nm)
-		lg.add_child(Tela.rotulo("MÁX" if g["nivel"] >= Dados.NIVEL_MAX else "Nv %d" % g["nivel"], 16, Tela.URUCUM, HORIZONTAL_ALIGNMENT_RIGHT, true))
-	var at := "Vida %d / %d  ·  Dano +%s\nCrítico %s (×%.1f)  ·  Vel. de ataque +%s\nÁrea +%s  ·  Defesa %s  ·  Regenera %.1f/s" % [
+		lg.add_child(Tela.rotulo(tr("MÁX") if g["nivel"] >= Dados.NIVEL_MAX else tr("Nv %d") % g["nivel"], 16, Tela.URUCUM, HORIZONTAL_ALIGNMENT_RIGHT, true))
+	var at := tr("Vida %d / %d  ·  Dano +%s\nCrítico %s (×%.1f)  ·  Vel. de ataque +%s\nÁrea +%s  ·  Defesa %s  ·  Regenera %.1f/s") % [
 		int(ceil(j.hp)), int(j.max_hp), _pct(j.dano_mult - 1.0), _pct(j.crit), j.crit_dano, _pct(j.atk_speed - 1.0),
 		_pct(j.area_mult - 1.0), _pct(j.armor), j.regen]
 	esq.add_child(Tela.texto(at, 14, 400, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
-	esq.add_child(Tela.faixa("FASE %d · %s" % [w.fase + 1, String(f["nome"]).to_upper()], Tela.PAPEL2, 14, Tela.TINTA))
-	esq.add_child(Tela.texto("Tempo %s  ·  %d abates  ·  ◉ %d moedas\nMaior golpe: %s  ·  Dano total: %s" % [
+	esq.add_child(Tela.faixa(tr("FASE %d · %s") % [w.fase + 1, tr(String(f["nome"])).to_upper()], Tela.PAPEL2, 14, Tela.TINTA))
+	esq.add_child(Tela.texto(tr("Tempo %s  ·  %d abates  ·  ◉ %d moedas\nMaior golpe: %s  ·  Dano total: %s") % [
 		w._mmss(w.time), w.kills, int(w.moedas), Tela.num(w.maior_dano), Tela.num(w.dano_total)], 14, 400, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 	var dir := VBoxContainer.new(); dir.add_theme_constant_override("separation", 12); dir.alignment = BoxContainer.ALIGNMENT_CENTER; hb.add_child(dir)
 	dir.add_child(Tela.botao("CONTINUAR", w.continuar, 22, Tela.URUCUM, 300.0, 56.0))
@@ -527,7 +531,7 @@ func pausa() -> void:
 	dir.add_child(Tela.botao("FECHAR O JOGO", ac_fechar, 16, Tela.PARDO, 300.0, 42.0))
 	if not w.chefe_morto:
 		dir.add_child(Tela.texto("Sair antes de vencer o chefe leva só metade das moedas.", 12, 300))
-	vb.add_child(Tela.texto("%s%s%s%s anda · mouse gira a câmera · rodinha aproxima · %s pula · %s arranca · %s especial · %s ultimate · %s mostra a build" % [
+	vb.add_child(Tela.texto(tr("%s%s%s%s anda · mouse gira a câmera · rodinha aproxima · %s pula · %s arranca · %s especial · %s ultimate · %s mostra a build") % [
 		Ctrl.nome("cima"), Ctrl.nome("esq"), Ctrl.nome("baixo"), Ctrl.nome("dir"), Ctrl.nome("pulo"), Ctrl.nome("dash"), Ctrl.nome("q"), Ctrl.nome("r"), Ctrl.nome("info")], 13, 720))
 
 # ---------------- subir de nível: folhetos no varal ----------------
@@ -550,7 +554,7 @@ func nivel(p, ofertas: Array, tipo: String = "nivel") -> void:
 		vb.add_child(Tela.rotulo("Escolha uma graça", 20, Tela.PAPEL))
 	else:
 		vb.add_child(Tela.titulo("t_nivel", 62))
-		vb.add_child(Tela.rotulo("Nível %d — escolha um folheto" % p.level, 20, Tela.PAPEL))
+		vb.add_child(Tela.rotulo(tr("Nível %d — escolha um folheto") % p.level, 20, Tela.PAPEL))
 	var larg := 270.0; var vao := 34.0
 	var area := Control.new(); area.custom_minimum_size = Vector2(ofertas.size() * larg + (ofertas.size() - 1) * vao, 450); vb.add_child(area)
 	var corda := ColorRect.new(); corda.color = Tela.PAPEL2; corda.position = Vector2(-60, 12); corda.size = Vector2(area.custom_minimum_size.x + 120, 4)
@@ -577,16 +581,16 @@ func _folheto(p, card: Dictionary, i: int, tam: Vector2) -> Button:
 	b.add_theme_stylebox_override("pressed", Tela.caixa(Color(1, 1, 0.94), 6, Tela.URUCUM, 2))
 	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 	var v := _miolo(b, 12, 6)
-	var nome_r := String(r["nome"]).to_upper()
-	if card["tipo"] == "golpe_novo": nome_r = "GOLPE NOVO"; cor_r = Tela.URUCUM
-	v.add_child(Tela.faixa(("✦ %s ✦" % nome_r) if mitica else nome_r, cor_r, 15, Tela.PAPEL if cor_r.get_luminance() < 0.45 else Tela.TINTA))
+	var nome_r := tr(String(r["nome"])).to_upper()
+	if card["tipo"] == "golpe_novo": nome_r = tr("GOLPE NOVO"); cor_r = Tela.URUCUM
+	v.add_child(Tela.faixa((tr("✦ %s ✦") % nome_r) if mitica else nome_r, cor_r, 15, Tela.PAPEL if cor_r.get_luminance() < 0.45 else Tela.TINTA))
 	v.add_child(Tela.imagem("a_" + String(info["arte"]), Vector2(tam.x - 24, (tam.x - 24) * 0.65)))
 	var nm := Tela.texto(info["nome"], 21, tam.x - 28); nm.add_theme_font_override("font", Tela.fonte(true)); v.add_child(nm)
 	if card["tipo"] != "golpe_novo": v.add_child(Tela.rotulo(info["selo"], 14, Tela.URUCUM, HORIZONTAL_ALIGNMENT_CENTER, true))
 	v.add_child(Tela.texto(info["txt"], 15, tam.x - 28))
 	var esp := Control.new(); esp.size_flags_vertical = Control.SIZE_EXPAND_FILL; v.add_child(esp)
-	if Dados.PIADAS.has(card["id"]): v.add_child(Tela.texto("“%s”" % Dados.PIADAS[card["id"]], 12, tam.x - 28, Tela.ANIL))
-	v.add_child(Tela.rotulo("tecla %d" % (i + 1), 12, Tela.PARDO.darkened(0.2)))
+	if Dados.PIADAS.has(card["id"]): v.add_child(Tela.texto(tr("“%s”") % tr(String(Dados.PIADAS[card["id"]])), 12, tam.x - 28, Tela.ANIL))
+	v.add_child(Tela.rotulo(tr("tecla %d") % (i + 1), 12, Tela.PARDO.darkened(0.2)))
 	Tela.ignora_mouse(b)
 	b.mouse_entered.connect(func(): create_tween().tween_property(b, "scale", Vector2(1.06, 1.06), 0.08))
 	b.mouse_exited.connect(func(): create_tween().tween_property(b, "scale", Vector2.ONE, 0.08))
@@ -624,7 +628,7 @@ func loja() -> void:
 	var p := Tela.painel(Color(1.0, 0.97, 0.86)); cc.add_child(p)
 	var vb := VBoxContainer.new(); vb.add_theme_constant_override("separation", 9); p.add_child(vb)
 	vb.add_child(Tela.rotulo("BODEGA DO LAMPIÃO", 40, Tela.TINTA, HORIZONTAL_ALIGNMENT_CENTER, true))
-	vb.add_child(Tela.faixa("Você tem ◉ %d moedas nesta partida" % int(w.moedas), Tela.IPE, 16, Tela.TINTA))
+	vb.add_child(Tela.faixa(tr("Você tem ◉ %d moedas nesta partida") % int(w.moedas), Tela.IPE, 16, Tela.TINTA))
 	for it in Dados.LOJA:
 		var id: String = it["id"]
 		var preco: int = w.loja_preco(id)
@@ -633,8 +637,8 @@ func loja() -> void:
 		v.add_child(Tela.rotulo(it["nome"], 18, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
 		v.add_child(Tela.texto(it["txt"], 13, 560, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 		var ac := func(): w.comprar_loja(id)
-		var txt := "◉ %d" % preco if preco > 0 else "DE GRAÇA"
-		if id == "pacto" and w.pacto_feito: txt = "FEITO"
+		var txt := tr("◉ %d") % preco if preco > 0 else tr("DE GRAÇA")
+		if id == "pacto" and w.pacto_feito: txt = tr("FEITO")
 		var bt := Tela.botao(txt, ac, 16, Tela.URUCUM, 150.0, 42.0); bt.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		bt.disabled = not w.loja_pode(id)
 		hb.add_child(bt)
@@ -700,25 +704,25 @@ func npc(tipo: String, fala: int) -> void:
 	var qd := PanelContainer.new(); qd.add_theme_stylebox_override("panel", Tela.caixa(Tela.PAPEL2, 3, Tela.TINTA, 4)); topo.add_child(qd)
 	qd.add_child(_retrato3d(tipo, Vector2(150, 176)))
 	var dv := VBoxContainer.new(); dv.add_theme_constant_override("separation", 6); dv.alignment = BoxContainer.ALIGNMENT_CENTER; topo.add_child(dv)
-	dv.add_child(Tela.rotulo(String(d["nome"]).to_upper(), 34, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
+	dv.add_child(Tela.rotulo(tr(String(d["nome"])).to_upper(), 34, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
 	dv.add_child(Tela.rotulo(d["de"], 14, Tela.URUCUM, HORIZONTAL_ALIGNMENT_LEFT, true))
 	var balao := PanelContainer.new()
 	var sb := Tela.caixa(Color.WHITE, 3, Tela.TINTA, 4, 14); sb.set_content_margin_all(12); sb.corner_radius_bottom_left = 0
 	balao.add_theme_stylebox_override("panel", sb); dv.add_child(balao)
 	var falas: Array = d["falas"]
-	balao.add_child(Tela.texto("“%s”" % falas[fala % falas.size()], 18, 520, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
+	balao.add_child(Tela.texto(tr("“%s”") % tr(String(falas[fala % falas.size()])), 18, 520, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 	vb.add_child(Tela.texto(d["txt"], 13, 720, Color(0.1, 0.07, 0.05, 0.8)))
-	vb.add_child(Tela.faixa("Você tem ◉ %d moedas nesta partida" % int(w.moedas), Tela.IPE, 15, Tela.TINTA))
+	vb.add_child(Tela.faixa(tr("Você tem ◉ %d moedas nesta partida") % int(w.moedas), Tela.IPE, 15, Tela.TINTA))
 	for it in d["itens"]:
 		var id: String = it["id"]
 		var preco: int = w.npc_preco(id, int(it["preco"]))
 		var hb := HBoxContainer.new(); hb.add_theme_constant_override("separation", 14); vb.add_child(hb)
 		var v := VBoxContainer.new(); v.custom_minimum_size = Vector2(556, 0); v.add_theme_constant_override("separation", 0); hb.add_child(v)
-		v.add_child(Tela.rotulo(String(it["nome"]) + ("  (só uma vez)" if it.get("vez", false) else ""), 17, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
+		v.add_child(Tela.rotulo(tr(String(it["nome"])) + (tr("  (só uma vez)") if it.get("vez", false) else ""), 17, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true))
 		v.add_child(Tela.texto(it["txt"], 13, 556, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
 		var ac := func(): w.npc_comprar(tipo, it, preco, fala)
-		var txt := "◉ %d" % preco if preco > 0 else "ACEITAR"
-		if w.npc_feito.has(id): txt = "FEITO"
+		var txt := tr("◉ %d") % preco if preco > 0 else tr("ACEITAR")
+		if w.npc_feito.has(id): txt = tr("FEITO")
 		var bt := Tela.botao(txt, ac, 16, Tela.URUCUM, 150.0, 40.0); bt.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		bt.disabled = w.npc_feito.has(id) or w.moedas < preco or not w.npc_pode(id)
 		hb.add_child(bt)
@@ -734,7 +738,7 @@ func lore(tipo: String) -> void:
 	var p := Tela.painel(Color(1.0, 0.97, 0.86)); cc.add_child(p)
 	var vb := VBoxContainer.new(); vb.add_theme_constant_override("separation", 10); p.add_child(vb)
 	var topo := HBoxContainer.new(); vb.add_child(topo)
-	var tit := Tela.rotulo(String(l["nome"]).to_upper(), 38, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true); tit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var tit := Tela.rotulo(tr(String(l["nome"])).to_upper(), 38, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT, true); tit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	topo.add_child(tit)
 	topo.add_child(Tela.botao("X", w.fechar_loja, 18, Tela.PARDO, 44.0, 40.0))
 	vb.add_child(Tela.faixa(l["de"], Tela.URUCUM, 14))
@@ -743,7 +747,7 @@ func lore(tipo: String) -> void:
 	qd.add_child(_retrato_bicho(tipo, Vector2(170, 200)))
 	var v := VBoxContainer.new(); v.add_theme_constant_override("separation", 12); v.alignment = BoxContainer.ALIGNMENT_CENTER; hb.add_child(v)
 	v.add_child(Tela.texto(l["txt"], 17, 470, Tela.TINTA, HORIZONTAL_ALIGNMENT_LEFT))
-	v.add_child(Tela.texto("No jogo: " + String(l["jeito"]), 15, 470, Tela.ANIL, HORIZONTAL_ALIGNMENT_LEFT))
+	v.add_child(Tela.texto(tr("No jogo: ") + tr(String(l["jeito"])), 15, 470, Tela.ANIL, HORIZONTAL_ALIGNMENT_LEFT))
 	var ok := Tela.botao("OK", w.fechar_loja, 22, Tela.URUCUM, 220.0, 50.0); ok.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	vb.add_child(ok)
 
@@ -757,7 +761,7 @@ func fim(titulo_txt: String, img: String, linhas: String, ganho: int) -> void:
 	if img != "" and Tela.tex(img): vb.add_child(Tela.titulo(img, 60))
 	else: vb.add_child(Tela.rotulo(titulo_txt, 34, Tela.URUCUM, HORIZONTAL_ALIGNMENT_CENTER, true))
 	vb.add_child(Tela.texto(linhas, 17, 560))
-	var fx := Tela.faixa("◉ +%d moedas" % ganho, Tela.IPE, 24, Tela.TINTA); vb.add_child(fx)
+	var fx := Tela.faixa(tr("◉ +%d moedas") % ganho, Tela.IPE, 24, Tela.TINTA); vb.add_child(fx)
 	var ac_arraial := func(): get_tree().reload_current_scene()
 	var bt := Tela.botao("VOLTAR AO ARRAIAL  (Enter)", ac_arraial, 18, Tela.URUCUM, 360.0, 52.0)
 	bt.size_flags_horizontal = Control.SIZE_SHRINK_CENTER; vb.add_child(bt)

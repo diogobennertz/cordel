@@ -113,6 +113,20 @@ static func fundo_papel(pai: Control, cor: Color = Color(1, 1, 1)) -> void:
 	fil2.offset_left = 19; fil2.offset_top = 19; fil2.offset_right = -19; fil2.offset_bottom = -19
 	var s2 := StyleBoxFlat.new(); s2.bg_color = Color(0, 0, 0, 0); s2.border_color = TINTA; s2.set_border_width_all(2)
 	fil2.add_theme_stylebox_override("panel", s2); fil2.mouse_filter = Control.MOUSE_FILTER_IGNORE; pai.add_child(fil2)
+	_cantos_cordel(pai)
+
+# enfeite nos 4 cantos, tipo xilogravura de folheto de cordel (estrela, sol, cacto, passarinho)
+static func _cantos_cordel(pai: Control) -> void:
+	var cantos := [
+		["orna_passaro", Control.PRESET_TOP_LEFT, Vector2(26, 24), Vector2(76, 60)],
+		["orna_sol", Control.PRESET_TOP_RIGHT, Vector2(-60, 6), Vector2(34, 34)],
+		["orna_cacto", Control.PRESET_BOTTOM_LEFT, Vector2(30, -148), Vector2(60, 90)],
+		["orna_estrela", Control.PRESET_BOTTOM_RIGHT, Vector2(-80, -84), Vector2(56, 56)],
+	]
+	for c in cantos:
+		var t := imagem(c[0], c[3]); t.set_anchors_preset(c[1])
+		t.position = c[2]; t.modulate = Color(TINTA.r, TINTA.g, TINTA.b, 0.8)
+		pai.add_child(t)
 
 static func escuro(pai: Control, a: float = 0.72) -> void:
 	var f := ColorRect.new(); f.color = Color(TINTA.r, TINTA.g, TINTA.b, a)

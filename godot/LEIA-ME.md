@@ -1,5 +1,11 @@
 # Cordel — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 (madrugada, continuação 4): moldura de xilogravura nos menus
+- Todo menu (`Tela.fundo_papel()`, chamado pela tela de título, melhorias, opções, co-op, etc.) ganhou 4
+  enfeites nos cantos no estilo xilogravura de folheto de cordel nordestino: passarinho, sol, mandacaru (cacto)
+  e estrela — desenhados por código (mesmo estilo das outras artes do jogo), não por IA, porque é mais confiável
+  pra um enfeite geométrico simples e pra garantir que nunca tape nenhum texto/botão.
+
 ## 2026-11-16 (madrugada, continuação 3): nome novo, logo nova, ritmo mais vivo
 - **O jogo mudou de nome**: "Cordelame" virou **Cordel**. Projeto (`project.godot`), instalador (`Cordel.iss`,
   `Cordel-Instalar.exe`), atalhos, textos e os dois repositórios no GitHub (ver "Publicado no GitHub" abaixo)

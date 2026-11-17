@@ -1,5 +1,12 @@
 # Cordel — jogo de folclore 3D (Godot 4)
 
+## 2026-11-17: carta de nível aparece pro parceiro no co-op
+- Último item que faltava do co-op ("Ainda falta"): quando alguém sobe de nível e escolhe uma carta, agora
+  aparece um aviso flutuando em cima da cabeça dela pros outros jogadores verem ("Nível X: nome da carta") —
+  os atributos em si já estavam sincronizados (são campos do `Jogador` já replicados), só faltava o aviso.
+  Testado de verdade com dois processos reais na rede: confirmado que o anfitrião escolhendo uma carta manda
+  o aviso que chega certinho na tela do convidado.
+
 ## 2026-11-16 (madrugada, continuação 6): os 4 primeiros heróis também de retrato novo
 - Mestre Besouro (capoeirista), Bia Gracie (jiujitsu) e Capitão Gonzaga (cangaceiro) — os únicos 3 que ainda
   usavam a arte 2D original desenhada à mão, depois de 2 tentativas de IA ruins numa leva anterior — tentei de
@@ -406,9 +413,9 @@ compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abr
   - Conferido no código (já funcionava desde antes, só não estava documentado): o chefe de verdade da fase
     também já nasce e enfurece replicado pros dois (`_dirigir()` já era só-anfitrião, `_marcar_furia_rede`),
     com barra de vida e aviso aparecendo certo pro convidado.
-  - Ainda NÃO entrou: a carta de subir de nível de cada um não aparece visualmente pro parceiro (hoje cada um
-    ainda sobe sozinho, sem avisar o outro — funciona, só não é visto). Loja/baú continuam com economia pessoal
-    de propósito (cada um paga com a própria moeda).
+  - A carta de subir de nível de cada um agora também avisa o parceiro (aviso flutuante em cima da cabeça —
+    ver changelog de 17/11). Loja/baú continuam com economia pessoal de propósito (cada um paga com a própria
+    moeda).
   - Testes: `-- --coop-host` e `-- --coop-join <ip>` (cria um bicho de teste, teleporta o anfitrião até um pote pra
     confirmar que o consumo soma igual nos dois lados, separa os jogadores e confere dano/XP/moeda/objetos nos
     dois lados pelos registros — sem precisar jogar na mão).

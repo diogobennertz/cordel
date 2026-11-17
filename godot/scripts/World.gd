@@ -1099,15 +1099,25 @@ func abrir_escolha(tipo: String) -> void:
 	_mouse(false)
 
 func _escolher_carta(p: Jogador, card: Dictionary) -> void:
+	var nome_carta: String = p.info_carta(card)["nome"]
 	p.aplicar_carta(card)
 	Som.tocar("carta")
 	if card.get("rar", 0) == 5:
 		lbl_centro.text = "CARTA MÍTICA!"; _piscar_centro(); Som.voz("v_mitica"); tremor = 0.6
+	if Rede.ativo(): _avisar_carta_rede.rpc(Rede.meu_id(), nome_carta, p.level)
 	menus.fechar()
 	levelup_aberto = false
 	if not _fila.is_empty():
 		abrir_escolha(_fila.pop_front()); return
 	_mouse(true)
+
+# no co-op, quando o parceiro escolhe uma carta, mostra pra todo mundo flutuando em cima da cabeça dele
+# (as cartas em si já chegam sozinhas pelos stats do Jogador, que já são sincronizados — isso aqui é só o aviso)
+@rpc("any_peer", "call_remote", "reliable")
+func _avisar_carta_rede(id: int, nome_carta: String, nivel: int) -> void:
+	var j = jogadores_rede.get(id)
+	if j == null or not is_instance_valid(j): return
+	dano_num(j.global_position, "Nível %d: %s" % [nivel, nome_carta], Color(1.0, 0.9, 0.4), 32, true)
 
 # ---------------- efeitos ----------------
 func _efeito_anel(centro: Vector3, raio: float, cor: Color) -> void:
@@ -2160,6 +2170,9 @@ func _teste_coop_relatar() -> void:
 					player.position = o2["no"].position; player.alt = 0.0
 					print("HOST teleportou pro pote net_id=%s pra testar consumo sincronizado" % str(o2.get("net_id", "?")))
 					break
+		if Rede.sou_host() and i == 12:
+			_escolher_carta(player, player.ofertas()[0])
+			print("HOST escolheu uma carta na marra, pra testar o aviso de nível pro convidado")
 		print("COOP eu=%s id=%d tick=%d jogadores=%d bichos=%d objetos=%d nivel=%d xp=%.1f moedas=%.1f vida=%.1f/%.1f" % [
 			sel_heroi, Rede.meu_id(), i, jogadores_rede.size(), enemies.size(), objetos.size(), player.level, player.xp, moedas, player.hp, player.max_hp])
 	get_tree().quit()

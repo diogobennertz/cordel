@@ -1,5 +1,11 @@
 # Cordel — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 (madrugada, continuação 5): retrato do Capiba (frevista) de verdade
+- Terceira tentativa de gerar o retrato do frevista por IA local deu certo — saiu bom de primeira (chapéu de
+  palha, sorriso, camisa rosa, colar de miçanga), só precisou de uma limpeza simples nas bordas (cortar pixel
+  quase transparente que sobrava tipo um "fantasma" fraco ao redor). Ele deixa de ser o único herói sem retrato
+  2D — agora os 32 têm.
+
 ## 2026-11-16 (madrugada, continuação 4): moldura de xilogravura nos menus
 - Todo menu (`Tela.fundo_papel()`, chamado pela tela de título, melhorias, opções, co-op, etc.) ganhou 4
   enfeites nos cantos no estilo xilogravura de folheto de cordel nordestino: passarinho, sol, mandacaru (cacto)

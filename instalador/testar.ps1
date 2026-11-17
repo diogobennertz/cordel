@@ -6,12 +6,12 @@ $fonte = Join-Path $env:TEMP 'cdl_pub'
 $iscc = Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'
 $saida = Join-Path $env:TEMP 'cdl_teste'
 New-Item -ItemType Directory -Force $saida | Out-Null
-& $iscc /Q /DVersao=teste /DSemAtalho=1 "/DFonte=$fonte" "/DRaiz=$raiz" "/DSaida=$saida" (Join-Path $fonte 'Cordelame.iss')
+& $iscc /Q /DVersao=teste /DSemAtalho=1 "/DFonte=$fonte" "/DRaiz=$raiz" "/DSaida=$saida" (Join-Path $fonte 'Cordel.iss')
 if ($LASTEXITCODE -ne 0) { throw "ISCC falhou" }
 
 $dest = Join-Path $env:TEMP 'cdl_inst_teste'
 if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
-$p = Start-Process (Join-Path $saida 'Cordelame-Instalar.exe') -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NOICONS',"/DIR=`"$dest`"" -Wait -PassThru
+$p = Start-Process (Join-Path $saida 'Cordel-Instalar.exe') -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NOICONS',"/DIR=`"$dest`"" -Wait -PassThru
 Write-Host "instalou: $($p.ExitCode)"
 
 $verReal = Get-Content (Join-Path $dest 'versao.txt')

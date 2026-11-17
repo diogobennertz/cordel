@@ -1,4 +1,4 @@
-# Abre o Cordelame. Antes, se houver um endereço em atualizacao.txt, confere se saiu versão nova e baixa sozinho.
+# Abre o Cordel. Antes, se houver um endereço em atualizacao.txt, confere se saiu versão nova e baixa sozinho.
 $ErrorActionPreference = 'SilentlyContinue'
 $base = Split-Path -Parent $MyInvocation.MyCommand.Path
 $url = ''
@@ -11,7 +11,7 @@ if ($url) {
     $rem = $wc.DownloadString("$url/versao.txt").Trim()
     $loc = ("" + (Get-Content (Join-Path $base 'versao.txt') -TotalCount 1)).Trim()
     if ($rem -and ($rem -ne $loc) -and ($rem.Length -lt 40)) {
-      $zip = Join-Path $env:TEMP 'cordelame-jogo.zip'
+      $zip = Join-Path $env:TEMP 'cordel-jogo.zip'
       $wc.DownloadFile("$url/jogo.zip", $zip)
       $novo = Join-Path $base 'jogo_novo'
       if (Test-Path $novo) { Remove-Item -Recurse -Force $novo }
@@ -26,4 +26,4 @@ if ($url) {
     }
   } catch {}
 }
-Start-Process -FilePath (Join-Path $base 'motor\Cordelame.exe') -ArgumentList @('--path', ('"' + (Join-Path $base 'jogo') + '"'))
+Start-Process -FilePath (Join-Path $base 'motor\Cordel.exe') -ArgumentList @('--path', ('"' + (Join-Path $base 'jogo') + '"'))

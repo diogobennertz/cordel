@@ -53,7 +53,7 @@ func _anunciar() -> void:
 		_udp_anuncio = PacketPeerUDP.new()
 		_udp_anuncio.set_broadcast_enabled(true)
 		_udp_anuncio.set_dest_address("255.255.255.255", PORTA_DESCOBERTA)
-	_udp_anuncio.put_packet(("CORDELAME_MUNDO:" + _nome_mundo_host).to_utf8_buffer())
+	_udp_anuncio.put_packet(("CORDEL_MUNDO:" + _nome_mundo_host).to_utf8_buffer())
 
 func _escutar_anuncios() -> void:
 	if _udp_escuta == null: return
@@ -61,7 +61,7 @@ func _escutar_anuncios() -> void:
 		var pct := _udp_escuta.get_packet()
 		var ip := _udp_escuta.get_packet_ip()
 		var txt := pct.get_string_from_utf8()
-		if txt.begins_with("CORDELAME_MUNDO:") and ip != "":
+		if txt.begins_with("CORDEL_MUNDO:") and ip != "":
 			var nome := txt.substr(17)
 			var novo := not mundos_vistos.has(ip)
 			mundos_vistos[ip] = {"nome": nome, "visto": Time.get_ticks_msec() / 1000.0}

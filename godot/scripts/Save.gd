@@ -3,7 +3,7 @@ class_name Salvo
 # O que fica guardado entre as partidas: moedas, fases liberadas, melhorias, recordes, opções e contadores
 # (os contadores vão servir para liberar personagens: "mate 150 sacis", "aplique 150 kimuras"...).
 
-const CAMINHO := "user://cordelame_save.json"
+const CAMINHO := "user://cordelame_save.json"       # nome antigo do jogo, de propósito: mudar aqui perderia o save de quem já jogou
 const CAMINHO_MUNDOS := "user://cordelame_mundos.json"
 const OPCOES := {"geral": 1.0, "musica": 0.7, "efeitos": 0.8, "sens": 1.0, "camera": 12.0, "cheia": 0.0, "numeros": 1.0, "pixel": 1.0}
 static var d := {}

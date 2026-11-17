@@ -1,6 +1,6 @@
 # Monta a versão para distribuir, na pasta dist/:
 #   jogo.zip + versao.txt     o que o atualizador baixa (suba os dois no mesmo lugar)
-#   Cordelame-Instalar.exe    o instalador (motor + jogo + atalho)
+#   Cordel-Instalar.exe       o instalador (motor + jogo + atalho)
 # Uso:  python instalador/publicar.py [endereço-das-atualizações]
 # O endereço também pode ficar guardado em instalador/endereco.txt.
 import os, shutil, subprocess, sys, tempfile, time, zipfile
@@ -37,10 +37,10 @@ iscc = os.path.join(os.environ.get('LOCALAPPDATA', ''), 'Programs', 'Inno Setup 
 if not os.path.exists(iscc): iscc = os.path.join('C:' + os.sep, 'Program Files (x86)', 'Inno Setup 6', 'ISCC.exe')
 if not os.path.exists(iscc):
     print('Inno Setup nao encontrado: o instalador nao foi gerado'); sys.exit(0)
-shutil.copy('instalador/Cordelame.iss', FONTE)
+shutil.copy('instalador/Cordel.iss', FONTE)
 shutil.copy('instalador/Jogar.ps1', FONTE)
-r = subprocess.run([iscc, '/Q', '/DVersao=' + versao, '/DFonte=' + FONTE, '/DRaiz=' + RAIZ, '/DSaida=' + FONTE, os.path.join(FONTE, 'Cordelame.iss')])
+r = subprocess.run([iscc, '/Q', '/DVersao=' + versao, '/DFonte=' + FONTE, '/DRaiz=' + RAIZ, '/DSaida=' + FONTE, os.path.join(FONTE, 'Cordel.iss')])
 if r.returncode != 0:
     print('ERRO ao montar o instalador'); sys.exit(1)
-shutil.copy(os.path.join(FONTE, 'Cordelame-Instalar.exe'), 'dist/Cordelame-Instalar.exe')
-print('instalador', round(os.path.getsize('dist/Cordelame-Instalar.exe') / 1e6, 1), 'MB')
+shutil.copy(os.path.join(FONTE, 'Cordel-Instalar.exe'), 'dist/Cordel-Instalar.exe')
+print('instalador', round(os.path.getsize('dist/Cordel-Instalar.exe') / 1e6, 1), 'MB')

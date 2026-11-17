@@ -1,4 +1,4 @@
-# Cordelame em 3D + coop na Steam — plano
+# Cordel em 3D + coop na Steam — plano
 
 Documento de decisão. A versão atual (2D, HTML/Canvas, roda no navegador) continua servindo como
 **protótipo jogável e "bíblia de design"**: toda a regra, número e conteúdo já estão provados nela.

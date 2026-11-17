@@ -1,4 +1,20 @@
-# Cordelame — jogo de folclore 3D (Godot 4)
+# Cordel — jogo de folclore 3D (Godot 4)
+
+## 2026-11-16 (madrugada, continuação 3): nome novo, logo nova, ritmo mais vivo
+- **O jogo mudou de nome**: "Cordelame" virou **Cordel**. Projeto (`project.godot`), instalador (`Cordel.iss`,
+  `Cordel-Instalar.exe`), atalhos, textos e os dois repositórios no GitHub (ver "Publicado no GitHub" abaixo)
+  foram todos renomeados. **De propósito, NÃO mudei** o nome do arquivo de save (`user://cordelame_save.json`)
+  — mudar isso faria o jogo parar de achar o progresso de quem já jogou (moedas, heróis desbloqueados, recordes).
+- **Logo nova**, bem "cara de Brasil": sol de festa junina colorido, gerado por IA local (mesmo processo das
+  outras artes desta madrugada), com o texto "CORDEL" desenhado por cima via código — não deixei a IA escrever
+  o texto porque modelo de imagem é notoriamente ruim pra escrever letra legível; o jeito mais confiável foi gerar
+  só a ilustração de fundo e escrever o título por cima do jeito que o jogo já faz nas outras telas.
+- **Ritmo da partida**: o ritmo (bicho na tela, primeira carta) começava devagar demais nos primeiros minutos.
+  Bicho aparece mais rápido desde o começo (intervalo de spawn começa menor e desce mais rápido, pico lá por
+  7-8min em vez de só perto do chefe aos 10min), a primeira carta de nível chega um pouco mais cedo, e três
+  avisos no meio da partida ("A mata tá esquentando…", "Metade do caminho!", "O chefe tá chegando…") marcam que
+  o tempo tá passando. Teste novo pra isso sem precisar esperar 10 minutos de verdade: `-- --teste-ritmo`
+  (avança o relógio na marra e imprime quantos bichos tem na tela a cada minuto simulado).
 
 ## 2026-11-16 — ícones de golpe de verdade, luz de três pontos nos retratos
 - **7 ícones novos de verdade** (giro, chute em arco, onda, investida, tiro reto, tiro teleguiado,
@@ -116,7 +132,7 @@ herói que gira com o mouse, uma clareira com arraial de São João no meio e **
 (é o limite do mapa: não dá para passar, e é de lá que os bichos saem). Tudo é montado por código.
 
 ## Como abrir e jogar
-**Jeito fácil:** dois cliques no atalho **Cordelame** da Área de Trabalho (ou no `JOGAR.bat`, na pasta de cima).
+**Jeito fácil:** dois cliques no atalho **Cordel** da Área de Trabalho (ou no `JOGAR.bat`, na pasta de cima).
 O motor do jogo já está junto, na pasta `motor`; não precisa instalar nada. `EDITAR.bat` abre o editor.
 
 **Jeito manual:**
@@ -217,7 +233,7 @@ deve ficar em tabela (`Data.gd`) para a tradução ser só trocar a tabela.
 - **Heróis mais únicos**: apelido, pulo próprio de cada um, carta de pulo duplo (Pulo do Saci).
 - **Tutorial** na primeira partida (dá para refazer em Opções > Jogo). **Feitos** que pagam moedas. Mítica agora é 1 em 100.
 - Testes: `-- --bot <classe> --melhorias N` joga com as melhorias compradas no nível N.
-- Pacote para amigos: `Cordelame-teste.zip` na pasta de cima (extrair e abrir `JOGAR.bat`).
+- Pacote para amigos: `Cordel-teste.zip` na pasta de cima (extrair e abrir `JOGAR.bat`).
 
 ## Ainda falta
 Itens ativos, cenário diferente por fase, mais chefes e personagens desbloqueáveis por feito, sons/vozes definitivos,
@@ -297,14 +313,14 @@ tradução (os textos ainda estão soltos no código), coop Steam/LAN, exportaç
   paga com sua própria moeda, o que já fazia sentido assim).
 
 ## Distribuir
-`python instalador/publicar.py [endereço]` gera em `dist/`: `Cordelame-Instalar.exe` (instala sem senha de administrador e cria
+`python instalador/publicar.py [endereço]` gera em `dist/`: `Cordel-Instalar.exe` (instala sem senha de administrador e cria
 atalho) e `jogo.zip` + `versao.txt`. O jogo instalado abre por `Jogar.ps1`, que, se houver endereço em `atualizacao.txt`,
 compara o `versao.txt` de lá com o local e baixa o `jogo.zip` novo antes de abrir. O endereço precisa ser acessível sem login.
 
 
 ## Publicado no GitHub
-- Código-fonte (privado): https://github.com/diogobennertz/cordelame
-- Para os colegas baixarem e jogarem (público, só os arquivos prontos): https://github.com/diogobennertz/cordelame-jogo/releases/latest
+- Código-fonte (privado): https://github.com/diogobennertz/cordel
+- Para os colegas baixarem e jogarem (público, só os arquivos prontos): https://github.com/diogobennertz/cordel-jogo/releases/latest
 - Para publicar uma versão nova depois de mexer no jogo: `bash instalador/publicar_github.sh "mensagem"` (sobe o código, gera o
   instalador, sobe a atualização e cria a release — tudo de uma vez). Quem já instalou recebe a atualização sozinho ao abrir o jogo.
 - Para testar o instalador sem bagunçar o atalho de quem está desenvolvendo: `powershell instalador/testar.ps1`.

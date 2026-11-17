@@ -1,11 +1,11 @@
-; Cordelame — jogo de folclore 3D em Godot 4
+; Cordel — jogo de folclore 3D em Godot 4
 ; Projeto de referência: abra esta pasta no Godot 4.2+ e aperte F5.
 
 config_version=5
 
 [application]
 
-config/name="Cordelame"
+config/name="Cordel"
 config/description="Esqueleto 2.5D: mundo 3D + bonecos de cordel chapados. Etapa 1 do PLANO-3D-STEAM."
 run/main_scene="res://scenes/World.tscn"
 config/features=PackedStringArray("4.3")

@@ -20,6 +20,7 @@ var fireflies: Array = []
 var projectiles: Array = []  # [{node, vel:Vector3, raio, dmg, pierce, vida, homing, boom, cor, hits:{}}]
 
 var time := 0.0
+var _marco_visto := 0   # avisos de ritmo no meio da partida ("a mata esquenta", etc.) — só pra dar a sensação de que o tempo passa
 var spawn_t := 0.0
 var elite_t := 10.0
 var kills := 0
@@ -179,6 +180,8 @@ func _ready() -> void:
 		_galeria()
 	elif "--teste" in args:
 		_teste(args[args.find("--teste") + 1] if args.find("--teste") + 1 < args.size() else "capoeirista")
+	elif "--teste-ritmo" in args:
+		_teste_ritmo()
 	else:
 		_montar_menu()
 
@@ -689,6 +692,7 @@ func _process(delta: float) -> void:
 	if Rede.ativo(): _coop_spawns()
 	if player == null: return       # co-op: esperando o próprio boneco chegar pela rede (dura um quadro só)
 	time += delta
+	_marcos_de_ritmo()
 	if tut >= 0: _tutorial(delta)
 	elif Rede.ativo() and not Rede.sou_host(): pass   # os bichos são mandados pelo anfitrião, chegam pela rede
 	else: _dirigir(delta)
@@ -779,6 +783,15 @@ func _notification(what: int) -> void:      # trocou de janela no meio da fase: 
 # ---------------- diretor da fase ----------------
 # Até o chefe: os bichos vão engrossando devagar. Chefe aos 10 minutos, com 3 para vencer; se não vencer,
 # ele enfurece e a mata despeja bicho. Chefe vencido: fase infinita, cada vez mais bicho e mais forte.
+# avisos no meio da partida (não mexem em nada, só marcam que o tempo tá passando e a coisa tá esquentando)
+func _marcos_de_ritmo() -> void:
+	if _marco_visto == 0 and time >= 150.0:
+		_marco_visto = 1; lbl_centro.text = "A MATA TÁ ESQUENTANDO…"; _piscar_centro()
+	elif _marco_visto == 1 and time >= 330.0:
+		_marco_visto = 2; lbl_centro.text = "METADE DO CAMINHO!"; _piscar_centro()
+	elif _marco_visto == 2 and time >= 510.0:
+		_marco_visto = 3; lbl_centro.text = "O CHEFE TÁ CHEGANDO…"; _piscar_centro()
+
 func _dirigir(delta: float) -> void:
 	if Rede.ativo() and not Rede.sou_host(): return   # só quem hospeda manda nos bichos
 	var fm: float = Dados.FASES[fase]["mult"]
@@ -786,7 +799,8 @@ func _dirigir(delta: float) -> void:
 	var qtd_jogadores := (Rede.ids().size() if Rede.ativo() else 1)
 	var mult_coop := 1.0 + 0.35 * (qtd_jogadores - 1)
 	var forca := (1.0 + time / 75.0) * fm * praga * mult_coop
-	var intervalo := maxf(0.2, 0.95 - time / 800.0) / (1.0 + 0.25 * (qtd_jogadores - 1))
+	# começa mais cheio (não só perto do chefe aos 10min) — sensação de ritmo mais vivo desde o início
+	var intervalo := maxf(0.2, 0.7 - time / 900.0) / (1.0 + 0.25 * (qtd_jogadores - 1))
 	var teto := int(150 * (1.0 + 0.5 * (qtd_jogadores - 1)))
 	var passo := 1.0
 	if chefe_morto:
@@ -2148,6 +2162,25 @@ func _teste_coop_relatar() -> void:
 					break
 		print("COOP eu=%s id=%d tick=%d jogadores=%d bichos=%d objetos=%d nivel=%d xp=%.1f moedas=%.1f vida=%.1f/%.1f" % [
 			sel_heroi, Rede.meu_id(), i, jogadores_rede.size(), enemies.size(), objetos.size(), player.level, player.xp, moedas, player.hp, player.max_hp])
+	get_tree().quit()
+
+# simula o ritmo da partida inteira (sem precisar esperar 10 minutos de verdade): avança o relógio na marra e
+# confere quantos bichos tem na tela e quantos XP/nível em cada marco de tempo.
+func _teste_ritmo() -> void:
+	sem_mouse = true
+	iniciar_jogo("capoeirista")
+	player.aplicar_carta({"tipo": "golpe_novo", "id": "meialua"})
+	var passo := 0.1
+	var proximo_marco := 60.0
+	while time < 620.0:
+		time += passo
+		_marcos_de_ritmo()
+		_dirigir(passo)
+		_update_projectiles(passo)
+		_objetos(passo)
+		if time >= proximo_marco:
+			print("RITMO t=%s bichos=%d xp_next=%.0f nivel=%d" % [_mmss(time), enemies.size(), player.xp_next, player.level])
+			proximo_marco += 60.0
 	get_tree().quit()
 
 func _teste_lock() -> void:

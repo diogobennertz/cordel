@@ -213,7 +213,7 @@ func gain_xp(v: float) -> void:
 	while xp >= xp_next:
 		xp -= xp_next
 		level += 1
-		xp_next = round(8 + level * 6 + 0.9 * level * level)
+		xp_next = round(5 + level * 5 + 0.85 * level * level)   # primeira carta mais rápida: fisga o jogador logo no começo
 		hp = minf(max_hp, hp + max_hp * 0.08)
 		world.abrir_escolha("nivel")
 

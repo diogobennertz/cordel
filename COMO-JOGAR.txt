@@ -1,7 +1,7 @@
-CORDELAME — versão de teste
+CORDEL — versão de teste
 
 COMO ABRIR
-1. Extraia o .zip inteiro numa pasta de nome curto (ex.: C:\Jogos\Cordelame). Não rode de dentro do zip.
+1. Extraia o .zip inteiro numa pasta de nome curto (ex.: C:\Jogos\Cordel). Não rode de dentro do zip.
 2. Dois cliques em JOGAR.bat. Não precisa instalar nada.
    (Se o Windows avisar que o arquivo veio da internet, clique em "Mais informações" > "Executar assim mesmo".)
 

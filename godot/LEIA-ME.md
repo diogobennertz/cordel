@@ -1,5 +1,11 @@
 # Cordel — jogo de folclore 3D (Godot 4)
 
+## 2026-11-16 (madrugada, continuação 6): os 4 primeiros heróis também de retrato novo
+- Mestre Besouro (capoeirista), Bia Gracie (jiujitsu) e Capitão Gonzaga (cangaceiro) — os únicos 3 que ainda
+  usavam a arte 2D original desenhada à mão, depois de 2 tentativas de IA ruins numa leva anterior — tentei de
+  novo e dessa vez saiu bom nos 3. Agora TODOS os 32 heróis têm o mesmo estilo de retrato (foto 3D gerada por
+  IA local), sem nenhum ficar destoando com a arte original ou caindo no boneco 3D.
+
 ## 2026-11-16 (madrugada, continuação 5): retrato do Capiba (frevista) de verdade
 - Terceira tentativa de gerar o retrato do frevista por IA local deu certo — saiu bom de primeira (chapéu de
   palha, sorriso, camisa rosa, colar de miçanga), só precisou de uma limpeza simples nas bordas (cortar pixel
